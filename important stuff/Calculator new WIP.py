@@ -20,7 +20,8 @@ from scientific_parser import *
 # create GUIs for different displays
 # create the necessary button functions
 # create the necessary variables
-# link with parser
+# create logic for parser
+# link parser & display
 
 
 
@@ -877,6 +878,28 @@ def scientific():
     dict['gui']['buttons']['e'].             place(x = 0,   y = 375, width = 100, height = 75)
     dict['gui']['buttons']['log'].           place(x = 0,   y = 450, width = 100, height = 75)
     dict['gui']['buttons']['answer'].        place(x = 0,   y = 525, width = 100, height = 75)
+
+
+
+# Factoring calculator display configuration
+def Factoring():
+
+    # have an input where a trinomial can be factored
+    # have an output that says what kind of trinomial was inputted
+
+    pass
+
+
+
+# Quadratic calculator display configuration
+def Quadratic():
+
+    pass
+
+
+
+# Trigonometric calculator display configuration
+def Trigonometry():
 
     pass
 
