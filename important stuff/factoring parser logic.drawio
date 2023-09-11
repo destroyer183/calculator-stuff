@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-09-11T19:32:41.708Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="n8XinhsSm7hOoGt_Ef3a" version="21.7.4" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2023-09-11T20:57:53.837Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="xqiV-2_W5puYyMXTqS_4" version="21.7.4" type="github" pages="2">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="796" dy="506" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
@@ -67,7 +67,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="BQg6JwgNhNgrC6UbApTg" name="Page-2">
-    <mxGraphModel dx="796" dy="506" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="796" dy="438" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -110,7 +110,7 @@
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-5" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="630" y="570" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="s2lf8T3ZpkW-WNz2dh5t-8" value="square root both numbers," style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="1">
+        <mxCell id="s2lf8T3ZpkW-WNz2dh5t-8" value="square root both numbers, and sub them in for x and y in: (x - y) (x + y)" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="1">
           <mxGeometry x="550" y="680" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-10" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
