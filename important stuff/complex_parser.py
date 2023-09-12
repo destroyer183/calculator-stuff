@@ -6,7 +6,7 @@ import math
 
 # convert quadratic equations between standard form and vertex form
 # give me all the points of interest for a quadratic equation, i.e. vertex, AOS, direction of opening, zeroes, y-int, 
-# maybe graphing equations
+# maybe graphing equations, use MathPlotLib for this because it's based
 
 # give me outputs for sine law and both cosine laws, and maybe more
 

@@ -1,0 +1,92 @@
+import math
+
+factor equations, i.e. simple trinomials, complex trinomials, perfect square trinomials, difference of square binomials, polynomials of varying length
+
+
+for a FACTORING
+
+
+
+logic planning:
+
+    identifying length:
+
+        order all of the terms correctly, exponent value first, alphabetical order second. i.e. 2x^3 + 3y^3 - 7x^2 + 5y^2 - 2xy + 3x + 5y
+
+        add 'like' terms
+
+        count the number of '+' and '-' signs and add one to determine the number of terms
+
+
+
+    if it's a binomial:
+
+        factor out GCF if there is one
+
+            check if every term shares a variable to determine if one can be factored out
+
+            find factors by dividing each term by every number <= its value and add that number to a list
+
+            check if every list shares one or more numbers
+
+            pick the largest number and factor it out of every term
+
+            put the factored number outside brackets
+
+
+
+        difference of squares:
+
+            the terms are subtracted
+
+            both can be square-rooted
+
+            square root each number and put them within the correct brackets
+
+
+
+
+    how to identify what kind of trinomial it is:
+
+        factor out GCF if there is one
+
+        simple trinomial:
+
+            if 'a' has no coefficient and is squared
+
+            find all factors of 'c'
+
+            find what factors of 'c' add up to 'b'
+
+            separate them and put them within the correct brackets
+
+
+
+        perfect square trinomial:
+
+            square root of 'a' and 'c' have no decimals, and 2ac = b
+
+            square root 'a' and 'c', and put them within brackets and square the brackets
+
+        
+
+        complex trinomial:
+
+            'a' has a coefficient and it isn't a PST
+
+            find all factors of 'ac' 
+
+            find what factors of 'ac' add up to 'b'
+
+            pair factors of 'b' with 'a' and 'c'
+
+            use factors to find what numbers pair up best
+
+            factor out GCF from each pair, and group the factors next to the factored pairs
+
+
+
+    polynomials:
+
+        longer than trinomial
+

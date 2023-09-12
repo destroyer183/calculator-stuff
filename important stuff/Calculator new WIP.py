@@ -6,6 +6,16 @@ from scientific_parser import *
 
 
 
+
+# things to update:
+
+# make a function that makes changes to variables instead of repeating tons of code
+
+# add something to close all unclosed brackets (possibly put both on screen, and put numbers in between them, and then put numbers outside once close brackets is pressed)
+
+
+
+
 # things this needs to do to integrate the complex parser:
 
 # have separate display options for scientific calculator, factoring calculator, quadratic calculator, and trig calculator
@@ -257,7 +267,7 @@ def assigninteger():
 
             dict['gui']['display text'] = ('').join(dict['gui']['display text'])
 
-            
+
 
     except:
 
@@ -280,12 +290,38 @@ def assigninteger():
 # function to input numbers.
 def assign(x):
 
-    # put the number in the equation and display strings
-    dict['numbers']['equation'] += str(x)
+    try:
 
-    dict['gui']['equation text'] += str(x)
+        # make numbers superscript if they are exponents
+        if dict['numbers']['equation'][-2] == '^':
 
-    dict['gui']['display text']  += str(x)
+            dict['numbers']['equation'] += str(x)
+
+            dict['gui']['equation text'] += get_super(str(x))
+
+            dict['gui']['display text'] += str(x)
+
+
+
+        else:
+
+            # put the number in the equation and display strings
+            dict['numbers']['equation'] += str(x)
+
+            dict['gui']['equation text'] += str(x)
+
+            dict['gui']['display text'] += str(x)
+
+
+
+    except:
+
+        # put the number in the equation and display strings
+        dict['numbers']['equation'] += str(x)
+
+        dict['gui']['equation text'] += str(x)
+
+        dict['gui']['display text'] += str(x)
 
 
 
@@ -302,9 +338,9 @@ def exponent(ctrlexp = -1):
         # put the exponent sign and exponent number in the equation and display strings
         dict['numbers']['equation'] += ' ^ ' + str(ctrlexp)
 
-        dict['gui']['equation text'] += ' ^ ' + str(ctrlexp)
+        dict['gui']['equation text'] += get_super(str(ctrlexp))
 
-        dict['gui']['display text'] = str(ctrlexp)
+        dict['gui']['display text'] = ''
 
     
 
@@ -313,8 +349,6 @@ def exponent(ctrlexp = -1):
         # put the exponent sign in the equation and display strings
         dict['numbers']['equation'] += ' ^ '
 
-        dict['gui']['equation text'] += ' ^ '
-
         dict['gui']['display text'] = ''
 
 
@@ -322,7 +356,7 @@ def exponent(ctrlexp = -1):
     # update display
     dict['gui']['display'].configure(text = '0')
 
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    dict['gui']['equation'].configure(text = dict['gui']['equation text'] + get_super('y'))
 
 
 
@@ -385,6 +419,13 @@ def brackets(type):
 
     if type:
 
+        # allow for bracket multiplication without pressing the multiplication button
+        if dict['numbers']['equation'][-1] in '1234567890)':
+
+            dict['numbers']['equation'] += ' * '
+
+
+
         # add an open bracket to the equation and display strings
         dict['numbers']['equation'] += '('
 
@@ -396,12 +437,35 @@ def brackets(type):
 
     else:
 
-        # add a closed bracket to the equation and display strings
-        dict['numbers']['equation'] += ')'
+        count = 0
 
-        dict['gui']['equation text'] += ')'
+        count2 = 0
 
-        dict['gui']['display text'] = ''
+        # prevent the number of closed brackets from exceeding the number of open brackets
+        for i in dict['numbers']['equation']:
+
+            # count the # of open brackets
+            if i == '(':
+
+                count += 1
+
+
+
+            # count the # of closed brackets
+            if i == ')':
+
+                count2 += 1
+
+
+        # only allow a closed bracket to be entered if there are less of them than open brackets
+        if count > count2:
+
+            # add a closed bracket to the equation and display strings
+            dict['numbers']['equation'] += ')'
+
+            dict['gui']['equation text'] += ')'
+
+            dict['gui']['display text'] = ''
 
         
 
@@ -586,26 +650,26 @@ def shifte():
         dict['gui']['buttons']['cosine']. configure(font=('Arial', 25, 'bold'))
         dict['gui']['buttons']['tangent'].configure(font=('Arial', 25, 'bold'))
 
-        dict['gui']['buttons']['sine'].      place(x = 100, y = 375, width = 100, height = 75)
-        dict['gui']['buttons']['cosine'].    place(x = 100, y = 450, width = 100, height = 75)
-        dict['gui']['buttons']['tangent'].   place(x = 100, y = 525, width = 100, height = 75)
+        dict['gui']['buttons']['sine'].   place(x = 100, y = 375, width = 100, height = 75)
+        dict['gui']['buttons']['cosine']. place(x = 100, y = 450, width = 100, height = 75)
+        dict['gui']['buttons']['tangent'].place(x = 100, y = 525, width = 100, height = 75)
 
 
 
     # change the button text to normal functions
     else:
 
-        dict['gui']['buttons']['sine']       = tk.Button(root, text='sin', anchor='center', bg='gainsboro', command=lambda:trigonometry(True))
-        dict['gui']['buttons']['cosine']     = tk.Button(root, text='cos', anchor='center', bg='gainsboro', command=lambda:trigonometry(False))
-        dict['gui']['buttons']['tangent']    = tk.Button(root, text='tan', anchor='center', bg='gainsboro', command=lambda:trigonometry())
+        dict['gui']['buttons']['sine']    = tk.Button(root, text='sin', anchor='center', bg='gainsboro', command=lambda:trigonometry(True))
+        dict['gui']['buttons']['cosine']  = tk.Button(root, text='cos', anchor='center', bg='gainsboro', command=lambda:trigonometry(False))
+        dict['gui']['buttons']['tangent'] = tk.Button(root, text='tan', anchor='center', bg='gainsboro', command=lambda:trigonometry())
 
         dict['gui']['buttons']['sine'].   configure(font=('Arial', 25, 'bold'))
         dict['gui']['buttons']['cosine']. configure(font=('Arial', 25, 'bold'))
         dict['gui']['buttons']['tangent'].configure(font=('Arial', 25, 'bold'))
 
-        dict['gui']['buttons']['sine'].      place(x = 100, y = 375, width = 100, height = 75)
-        dict['gui']['buttons']['cosine'].    place(x = 100, y = 450, width = 100, height = 75)
-        dict['gui']['buttons']['tangent'].   place(x = 100, y = 525, width = 100, height = 75)
+        dict['gui']['buttons']['sine'].   place(x = 100, y = 375, width = 100, height = 75)
+        dict['gui']['buttons']['cosine']. place(x = 100, y = 450, width = 100, height = 75)
+        dict['gui']['buttons']['tangent'].place(x = 100, y = 525, width = 100, height = 75)
 
 
 
@@ -642,7 +706,7 @@ def keybindings():
     if keyboard.is_pressed('ctrl+9')   :exponent(9)
     if keyboard.is_pressed('shift+0')  :brackets(False)
     if keyboard.is_pressed('shift+1')  :factorials()
-    if keyboard.is_pressed('shift+6')  :exponent(-1)
+    if keyboard.is_pressed('shift+6')  :exponent()
     if keyboard.is_pressed('shift+7')  :exponent(0.5)
     if keyboard.is_pressed('shift+9')  :brackets(True)
     if keyboard.is_pressed('ctrl+s')   :trigonometry(True)
@@ -686,6 +750,9 @@ def options_callback(var, index, mode):
 
 # scientific calculator display configuration
 def scientific():
+
+    # sizing
+    root.geometry('700x675')
 
     # graphical setup
     dict['gui']['equation'] = tk.Label(root, text = '')
@@ -753,7 +820,7 @@ def scientific():
     # column 3
     dict['gui']['buttons']['memory recall']  = tk.Button(root, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:memoryrecall())
     dict['gui']['buttons']['factorial']      = tk.Button(root, text='!x',                 anchor='center', bg='gainsboro',      command=lambda:factorials())
-    dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponent(-1))
+    dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponent())
     dict['gui']['buttons']['squared']        = tk.Button(root, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:exponent(2))
     dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:exponent(0.5))
 
@@ -884,8 +951,26 @@ def scientific():
 # Factoring calculator display configuration
 def Factoring():
 
-    # have an input where a trinomial can be factored
-    # have an output that says what kind of trinomial was inputted
+
+
+    # type in equations or use buttons?
+
+    # things needed to type in equations:
+        # something to understand syntax that can change
+        # something to understand different variable names
+        # something to understand polynomials of very different lengths
+
+
+    
+    # things needed to use buttons:
+        # a way to enter in all letters as variables
+
+
+
+
+    # have an input where a polynomial of any size can be factored
+    # have an output that says what type of polynomial was inputted
+    # have an output that says what the factored form of the polynomial is
 
     pass
 
