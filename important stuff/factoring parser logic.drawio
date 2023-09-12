@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-09-12T16:10:52.397Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="ZhTon0xxSaHn-A-sccMl" version="21.7.4" type="github" pages="4">
+<mxfile host="app.diagrams.net" modified="2023-09-12T19:26:42.762Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="J_h9R0LR6a87wU3QFV7-" version="21.7.4" type="github" pages="4">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="557" dy="354" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
@@ -85,7 +85,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="BQg6JwgNhNgrC6UbApTg" name="Page-2">
-    <mxGraphModel dx="796" dy="506" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="961" dy="611" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -98,12 +98,12 @@
         <mxCell id="ekKR49PGMM6hBl4tPGdU-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="s2lf8T3ZpkW-WNz2dh5t-8" target="yLvlcDcz9tJkH_rwTKGk-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="780" y="710" />
+              <mxPoint x="760" y="710" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-8" value="square root both numbers, and sub them into the equation: &lt;br&gt;(a - b) (a + b)" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="730" y="260" width="100" height="100" as="geometry" />
+          <mxGeometry x="710" y="120" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-10" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="640" y="150" width="60" height="30" as="geometry" />
@@ -111,11 +111,16 @@
         <mxCell id="yLvlcDcz9tJkH_rwTKGk-1" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;return factored &lt;br&gt;equation to GUI&lt;/font&gt;" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
           <mxGeometry x="550" y="680" width="100" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="ViNsGyoTkDfMZFm2l1Cc-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="ZjxETQ-AxmU1mtQch9HH-2" target="FObISRAITt_tnxuXhr_k-3">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="sRJdcyaHDppIJw3_62mj-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="ZjxETQ-AxmU1mtQch9HH-2" target="sRJdcyaHDppIJw3_62mj-1">
           <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="4l0tw9BMxy1Yg-8ak-ge-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="ZjxETQ-AxmU1mtQch9HH-2" target="yLvlcDcz9tJkH_rwTKGk-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="760" y="310" />
+              <mxPoint x="760" y="710" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="ZjxETQ-AxmU1mtQch9HH-2" value="&lt;font style=&quot;font-size: 10px;&quot;&gt;are they &lt;br&gt;perfect cubes?&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="550" y="260" width="100" height="100" as="geometry" />
@@ -123,11 +128,8 @@
         <mxCell id="FObISRAITt_tnxuXhr_k-2" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="560" y="210" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="FObISRAITt_tnxuXhr_k-3" value="return &#39;not factorable&#39;&lt;br&gt;to the GUI" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
-          <mxGeometry x="400" y="280" width="100" height="60" as="geometry" />
-        </mxCell>
         <mxCell id="ViNsGyoTkDfMZFm2l1Cc-2" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="510" y="290" width="60" height="30" as="geometry" />
+          <mxGeometry x="630" y="290" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="sRJdcyaHDppIJw3_62mj-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="sRJdcyaHDppIJw3_62mj-1" target="sRJdcyaHDppIJw3_62mj-5">
           <mxGeometry relative="1" as="geometry" />
@@ -172,21 +174,23 @@
         <mxCell id="KQ8DPkezO2kAnrUBqWoc-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="KQ8DPkezO2kAnrUBqWoc-2" target="ZjxETQ-AxmU1mtQch9HH-2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="ekKR49PGMM6hBl4tPGdU-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="KQ8DPkezO2kAnrUBqWoc-2" target="s2lf8T3ZpkW-WNz2dh5t-8">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="780" y="170" />
-            </Array>
-          </mxGeometry>
+        <mxCell id="4l0tw9BMxy1Yg-8ak-ge-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="KQ8DPkezO2kAnrUBqWoc-2" target="s2lf8T3ZpkW-WNz2dh5t-8">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="KQ8DPkezO2kAnrUBqWoc-2" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;are they&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;subtracted and perfect squares?&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+        <mxCell id="KQ8DPkezO2kAnrUBqWoc-2" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;are a and b&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;subtracted and perfect squares?&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="550" y="120" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="oftLlaMtXsA4nTg0ffw2-1" value="note: make sure this can understand complicated difference of squares equations. ex:&lt;br&gt;9(7x - 2)&lt;span style=&quot;font-size: 10px;&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/span&gt;&amp;nbsp;- 49(5x + 3)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;&lt;br&gt;= (3(7x - 2)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;+ 7(5x + 3))&amp;nbsp;(3(7x - 2)&lt;sup style=&quot;border-color: var(--border-color);&quot;&gt;2&lt;/sup&gt;&amp;nbsp;- 7(5x + 3))&lt;br&gt;= (147x&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;- 49x + 33) (147x&lt;sup style=&quot;border-color: var(--border-color);&quot;&gt;2&lt;/sup&gt;&amp;nbsp;- 119x - 9)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="edgUWH6tAnI_psiBDAEP-1" value="&lt;a href=&quot;https://www.symbolab.com/solver/factor-trinomials-calculator/factor%209%5Cleft(7x%20-%202%5Cright)%5E%7B4%7D%20-%2049%5Cleft(5x%20%2B%203%5Cright)%5E%7B2%7D?or=input&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;https://www.symbolab.com/solver/factor-trinomials-calculator/factor%209%5Cleft(7x%20-%202%5Cright)%5E%7B4%7D%20-%2049%5Cleft(5x%20%2B%203%5Cright)%5E%7B2%7D?or=input&lt;/font&gt;&lt;/a&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="120" width="280" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram id="zyUjxUo1pK8jHnFYvZsr" name="Page-3">
-    <mxGraphModel dx="844" dy="537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="995" dy="633" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -279,8 +283,13 @@
         <mxCell id="AzJ1HR5oV1sSh0lbEmiL-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="AzJ1HR5oV1sSh0lbEmiL-6" target="AzJ1HR5oV1sSh0lbEmiL-8">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="5zHYoXszGVtZdOfrWoOu-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="AzJ1HR5oV1sSh0lbEmiL-6" target="5zHYoXszGVtZdOfrWoOu-4">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="QaoY-nu1M0QrQI4vn01E-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="AzJ1HR5oV1sSh0lbEmiL-6" target="4CFxt6qYmShe7Cd7gjbn-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="440" y="590" />
+              <mxPoint x="440" y="850" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="AzJ1HR5oV1sSh0lbEmiL-6" value="do any two&lt;br&gt;factors add up &lt;br&gt;to b?" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
           <mxGeometry x="300" y="540" width="100" height="100" as="geometry" />
@@ -299,53 +308,60 @@
           <mxGeometry x="330" y="630" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-3" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="260" y="570" width="60" height="30" as="geometry" />
-        </mxCell>
-        <mxCell id="5zHYoXszGVtZdOfrWoOu-4" value="return &#39;not factorable&#39;&lt;br&gt;to the GUI" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
-          <mxGeometry x="160" y="560" width="100" height="60" as="geometry" />
+          <mxGeometry x="380" y="570" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-6" target="5zHYoXszGVtZdOfrWoOu-9">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-6" value="find factors of ac" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="870" y="260" width="100" height="100" as="geometry" />
+          <mxGeometry x="800" y="260" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-8" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="580" y="350" width="60" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="5zHYoXszGVtZdOfrWoOu-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-9" target="5zHYoXszGVtZdOfrWoOu-14">
-          <mxGeometry relative="1" as="geometry" />
+        <mxCell id="5zHYoXszGVtZdOfrWoOu-15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-9" target="4CFxt6qYmShe7Cd7gjbn-1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="980" y="440" as="sourcePoint" />
+            <mxPoint x="744.26" y="844.98" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="760" y="450" />
+              <mxPoint x="760" y="850" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-9" target="5zHYoXszGVtZdOfrWoOu-13">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-9" value="do any two&lt;br&gt;factors sum &lt;br&gt;to b?" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
-          <mxGeometry x="870" y="400" width="100" height="100" as="geometry" />
+          <mxGeometry x="800" y="400" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-13" target="5zHYoXszGVtZdOfrWoOu-21">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-13" value="determine factors of both terms, and pair terms with common factors" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="870" y="540" width="100" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="5zHYoXszGVtZdOfrWoOu-14" value="return &#39;not factorable&#39; &lt;br&gt;to the GUI" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
-          <mxGeometry x="720" y="420" width="100" height="60" as="geometry" />
+          <mxGeometry x="800" y="540" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-19" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="830" y="430" width="60" height="30" as="geometry" />
+          <mxGeometry x="760" y="430" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-20" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="900" y="490" width="60" height="30" as="geometry" />
+          <mxGeometry x="830" y="490" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="5zHYoXszGVtZdOfrWoOu-21" target="4CFxt6qYmShe7Cd7gjbn-1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="920" y="850" />
+              <mxPoint x="850" y="850" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="5zHYoXszGVtZdOfrWoOu-21" value="factor out GCF from both pairs, and group each GCF in brackets next to factored pair" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" vertex="1" parent="1">
-          <mxGeometry x="870" y="680" width="100" height="100" as="geometry" />
+          <mxGeometry x="800" y="680" width="100" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HJT2otXyAuT-DFZwZpZT-2" value="note: make sure this can understand complicated perfect square trinomials. ex: 9(7x - 2)&lt;sup&gt;4&lt;/sup&gt;&amp;nbsp;- 42(7x - 2)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;+ 49&lt;br&gt;= (3(7x - 2)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;- 7)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;&lt;br&gt;(147x&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;- 84x + 5)&lt;sup&gt;2&lt;/sup&gt;&amp;nbsp;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="HJT2otXyAuT-DFZwZpZT-3" value="&lt;a style=&quot;border-color: var(--border-color);&quot; href=&quot;https://www.symbolab.com/solver/factor-trinomials-calculator/factor%209%5Cleft(7x%20-%202%5Cright)%5E%7B4%7D%20-%2042%5Cleft(7x%20-%202%5Cright)%5E%7B2%7D%20%2B%2049?or=input&quot;&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;https://www.symbolab.com/solver/factor-trinomials-calculator/factor%209%5Cleft(7x%20-%202%5Cright)%5E%7B4%7D%20-%2042%5Cleft(7x%20-%202%5Cright)%5E%7B2%7D%20%2B%2049?or=input&lt;/font&gt;&lt;/a&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="120" width="240" height="100" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
