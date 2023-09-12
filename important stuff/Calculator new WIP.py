@@ -9,6 +9,8 @@ from scientific_parser import *
 
 # things to update:
 
+# fix the integer button, it can't properly add a negative sign to an equation if there isn't a number in the last spot
+
 # make a function that makes changes to variables instead of repeating tons of code
 
 # add something to close all unclosed brackets (possibly put both on screen, and put numbers in between them, and then put numbers outside once close brackets is pressed)
@@ -205,13 +207,26 @@ def assigninteger():
     
     try:
 
-        # find where the display number is within the whole equation
-        index = dict['gui']['equation text'].find(dict['gui']['display text'])
+        if dict['gui']['display text'] == '':
+
+            # add the integer sign to the number if there is nothing else in the equation
+            dict['numbers']['equation'] = dict['numbers']['equation'] + '-'
+
+            dict['gui']['equation text'] = dict['gui']['equation text'] + '-'
+
+            dict['gui']['display text'] = '-' + dict['gui']['display text']
+
+
+
+        elif dict['gui']['display text'] != '':
+
+            # find where the display number is within the whole equation
+            index = dict['gui']['equation text'].find(dict['gui']['display text'])
 
 
         
         # check if there is a integer sign on the number
-        if dict['gui']['equation text'][index] != '-':
+        elif dict['gui']['equation text'][index] != '-':
 
             # convert the strings into lists
             dict['numbers']['equation'] = list(dict['numbers']['equation'])
@@ -676,47 +691,47 @@ def shifte():
 # a function to handle all key inputs
 def keybindings():
 
-    if keyboard.is_pressed('shift+=')  :meth(1)
-    if keyboard.is_pressed('-')        :meth(2)
-    if keyboard.is_pressed('shift+8')  :meth(3)
-    if keyboard.is_pressed('/')        :meth(4)
-    if keyboard.is_pressed('shift+5')  :meth(5)
-    if keyboard.is_pressed('.')        :assigndecimal()
-    if keyboard.is_pressed('shift+-')  :assigninteger()
-    if keyboard.is_pressed('enter')    :calculate()
-    if keyboard.is_pressed('0')        :assign(0)
-    if keyboard.is_pressed('1')        :assign(1)
-    if keyboard.is_pressed('2')        :assign(2)
-    if keyboard.is_pressed('3')        :assign(3)
-    if keyboard.is_pressed('4')        :assign(4)
-    if keyboard.is_pressed('5')        :assign(5)
-    if keyboard.is_pressed('6')        :assign(6)
-    if keyboard.is_pressed('7')        :assign(7)
-    if keyboard.is_pressed('8')        :assign(8)
-    if keyboard.is_pressed('9')        :assign(9)
-    if keyboard.is_pressed('ctrl+0')   :exponent(0)
-    if keyboard.is_pressed('ctrl+1')   :exponent(1)
-    if keyboard.is_pressed('ctrl+2')   :exponent(2)
-    if keyboard.is_pressed('ctrl+3')   :exponent(3)
-    if keyboard.is_pressed('ctrl+4')   :exponent(4)
-    if keyboard.is_pressed('ctrl+5')   :exponent(5)
-    if keyboard.is_pressed('ctrl+6')   :exponent(6)
-    if keyboard.is_pressed('ctrl+7')   :exponent(7)
-    if keyboard.is_pressed('ctrl+8')   :exponent(8)
-    if keyboard.is_pressed('ctrl+9')   :exponent(9)
-    if keyboard.is_pressed('shift+0')  :brackets(False)
-    if keyboard.is_pressed('shift+1')  :factorials()
-    if keyboard.is_pressed('shift+6')  :exponent()
-    if keyboard.is_pressed('shift+7')  :exponent(0.5)
-    if keyboard.is_pressed('shift+9')  :brackets(True)
-    if keyboard.is_pressed('ctrl+s')   :trigonometry(True)
-    if keyboard.is_pressed('ctrl+c')   :trigonometry(False)
-    if keyboard.is_pressed('ctrl+t')   :trigonometry()
-    if keyboard.is_pressed('ctrl+a')   :answer()
-    if keyboard.is_pressed('ctrl+e')   :e()
-    if keyboard.is_pressed('ctrl+l')   :logarithm()
-    if keyboard.is_pressed('ctrl+p')   :pi()
-    if keyboard.is_pressed('backspace'):clearall()
+    if   keyboard.is_pressed('shift+=')  :meth(1)
+    elif keyboard.is_pressed('shift+8')  :meth(3)
+    elif keyboard.is_pressed('shift+5')  :meth(5)
+    elif keyboard.is_pressed('ctrl+0')   :exponent(0)
+    elif keyboard.is_pressed('ctrl+1')   :exponent(1)
+    elif keyboard.is_pressed('ctrl+2')   :exponent(2)
+    elif keyboard.is_pressed('ctrl+3')   :exponent(3)
+    elif keyboard.is_pressed('ctrl+4')   :exponent(4)
+    elif keyboard.is_pressed('ctrl+5')   :exponent(5)
+    elif keyboard.is_pressed('ctrl+6')   :exponent(6)
+    elif keyboard.is_pressed('ctrl+7')   :exponent(7)
+    elif keyboard.is_pressed('ctrl+8')   :exponent(8)
+    elif keyboard.is_pressed('ctrl+9')   :exponent(9)
+    elif keyboard.is_pressed('shift+0')  :brackets(False)
+    elif keyboard.is_pressed('shift+1')  :factorials()
+    elif keyboard.is_pressed('shift+6')  :exponent()
+    elif keyboard.is_pressed('shift+7')  :exponent(0.5)
+    elif keyboard.is_pressed('shift+9')  :brackets(True)
+    elif keyboard.is_pressed('ctrl+s')   :trigonometry(True)
+    elif keyboard.is_pressed('ctrl+c')   :trigonometry(False)
+    elif keyboard.is_pressed('ctrl+t')   :trigonometry()
+    elif keyboard.is_pressed('ctrl+a')   :answer()
+    elif keyboard.is_pressed('ctrl+e')   :e()
+    elif keyboard.is_pressed('ctrl+l')   :logarithm()
+    elif keyboard.is_pressed('ctrl+p')   :pi()
+    elif keyboard.is_pressed('shift+-')  :assigninteger()
+    elif keyboard.is_pressed('enter')    :calculate()
+    elif keyboard.is_pressed('-')        :meth(2)
+    elif keyboard.is_pressed('/')        :meth(4)
+    elif keyboard.is_pressed('.')        :assigndecimal()
+    elif keyboard.is_pressed('0')        :assign(0)
+    elif keyboard.is_pressed('1')        :assign(1)
+    elif keyboard.is_pressed('2')        :assign(2)
+    elif keyboard.is_pressed('3')        :assign(3)
+    elif keyboard.is_pressed('4')        :assign(4)
+    elif keyboard.is_pressed('5')        :assign(5)
+    elif keyboard.is_pressed('6')        :assign(6)
+    elif keyboard.is_pressed('7')        :assign(7)
+    elif keyboard.is_pressed('8')        :assign(8)
+    elif keyboard.is_pressed('9')        :assign(9)
+    elif keyboard.is_pressed('backspace'):clearall()
 
 
 
