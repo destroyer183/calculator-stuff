@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-09-12T15:57:40.063Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="0bfVW1T2Gy05KxANU-W6" version="21.7.4" type="github" pages="4">
+<mxfile host="app.diagrams.net" modified="2023-09-12T16:10:52.397Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 OPR/100.0.0.0" etag="ZhTon0xxSaHn-A-sccMl" version="21.7.4" type="github" pages="4">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="557" dy="354" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
@@ -85,27 +85,28 @@
     </mxGraphModel>
   </diagram>
   <diagram id="BQg6JwgNhNgrC6UbApTg" name="Page-2">
-    <mxGraphModel dx="1990" dy="1266" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="796" dy="506" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ZjxETQ-AxmU1mtQch9HH-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="EtWaN-WnZ443iwk2cbBP-1" target="5-Mt6bs5kKPVT8Y9pz6Z-7">
+        <mxCell id="ekKR49PGMM6hBl4tPGdU-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="EtWaN-WnZ443iwk2cbBP-1" target="KQ8DPkezO2kAnrUBqWoc-2">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="EtWaN-WnZ443iwk2cbBP-1" value="continue from page 1" style="shape=offPageConnector;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="560" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="FObISRAITt_tnxuXhr_k-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="5-Mt6bs5kKPVT8Y9pz6Z-7" target="ZjxETQ-AxmU1mtQch9HH-2">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="5-Mt6bs5kKPVT8Y9pz6Z-7" value="&lt;font style=&quot;&quot;&gt;&lt;font style=&quot;font-size: 8px;&quot;&gt;are they &lt;br&gt;subtracted and perfect squares?&lt;/font&gt;&lt;br&gt;&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" parent="1" vertex="1">
-          <mxGeometry x="550" y="130" width="100" height="100" as="geometry" />
+        <mxCell id="ekKR49PGMM6hBl4tPGdU-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="s2lf8T3ZpkW-WNz2dh5t-8" target="yLvlcDcz9tJkH_rwTKGk-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="710" />
+            </Array>
+          </mxGeometry>
         </mxCell>
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-8" value="square root both numbers, and sub them into the equation: &lt;br&gt;(a - b) (a + b)" style="rounded=1;whiteSpace=wrap;html=1;absoluteArcSize=1;arcSize=14;strokeWidth=2;" parent="1" vertex="1">
-          <mxGeometry x="790" y="260" width="100" height="100" as="geometry" />
+          <mxGeometry x="730" y="260" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="s2lf8T3ZpkW-WNz2dh5t-10" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="820" y="210" width="60" height="30" as="geometry" />
+          <mxGeometry x="640" y="150" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="yLvlcDcz9tJkH_rwTKGk-1" value="&lt;font style=&quot;font-size: 9px;&quot;&gt;return factored &lt;br&gt;equation to GUI&lt;/font&gt;" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
           <mxGeometry x="550" y="680" width="100" height="60" as="geometry" />
@@ -120,7 +121,7 @@
           <mxGeometry x="550" y="260" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="FObISRAITt_tnxuXhr_k-2" value="no" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="750" y="150" width="60" height="30" as="geometry" />
+          <mxGeometry x="560" y="210" width="60" height="30" as="geometry" />
         </mxCell>
         <mxCell id="FObISRAITt_tnxuXhr_k-3" value="return &#39;not factorable&#39;&lt;br&gt;to the GUI" style="shape=parallelogram;html=1;strokeWidth=2;perimeter=parallelogramPerimeter;whiteSpace=wrap;rounded=1;arcSize=12;size=0.23;" vertex="1" parent="1">
           <mxGeometry x="400" y="280" width="100" height="60" as="geometry" />
@@ -168,11 +169,24 @@
         <mxCell id="MRx-PBOESVnJc0wRoH1b-2" value="yes" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="590" y="500" width="60" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="KQ8DPkezO2kAnrUBqWoc-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="KQ8DPkezO2kAnrUBqWoc-2" target="ZjxETQ-AxmU1mtQch9HH-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ekKR49PGMM6hBl4tPGdU-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="KQ8DPkezO2kAnrUBqWoc-2" target="s2lf8T3ZpkW-WNz2dh5t-8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="780" y="170" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="KQ8DPkezO2kAnrUBqWoc-2" value="&lt;font style=&quot;font-size: 8px;&quot;&gt;are they&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;subtracted and perfect squares?&lt;/font&gt;" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.decision;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="550" y="120" width="100" height="100" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
   <diagram id="zyUjxUo1pK8jHnFYvZsr" name="Page-3">
-    <mxGraphModel dx="733" dy="466" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
+    <mxGraphModel dx="844" dy="537" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="1200" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
