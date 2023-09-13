@@ -284,7 +284,7 @@ def assign(x):
 
     dict['gui']['equation text'] += str(x)
 
-    dict['gui']['display text']  += str(x)
+    dict['gui']['display text'] += str(x)
 
 
 

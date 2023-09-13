@@ -9,16 +9,14 @@ from scientific_parser import *
 
 # things to update:
 
-# MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
+# add something to close all unclosed brackets (possibly put both on screen, and put numbers in between them, and then put numbers outside once close brackets is pressed)
+    # might have to change all the equation variables to be lists instead of strings to allow this to work easier
 
 # make shift+backspace work like regular backspace
 
-# fix the integer button, it can't properly add a negative sign to an equation if there isn't a number in the last spot
+# slow down the input speed when using keyboard inputs
 
-# make a function that makes changes to variables instead of repeating tons of code
-
-# add something to close all unclosed brackets (possibly put both on screen, and put numbers in between them, and then put numbers outside once close brackets is pressed)
-
+# MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
 
 
 
@@ -28,7 +26,6 @@ from scientific_parser import *
 # have proper inputs for each display option
 # possibly have separate dict lists for each kind of calculations
 # allow the display size to change
-
 
 # ideal order of completion:
 
@@ -65,12 +62,13 @@ dict['operator'] = {}
 dict['numbers']  = {}
 dict['gui']      = {}
 
-dict['numbers']['equation']    = ''
-dict['numbers']['output']      = 0
-dict['numbers']['memory']      = 0
+dict['numbers']['equation']    = []
+dict['numbers']['output']      = ''
+dict['numbers']['memory']      = []
+dict['numbers']['bracketnum']  = 0
 
-dict['gui']['equation text'] = ''
-dict['gui']['display text']  = ''
+dict['gui']['equation text'] = []
+dict['gui']['display text']  = []
 dict['gui']['buttons']       = {}
 dict['gui']['shift']         = False
 
@@ -78,6 +76,9 @@ dict['gui']['shift']         = False
 
 # the function bound to the 'equals' button to output a result for an equation.
 def calculate():
+
+    # assemble equation list into a string
+    dict['numbers']['equation'] = ('').join(dict['numbers']['equation'])
 
     # give the equation parser the equation string and set the output to a variable
     dict['numbers']['output'] = equation_parser(dict['numbers']['equation'])
@@ -95,9 +96,7 @@ def calculate():
 
 
     # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    update(type=2)
 
 
 
@@ -109,27 +108,27 @@ def calculate():
 
 
 # function to change variable to avoid repeating code
-def change(type = 0, string = [], update = 0):
+def update(type = 0, string = [], index = [0, 0, 0], update = 0):
 
     if type == 0:
 
         # edit main equation variables
-        dict['numbers']['equation'] += string[0]
+        for i in list(string[0]): dict['numbers']['equation'].insert(len(dict['numbers']['equation']) - index[0] - dict['numbers']['bracketnum'], i)
 
-        dict['gui']['equation text'] += string[1]
+        for i in list(string[0]): dict['gui']['equation text'].insert(len(dict['gui']['equation text']) - index[1] - dict['numbers']['bracketnum'], i)
 
-        dict['gui']['display text'] = string[2]
+        dict['gui']['display text'] = list(string[2])
 
 
     
-    elif type == 1:
+    elif type == 1: # it is trying to insert a list into a list, rather than a string into a list
 
         # edit main equation variables
-        dict['numbers']['equation'] += string[0]
+        for i in list(string[0]): dict['numbers']['equation'].insert(len(dict['numbers']['equation']) - index[0] - dict['numbers']['bracketnum'], i)
 
-        dict['gui']['equation text'] += string[1]
+        for i in list(string[0]): dict['gui']['equation text'].insert(len(dict['gui']['equation text']) - index[1] - dict['numbers']['bracketnum'], i)
 
-        dict['gui']['display text'] += string[2]
+        for i in list(string[0]): dict['gui']['display text'].insert(len(dict['gui']['display text']) - index[2] - dict['numbers']['bracketnum'], i)
 
     else:pass
 
@@ -137,26 +136,60 @@ def change(type = 0, string = [], update = 0):
 
     if update == 0:
 
+        # assemble variables into strings
+        dict['gui']['display text'] = ('').join(dict['gui']['display text'])
+
+        dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
+
+
+
         # update display
         dict['gui']['display'].configure(text = dict['gui']['display text'])
 
         dict['gui']['equation'].configure(text = dict['gui']['equation text'])
 
 
+        
+        # convert variables back into lists
+        dict['gui']['display text'] = list(dict['gui']['display text'])
+
+        dict['gui']['equation text'] = list(dict['gui']['equation text'])
+
+
 
     elif update == 1:
+
+        # assemble variables into strings
+        dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
+
+
 
         # update display
         dict['gui']['display'].configure(text = '0')
 
         dict['gui']['equation'].configure(text = dict['gui']['equation text'])
 
+
+
+        # convert variables back into lists
+        dict['gui']['equation text'] = list(dict['gui']['equation text'])
+
     
 
     elif update == 2:
 
+        # assemble variables into strings
+        dict['gui']['display text'] = ('').join(dict['gui']['display text'])
+
+
+
         # update display
         dict['gui']['display'].configure(text = dict['gui']['display text'])
+
+
+
+        # convert variables back into lists
+        dict['gui']['display text'] = list(dict['gui']['display text'])
 
     else:pass
 
@@ -169,35 +202,35 @@ def meth(operation):
     if operation == 1:
 
         # add addition sign to equation and display strings
-        change(string=[' + ', ' + ', ''], update=1)
+        update(string=[' + ', ' + ', ''], update=1)
 
 
 
     if operation == 2:
 
         # add subtraction sign to equation and display strings
-        change(string=[' - ', ' - ', ''], update=1)
+        update(string=[' - ', ' - ', ''], update=1)
 
 
 
     if operation == 3:
 
         # add multiplication sign to equation and display strings
-        change(string=[' - ', ' - ', ''], update=1)
+        update(string=[' * ', ' * ', ''], update=1)
 
 
 
     if operation == 4:
 
         # add division sign to equation and display strings
-        change(string=[' / ', ' / ', ''], update=1)
+        update(string=[' / ', ' / ', ''], update=1)
 
 
 
     if operation == 5:
 
         # add modulus sign to equation and display strings
-        change(string=[' % ', ' % ', ''], update=1)
+        update(string=[' % ', ' % ', ''], update=1)
 
 
 
@@ -208,7 +241,7 @@ def get_super(x):
 
     super_s = 'ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣʸᶻᵃᵇᶜᵈᵉᶠᵍʰᶦʲᵏˡᵐⁿᵒᵖ۹ʳˢᵗᵘᵛʷˣʸᶻ⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾‧'
 
-    res     = x.maketrans(''.join(normal), ''.join(super_s))
+    res     = x.maketrans(('').join(normal), ('').join(super_s))
 
     return x.translate(res)
 
@@ -220,14 +253,14 @@ def assigndecimal():
     if dict['gui']['display text'] == '':
 
         # put the decimal in the equation and display strings
-        change(type=1, string=['0.', '0.', '0.'], update=2)
+        update(type=1, string=['0.', '0.', '0.'], update=2)
 
 
 
     elif '.' not in dict['gui']['display text']:
 
         # put the decimal in the equation and display strings
-        change(type=1, string=['.', '.', '.'], update=2)
+        update(type=1, string=['.', '.', '.'], update=2)
 
 
 
@@ -239,7 +272,7 @@ def assigninteger():
         if dict['gui']['display text'] == '':
 
             # add the integer sign to the number if there is nothing else in the equation
-            change(string=['-', '-', '-' + dict['gui']['display text']], update=3)
+            update(string=['-', '-', '-' + dict['gui']['display text']], update=3)
 
 
 
@@ -253,43 +286,11 @@ def assigninteger():
         # check if there is a integer sign on the number
         elif dict['gui']['equation text'][index] != '-':
 
-            # convert the strings into lists
-            dict['numbers']['equation'] = list(dict['numbers']['equation'])
-
-            dict['gui']['equation text'] = list(dict['gui']['equation text'])
-
-            dict['gui']['display text'] = list(dict['gui']['display text'])
-
-
-
-            # add the integer sign to the number
-            dict['numbers']['equation'].insert(index, '-')
-
-            dict['gui']['equation text'].insert(index, '-')
-
-            dict['gui']['display text'].insert(0, '-')
-
-            
-
-            # assemble the lists back into strings
-            dict['numbers']['equation'] = ('').join(dict['numbers']['equation'])
-
-            dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
-
-            dict['gui']['display text'] = ('').join(dict['gui']['display text'])
+            update(type=1, string=['-', '-', '-'], index=[index, index, 0])
 
 
         
         else:
-
-            # convert the strings into lists
-            dict['numbers']['equation'] = list(dict['numbers']['equation'])
-
-            dict['gui']['equation text'] = list(dict['gui']['equation text'])
-
-            dict['gui']['display text'] = list(dict['gui']['display text'])
-
-
 
             # remove the integer sign from the number
             dict['numbers']['equation'].pop(index)
@@ -298,25 +299,23 @@ def assigninteger():
 
             dict['gui']['display text'].pop(0)
 
-            
-
-            # assemble the lists back into strings
-            dict['numbers']['equation'] = ('').join(dict['numbers']['equation'])
-
-            dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
-
-            dict['gui']['display text'] = ('').join(dict['gui']['display text'])
-
 
 
     except:
 
         # add the integer sign to the number if there is nothing else in the equation
-        dict['numbers']['equation'] = '-' + dict['numbers']['equation']
+        dict['numbers']['equation'] = ['-'].append(dict['numbers']['equation'])
 
-        dict['gui']['equation text'] = '-' + dict['gui']['equation text']
+        dict['gui']['equation text'] = ['-'].append(dict['gui']['equation text'])
 
-        dict['gui']['display text'] = '-' + dict['gui']['display text']
+        dict['gui']['display text'] = ['-'].append(dict['gui']['display text'])
+
+
+
+    # assemble variables into strings
+    dict['gui']['display text'] = ('').join(dict['gui']['display text'])
+
+    dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
 
 
 
@@ -324,6 +323,13 @@ def assigninteger():
     dict['gui']['display'].configure(text = dict['gui']['display text'])
 
     dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+
+
+    
+    # convert variables back into lists
+    dict['gui']['display text'] = list(dict['gui']['display text'])
+
+    dict['gui']['equation text'] = list(dict['gui']['equation text'])
 
             
 
@@ -335,21 +341,21 @@ def assign(x):
         if dict['numbers']['equation'][-2] == '^':
 
             # make numbers superscript if they are exponents
-            change(type=2, string=[str(x), get_super(str(x)), str(x)], update=2)
+            update(type=1, string=[str(x), get_super(str(x)), str(x)], update=2)
 
 
 
         else:
 
             # put the number in the equation and display strings
-            change(type=2, string=[str(x), str(x), str(x)], update=2)
+            update(type=1, string=[str(x), str(x), str(x)], update=2)
 
 
 
     except:
 
         # put the number in the equation and display strings
-        change(type=2, string=[str(x), str(x), str(x)], update=2)
+        update(type=1, string=[str(x), str(x), str(x)], update=2)
 
 
 
@@ -359,23 +365,33 @@ def exponent(ctrlexp = -1):
     if ctrlexp != -1:
 
         # put the exponent sign and exponent number in the equation and display strings
-        change(string=[' ^ ' + str(ctrlexp), get_super(str(ctrlexp)), ''], update=1)
+        update(string=[' ^ ' + str(ctrlexp), get_super(str(ctrlexp)), ''], update=1)
 
     
 
     else:
 
         # put the exponent sign in the equation and display strings
-        dict['numbers']['equation'] += ' ^ '
+        for i in list(' ^ '): dict['numbers']['equation'].insert(len(dict['numbers']['equation']) - dict['numbers']['bracketnum'], i)
 
-        dict['gui']['display text'] = ''
+        dict['gui']['display text'] = []
+
+
+
+        # assemble variables into strings
+        dict['gui']['equation text'] = ('').join(dict['gui']['equation text'])
 
 
 
         # update display
         dict['gui']['display'].configure(text = '0')
 
-        dict['gui']['equation'].configure(text = dict['gui']['equation text'] + get_super('y'))
+        dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+
+
+
+        # convert variables back into lists
+        dict['gui']['equation text'] = list(dict['gui']['equation text'])
 
 
 
@@ -383,7 +399,7 @@ def exponent(ctrlexp = -1):
 def factorials():
 
     # put the factorial sign in the equation and display strings
-    change(string=['!', '!', ''], update=1)
+    update(string=['!', '!', ''], update=1)
 
 
 
@@ -391,7 +407,7 @@ def factorials():
 def memoryrecall():
 
     # add the number stored in memory to the equation and display strings
-    change(string=[dict['numbers']['memory'], dict['numbers']['memory'], dict['numbers']['memory']])
+    update(string=[dict['numbers']['memory'], dict['numbers']['memory'], dict['numbers']['memory']])
 
 
 
@@ -399,17 +415,17 @@ def memoryrecall():
 def memoryclear():
 
     # clear the memory variable
-    dict['numbers']['memory'] = ''
+    dict['numbers']['memory'] = []
 
 
 
 # function bound to the memory add button to set the memory number to the number displayed.
 def memorystore():
 
-    print('memory: ' + str(dict['gui']['display text']))
+    print('memory: ' + ('').join(dict['gui']['display text']))
 
     # assign a number to the memory variable
-    dict['numbers']['memory'] = str(dict['gui']['display text'])
+    dict['numbers']['memory'] = dict['gui']['display text']
 
 
 
@@ -419,49 +435,39 @@ def brackets(type):
     if type:
 
         # allow for bracket multiplication without pressing the multiplication button
-        if dict['numbers']['equation'][-1] in '1234567890)':
+        if dict['numbers']['equation'][-1] in list('1234567890)'):
 
-            dict['numbers']['equation'] += ' * '
+            for i in list(' * '): dict['numbers']['equation'].insert(len(dict['numbers']['equation']) - dict['numbers']['bracketnum'], i)
 
 
 
         # add an open bracket to the equation and display strings
-        change(string=['(', '(', ''], update=1)
+        update(string=['()', '()', ''], update=1)
+
+
+
+        # keep track of brackets
+        dict['numbers']['bracketnum'] += 1
 
 
 
     else:
 
-        count = 0
+        # start typing outside one more layer of brackets
+        if dict['numbers']['bracketnum'] != 0:
 
-        count2 = 0
+            dict['numbers']['bracketnum'] -= 1
 
-        # prevent the number of closed brackets from exceeding the number of open brackets
-        for i in dict['numbers']['equation']:
-
-            # count the # of open brackets
-            if i == '(':
-
-                count += 1
-
-
-
-            # count the # of closed brackets
-            if i == ')':
-
-                count2 += 1
-
-
-        # only allow a closed bracket to be entered if there are less of them than open brackets
-        if count > count2:
-
-            # add a closed bracket to the equation and display strings
-            change(string=[')', ')', ''], update=1)
+            # display numbers within brackets
+            update(type=2, update=1)
 
 
 
 # function bound to the trigonometry buttons to allow them to be used.
 def trigonometry(type = 0):
+
+    # allow for more brackets
+    dict['numbers']['bracketnum'] += 1
 
     # add an alternate function for inverse trigonometry functions
     if dict['gui']['shift']:
@@ -469,21 +475,21 @@ def trigonometry(type = 0):
         if type:
 
             # add the inverse sine indicator to the equation and display strings
-            change(string=['S(', 'sin' + get_super('-1') + '(', ''], update=1)
+            update(string=['S()', 'sin' + get_super('-1') + '()', ''], update=1)
 
 
 
         elif not type:
             
             # add the inverse cosine indicator to the equation and display strings
-            change(string=['C(', 'cos' + get_super('-1') + '(', ''], update=1)
+            update(string=['C()', 'cos' + get_super('-1') + '()', ''], update=1)
 
 
 
         else:
             
             # add the inverse tangent indicator to the equation and display strings
-            change(string=['T(', 'tan' + get_super('-1') + '(', ''], update=1)
+            update(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
 
 
 
@@ -492,21 +498,21 @@ def trigonometry(type = 0):
         if type:
 
             # add the sine indicator to the equation and display strings
-            change(string=['s(', 'sin(', ''], update=1)
+            update(string=['s()', 'sin()', ''], update=1)
 
 
 
         elif not type:
             
             # add the cosine indicator to the equation and display strings
-            change(string=['c(', 'cos(', ''], update=1)
+            update(string=['c()', 'cos()', ''], update=1)
 
 
 
         else:
             
             # add the tangent indicator to the equation and display strings
-            change(string=['t(', 'tan(', ''], update=1)
+            update(string=['t()', 'tan()', ''], update=1)
 
 
 
@@ -514,7 +520,7 @@ def trigonometry(type = 0):
 def pi():
 
     # add the pi number to the equation and display strings
-    change(string=['3.14159265359', 'pi', '3.14159265359'])
+    update(string=['3.14159265359', 'pi', '3.14159265359'])
 
 
 
@@ -522,7 +528,7 @@ def pi():
 def e():
 
     # add eulers number to the equation and display strings
-    change(string=['2.71828182846', 'e', '2.71828182846'])
+    update(string=['2.71828182846', 'e', '2.71828182846'])
 
 
 
@@ -530,7 +536,7 @@ def e():
 def logarithm():
 
     # add the log function indicator to the equation and display strings
-    change(string=['l(', 'log(', ''], update=1)
+    update(string=['l()', 'log()', ''], update=1)
 
 
 
@@ -538,7 +544,7 @@ def logarithm():
 def answer():
 
     # add the previous answer to the equation and display strings
-    change(string=[dict['numbers']['output'], dict['numbers']['output'], dict['numbers']['output']])
+    update(string=[dict['numbers']['output'], dict['numbers']['output'], dict['numbers']['output']])
 
 
 
@@ -613,6 +619,7 @@ def keybindings():
     elif keyboard.is_pressed('shift+-')  :assigninteger()
     elif keyboard.is_pressed('shift+m')  :memorystore()
     elif keyboard.is_pressed('ctrl+m')   :memoryclear()
+    elif keyboard.is_pressed('shift+backspace'):clear(False)
     elif keyboard.is_pressed('enter')    :calculate()
     elif keyboard.is_pressed('m')        :memoryrecall()
     elif keyboard.is_pressed('-')        :meth(2)
@@ -628,24 +635,41 @@ def keybindings():
     elif keyboard.is_pressed('7')        :assign(7)
     elif keyboard.is_pressed('8')        :assign(8)
     elif keyboard.is_pressed('9')        :assign(9)
-    elif keyboard.is_pressed('backspace'):clearall()
+    elif keyboard.is_pressed('backspace'):clear()
 
 
 
 # function bound to the clear equation button that clears the variables and display.
-def clearall():
+def clear(type = True):
 
-    # reset variables
-    dict['numbers']['equation']    = ''
-    dict['gui']['equation text']   = ''
-    dict['gui']['display text']    = ''
+    if type:
+
+        # reset variables
+        dict['numbers']['equation'] = []
+
+        dict['gui']['equation text'] = []
+
+        dict['gui']['display text'] = []
+
+        dict['numbers']['bracketnum'] = 0
 
 
 
-    # update display
-    dict['gui']['display'].configure(text = '0')
+        # update display
+        dict['gui']['display'].configure(text = '0')
 
-    dict['gui']['equation'].configure(text = '')
+        dict['gui']['equation'].configure(text = '')
+
+
+
+    else:
+
+        # implement better brackets before doing this
+
+        # check if the last thing entered in was an operator
+        # check if the last thing is a bracket, if it is, go inside the bracket instead of deleting it
+
+        pass
 
 
 
@@ -702,7 +726,7 @@ def scientific():
     dict['gui']['buttons']['equal']          = tk.Button(root, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:calculate())
 
     # column 7
-    dict['gui']['buttons']['clear']          = tk.Button(root, text='CE',                 anchor='center', bg='lightcoral',     command=lambda:clearall())
+    dict['gui']['buttons']['clear']          = tk.Button(root, text='CE',                 anchor='center', bg='lightcoral',     command=lambda:clear())
     dict['gui']['buttons']['divide']         = tk.Button(root, text='/',                  anchor='center', bg='gainsboro',      command=lambda:meth(4))
     dict['gui']['buttons']['multiply']       = tk.Button(root, text='x',                  anchor='center', bg='gainsboro',      command=lambda:meth(3))
     dict['gui']['buttons']['minus']          = tk.Button(root, text='-',                  anchor='center', bg='gainsboro',      command=lambda:meth(2))

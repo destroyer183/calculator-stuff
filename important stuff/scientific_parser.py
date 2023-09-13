@@ -362,13 +362,7 @@ def solve(operation):
 
     dict['algebra equation'].insert(dict['normal equation']['start'], str(dict['normal equation']['output']))
 
-    string = ''
-
-    for x in dict['algebra equation']:
-
-        string += x
-
-    dict['algebra equation'] = string
+    dict['algebra equation'] = ('').join(dict['algebra equation'])
 
     print(dict['algebra equation'])
 
