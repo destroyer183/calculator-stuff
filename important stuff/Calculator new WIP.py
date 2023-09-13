@@ -9,6 +9,10 @@ from scientific_parser import *
 
 # things to update:
 
+# MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
+
+# make shift+backspace work like regular backspace
+
 # fix the integer button, it can't properly add a negative sign to an equation if there isn't a number in the last spot
 
 # make a function that makes changes to variables instead of repeating tons of code
@@ -91,7 +95,7 @@ def calculate():
 
 
     # update display
-    dict['gui']['display'].configure(text= dict['gui']['display text'])
+    dict['gui']['display'].configure(text = dict['gui']['display text'])
 
     dict['gui']['equation'].configure(text = dict['gui']['equation text'])
 
@@ -104,6 +108,60 @@ def calculate():
 
 
 
+# function to change variable to avoid repeating code
+def change(type = 0, string = [], update = 0):
+
+    if type == 0:
+
+        # edit main equation variables
+        dict['numbers']['equation'] += string[0]
+
+        dict['gui']['equation text'] += string[1]
+
+        dict['gui']['display text'] = string[2]
+
+
+    
+    elif type == 1:
+
+        # edit main equation variables
+        dict['numbers']['equation'] += string[0]
+
+        dict['gui']['equation text'] += string[1]
+
+        dict['gui']['display text'] += string[2]
+
+    else:pass
+
+
+
+    if update == 0:
+
+        # update display
+        dict['gui']['display'].configure(text = dict['gui']['display text'])
+
+        dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+
+
+
+    elif update == 1:
+
+        # update display
+        dict['gui']['display'].configure(text = '0')
+
+        dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+
+    
+
+    elif update == 2:
+
+        # update display
+        dict['gui']['display'].configure(text = dict['gui']['display text'])
+
+    else:pass
+
+
+
 # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
 def meth(operation):
 
@@ -111,62 +169,35 @@ def meth(operation):
     if operation == 1:
 
         # add addition sign to equation and display strings
-        dict['numbers']['equation'] += ' + '
-
-        dict['gui']['equation text'] += ' + '
-
-        dict['gui']['display text'] = ''
+        change(string=[' + ', ' + ', ''], update=1)
 
 
 
     if operation == 2:
 
         # add subtraction sign to equation and display strings
-        dict['numbers']['equation'] += ' - '
-
-        dict['gui']['equation text'] += ' - '
-
-        dict['gui']['display text'] = ''
+        change(string=[' - ', ' - ', ''], update=1)
 
 
 
     if operation == 3:
 
         # add multiplication sign to equation and display strings
-        dict['numbers']['equation'] += ' * '
-
-        dict['gui']['equation text'] += ' * '
-
-        dict['gui']['display text'] = ''
+        change(string=[' - ', ' - ', ''], update=1)
 
 
 
     if operation == 4:
 
         # add division sign to equation and display strings
-        dict['numbers']['equation'] += ' / '
-
-        dict['gui']['equation text'] += ' / '
-
-        dict['gui']['display text'] = ''
+        change(string=[' / ', ' / ', ''], update=1)
 
 
 
     if operation == 5:
 
         # add modulus sign to equation and display strings
-        dict['numbers']['equation'] += ' % '
-
-        dict['gui']['equation text'] += ' % '
-
-        dict['gui']['display text'] = ''
-
-    
-
-    # update display
-    dict['gui']['display'].configure(text = '0')
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+        change(string=[' % ', ' % ', ''], update=1)
 
 
 
@@ -186,19 +217,17 @@ def get_super(x):
 # function bound to the decimal button to allow decimal numbers to be inputted.
 def assigndecimal():
 
-    if '.' not in dict['gui']['display text']:
+    if dict['gui']['display text'] == '':
 
         # put the decimal in the equation and display strings
-        dict['numbers']['equation'] += '.'
-
-        dict['gui']['equation text'] += '.'
-
-        dict['gui']['display text'] += '.'
+        change(type=1, string=['0.', '0.', '0.'], update=2)
 
 
 
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
+    elif '.' not in dict['gui']['display text']:
+
+        # put the decimal in the equation and display strings
+        change(type=1, string=['.', '.', '.'], update=2)
 
 
 
@@ -210,11 +239,7 @@ def assigninteger():
         if dict['gui']['display text'] == '':
 
             # add the integer sign to the number if there is nothing else in the equation
-            dict['numbers']['equation'] = dict['numbers']['equation'] + '-'
-
-            dict['gui']['equation text'] = dict['gui']['equation text'] + '-'
-
-            dict['gui']['display text'] = '-' + dict['gui']['display text']
+            change(string=['-', '-', '-' + dict['gui']['display text']], update=3)
 
 
 
@@ -307,41 +332,24 @@ def assign(x):
 
     try:
 
-        # make numbers superscript if they are exponents
         if dict['numbers']['equation'][-2] == '^':
 
-            dict['numbers']['equation'] += str(x)
-
-            dict['gui']['equation text'] += get_super(str(x))
-
-            dict['gui']['display text'] += str(x)
+            # make numbers superscript if they are exponents
+            change(type=2, string=[str(x), get_super(str(x)), str(x)], update=2)
 
 
 
         else:
 
             # put the number in the equation and display strings
-            dict['numbers']['equation'] += str(x)
-
-            dict['gui']['equation text'] += str(x)
-
-            dict['gui']['display text'] += str(x)
+            change(type=2, string=[str(x), str(x), str(x)], update=2)
 
 
 
     except:
 
         # put the number in the equation and display strings
-        dict['numbers']['equation'] += str(x)
-
-        dict['gui']['equation text'] += str(x)
-
-        dict['gui']['display text'] += str(x)
-
-
-
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
+        change(type=2, string=[str(x), str(x), str(x)], update=2)
 
 
 
@@ -351,11 +359,7 @@ def exponent(ctrlexp = -1):
     if ctrlexp != -1:
 
         # put the exponent sign and exponent number in the equation and display strings
-        dict['numbers']['equation'] += ' ^ ' + str(ctrlexp)
-
-        dict['gui']['equation text'] += get_super(str(ctrlexp))
-
-        dict['gui']['display text'] = ''
+        change(string=[' ^ ' + str(ctrlexp), get_super(str(ctrlexp)), ''], update=1)
 
     
 
@@ -368,10 +372,10 @@ def exponent(ctrlexp = -1):
 
 
 
-    # update display
-    dict['gui']['display'].configure(text = '0')
+        # update display
+        dict['gui']['display'].configure(text = '0')
 
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'] + get_super('y'))
+        dict['gui']['equation'].configure(text = dict['gui']['equation text'] + get_super('y'))
 
 
 
@@ -379,18 +383,7 @@ def exponent(ctrlexp = -1):
 def factorials():
 
     # put the factorial sign in the equation and display strings
-    dict['numbers']['equation'] += '!'
-
-    dict['gui']['equation text'] += '!'
-
-    dict['gui']['display text'] = ''
-
-
-
-    # update display
-    dict['gui']['display'].configure(text = '0')
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=['!', '!', ''], update=1)
 
 
 
@@ -398,18 +391,7 @@ def factorials():
 def memoryrecall():
 
     # add the number stored in memory to the equation and display strings
-    dict['numbers']['equation'] += dict['numbers']['memory']
-
-    dict['gui']['equation text'] += dict['numbers']['memory']
-
-    dict['gui']['display text'] = dict['numbers']['memory']
-
-
-
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=[dict['numbers']['memory'], dict['numbers']['memory'], dict['numbers']['memory']])
 
 
 
@@ -417,12 +399,14 @@ def memoryrecall():
 def memoryclear():
 
     # clear the memory variable
-    dict['numbers']['memory'] = 0
+    dict['numbers']['memory'] = ''
 
 
 
 # function bound to the memory add button to set the memory number to the number displayed.
-def memoryadd():
+def memorystore():
+
+    print('memory: ' + str(dict['gui']['display text']))
 
     # assign a number to the memory variable
     dict['numbers']['memory'] = str(dict['gui']['display text'])
@@ -442,11 +426,7 @@ def brackets(type):
 
 
         # add an open bracket to the equation and display strings
-        dict['numbers']['equation'] += '('
-
-        dict['gui']['equation text'] += '('
-
-        dict['gui']['display text'] = ''
+        change(string=['(', '(', ''], update=1)
 
 
 
@@ -476,18 +456,7 @@ def brackets(type):
         if count > count2:
 
             # add a closed bracket to the equation and display strings
-            dict['numbers']['equation'] += ')'
-
-            dict['gui']['equation text'] += ')'
-
-            dict['gui']['display text'] = ''
-
-        
-
-    # update display
-    dict['gui']['display'].configure(text = '0')
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+            change(string=[')', ')', ''], update=1)
 
 
 
@@ -500,33 +469,21 @@ def trigonometry(type = 0):
         if type:
 
             # add the inverse sine indicator to the equation and display strings
-            dict['numbers']['equation'] += 'S('
-
-            dict['gui']['equation text'] += 'sin' + get_super('-1') + '('
-
-            dict['gui']['display text'] = ''
+            change(string=['S(', 'sin' + get_super('-1') + '(', ''], update=1)
 
 
 
         elif not type:
             
             # add the inverse cosine indicator to the equation and display strings
-            dict['numbers']['equation'] += 'C('
-
-            dict['gui']['equation text'] += 'cos' + get_super('-1') + '('
-
-            dict['gui']['display text'] = ''
+            change(string=['C(', 'cos' + get_super('-1') + '(', ''], update=1)
 
 
 
         else:
             
             # add the inverse tangent indicator to the equation and display strings
-            dict['numbers']['equation'] += 'T('
-
-            dict['gui']['equation text'] += 'tan' + get_super('-1') + '('
-
-            dict['gui']['display text'] = ''
+            change(string=['T(', 'tan' + get_super('-1') + '(', ''], update=1)
 
 
 
@@ -535,40 +492,21 @@ def trigonometry(type = 0):
         if type:
 
             # add the sine indicator to the equation and display strings
-            dict['numbers']['equation'] += 's('
-
-            dict['gui']['equation text'] += 'sin('
-
-            dict['gui']['display text'] = ''
+            change(string=['s(', 'sin(', ''], update=1)
 
 
 
         elif not type:
             
             # add the cosine indicator to the equation and display strings
-            dict['numbers']['equation'] += 'c('
-
-            dict['gui']['equation text'] += 'cos('
-
-            dict['gui']['display text'] = ''
+            change(string=['c(', 'cos(', ''], update=1)
 
 
 
         else:
             
             # add the tangent indicator to the equation and display strings
-            dict['numbers']['equation'] += 't('
-
-            dict['gui']['equation text'] += 'tan('
-
-            dict['gui']['display text'] = ''
-
-
-
-    # update display
-    dict['gui']['display'].configure(text = '0')
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+            change(string=['t(', 'tan(', ''], update=1)
 
 
 
@@ -576,18 +514,7 @@ def trigonometry(type = 0):
 def pi():
 
     # add the pi number to the equation and display strings
-    dict['numbers']['equation'] += str(3.14159265359)
-
-    dict['gui']['equation text'] += 'pi'
-
-    dict['gui']['display text'] = str(3.14159265359)
-
-    
-
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=['3.14159265359', 'pi', '3.14159265359'])
 
 
 
@@ -595,18 +522,7 @@ def pi():
 def e():
 
     # add eulers number to the equation and display strings
-    dict['numbers']['equation'] += str(2.71828182846)
-
-    dict['gui']['equation text'] += 'e'
-
-    dict['gui']['display text'] = str(2.71828182846)
-
-    
-
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=['2.71828182846', 'e', '2.71828182846'])
 
 
 
@@ -614,18 +530,7 @@ def e():
 def logarithm():
 
     # add the log function indicator to the equation and display strings
-    dict['numbers']['equation'] += 'l('
-
-    dict['gui']['equation text'] += 'log('
-
-    dict['gui']['display text'] = ''
-
-
-
-    # update display
-    dict['gui']['display'].configure(text = '0')
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=['l(', 'log(', ''], update=1)
 
 
 
@@ -633,18 +538,7 @@ def logarithm():
 def answer():
 
     # add the previous answer to the equation and display strings
-    dict['numbers']['equation'] += dict['numbers']['output']
-
-    dict['gui']['equation text'] += dict['numbers']['output']
-
-    dict['gui']['display text'] = dict['numbers']['output']
-
-    
-
-    # update display
-    dict['gui']['display'].configure(text = dict['gui']['display text'])
-
-    dict['gui']['equation'].configure(text = dict['gui']['equation text'])
+    change(string=[dict['numbers']['output'], dict['numbers']['output'], dict['numbers']['output']])
 
 
 
@@ -717,7 +611,10 @@ def keybindings():
     elif keyboard.is_pressed('ctrl+l')   :logarithm()
     elif keyboard.is_pressed('ctrl+p')   :pi()
     elif keyboard.is_pressed('shift+-')  :assigninteger()
+    elif keyboard.is_pressed('shift+m')  :memorystore()
+    elif keyboard.is_pressed('ctrl+m')   :memoryclear()
     elif keyboard.is_pressed('enter')    :calculate()
+    elif keyboard.is_pressed('m')        :memoryrecall()
     elif keyboard.is_pressed('-')        :meth(2)
     elif keyboard.is_pressed('/')        :meth(4)
     elif keyboard.is_pressed('.')        :assigndecimal()
@@ -840,7 +737,7 @@ def scientific():
     dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:exponent(0.5))
 
     # column 2
-    dict['gui']['buttons']['memory add']     = tk.Button(root, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:memoryadd())
+    dict['gui']['buttons']['memory add']     = tk.Button(root, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:memorystore())
     dict['gui']['buttons']['shift']          = tk.Button(root, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:shifte())
     dict['gui']['buttons']['sine']           = tk.Button(root, text='sin',                anchor='center', bg='gainsboro',      command=lambda:trigonometry(True))
     dict['gui']['buttons']['cosine']         = tk.Button(root, text='cos',                anchor='center', bg='gainsboro',      command=lambda:trigonometry(False))
