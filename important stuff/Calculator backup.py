@@ -63,7 +63,7 @@ dict['gui']['shift']         = False
 def calculate():
 
     # give the equation parser the equation string and set the output to a variable
-    dict['numbers']['output'] = equation_parser(dict['numbers']['equation'])
+    dict['numbers']['output'] = scientific_parser(dict['numbers']['equation'])
 
     # round the output to the specified number of decimal places
     dict['numbers']['output'] = str(round(float(dict['numbers']['output']), int(dict['numbers']['roundchoice'].get())))
