@@ -11,11 +11,11 @@ from scientific_parser import *
 
 # things to update:
 
+# LEARN CLASSES
+
 # use brackets to allow equations to be used as exponents (currently working but not displaying correctly)
 
-# fix factorial syntax
-
-# make shift+backspace work like regular backspace
+# make shift+backspace work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
 
 # MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
 
@@ -132,8 +132,6 @@ def update(type = 0, string = None, index = None, update = 0):
         c = dict['gui']['display text']
         d = dict['numbers']['bracketnum']
 
-        print(d)
-
         # edit main equation variables
         dict['numbers']['equation'] = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
 
@@ -151,8 +149,6 @@ def update(type = 0, string = None, index = None, update = 0):
         b = dict['gui']['equation text']
         c = dict['gui']['display text']
         d = dict['numbers']['bracketnum']
-
-        print(d)
 
         # edit main equation variables
         dict['numbers']['equation'] = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
@@ -260,16 +256,12 @@ def assign_integer():
         # check to see if there is anything in the display text
         if dict['gui']['display text'] == '':
 
-            print('running 1')
-
             # add the integer sign to the number if there is nothing else in the equation
             update(string=['-', '-', '-'])
 
 
 
         elif  '-' not in dict['gui']['display text']:
-
-            print('running 2')
 
             # find where display text is within the equation text
             index = ('').join(dict['gui']['equation text']).find(('').join(dict['gui']['display text']))
@@ -278,16 +270,12 @@ def assign_integer():
 
             if dict['gui']['equation text'][index] != '-':
 
-                print('running 3')
-
                 # put an integer sign on the number if it doesn't have one
                 update(type=1, string=['-', '-', '-'], index=[index, index, 0]) 
 
 
 
         else:
-
-            print('running 4')
 
             # remove the integer sign from the number
             dict['numbers']['equation'].pop(index)
@@ -392,7 +380,7 @@ def memoryclear():
 # function bound to the memory add button to set the memory number to the number displayed.
 def memorystore():
 
-    print('memory: ' + ('').join(dict['gui']['display text']))
+    print(f"memory: {('').join(dict['gui']['display text'])}")
 
     # assign a number to the memory variable
     dict['numbers']['memory'] = dict['gui']['display text']
@@ -636,10 +624,6 @@ def clear(type = True):
 
 
     else:
-
-        print('its trying')
-        print('')
-        print('length:', str(len(dict['gui']['display text'])))
 
         # check if there is anything in the display text variable
         if dict['gui']['equation text'][-1] in '1234567890.-':
