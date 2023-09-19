@@ -6,14 +6,16 @@ from scientific_parser import *
 
 
 # likely bug: when deleting stuff, if an operator is deleted, while the last item in the equation will be a number, that number won't be in the display string, 
-# which could cause errors with the decimal and exponent buttons
+# which could cause errors with the decimal and exponent buttons.
 
 
 # things to update:
 
+# MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
+
 # LEARN CLASSES
 
-# use brackets to allow equations to be used as exponents (currently working but not displaying correctly)
+# allow the exponent button to be toggled to allow for complex equations to be superscripted
 
 # make shift+backspace work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
 
@@ -350,14 +352,22 @@ def exponent(ctrlexp = -1):
 
 
 
+# function bound to the sqrt button that adds square root
+def square_root():
+
+    # add the sqrt function indicator to the equation and display strings
+    update(string=['#()', 'sqrt()', ''], update=1)
+
+    # allow for more brackets
+    dict['numbers']['bracketnum'] += 1
+
+
+
 # function bound to the factorial button to allow for factorials to be used.
 def factorials():
 
-    # find where display text is within the equation text
-    index = ('').join(dict['gui']['equation text']).find(('').join(dict['gui']['display text']))
-
     # put the factorial sign in the equation and display strings
-    update(string=['!', '!', ''], index=[index, len(dict['gui']['equation text']), len(dict['gui']['display text'])], update=1)
+    update(string=['!', '!', ''], update=1)
 
 
 
@@ -568,7 +578,7 @@ def keybindings():
     elif keyboard.is_pressed('shift+0')  :brackets(False)
     elif keyboard.is_pressed('shift+1')  :factorials()
     elif keyboard.is_pressed('shift+6')  :exponent()
-    elif keyboard.is_pressed('shift+7')  :exponent(0.5)
+    elif keyboard.is_pressed('shift+7')  :square_root()
     elif keyboard.is_pressed('shift+9')  :brackets(True)
     elif keyboard.is_pressed('ctrl+s')   :trigonometry(True)
     elif keyboard.is_pressed('ctrl+c')   :trigonometry(False)

@@ -5,12 +5,11 @@ import time
 
 # LEARN CLASSES
 
-# use a dict to store the precedence of each operator to clean up the bedmas function (save the index of the highest priority operator)
-
-# fix factorial syntax (display works correctly, but factorial should be located to the right of a number, not the left. could cause errors with brackets.)
 
 # implement this: https://en.m.wikipedia.org/wiki/Shunting_yard_algorithm
     # how to evaluate RPN notation: https://www.youtube.com/watch?v=qN8LPIcY6K4&t
+
+# put the converter and the solver in separate files
 
 # formatting
 # use math operators for everything (don't just put numbers next to brackets for multiplying brackets)
@@ -29,7 +28,7 @@ dict['bracket equation']['start'] = 0
 
 # this stores information about each type of operator to allow for them to be correctly solved in the right order with less for loops
 dict['precedence'] = {'s': 5, 'c': 5, 't': 5, 'l': 5, 'S': 5, 'C': 5, 'T': 5, '!': 4, '^': 3, '#': 2, '/': 1, '*': 1, '%': 1, '+': 0, '-': 0}
-dict['type']       = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, '!': 1, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '-': 0}
+dict['type']       = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, '!': 2, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '-': 0}
 
 
 
@@ -155,8 +154,6 @@ def replace_brackets():
     # print current equation
     print(f"next equation: {dict['equation']}")
 
-    time.sleep(2)
-
     # RECURSIVE LOOP EXIT CONDITION
     # try to convert main equation to a single number, if it works, the entiere equation has been solved
     try: dict['equation'] = float(dict['equation'])
@@ -281,6 +278,34 @@ def find_numbers(index, type):
 
                 dict['normal equation']['number 1'] += dict['algebra equation'][c]
 
+            else:break
+
+
+
+        print(f"number 1: {dict['normal equation']['number 1']}")
+
+        print('')
+
+    
+
+    if type == 2:
+
+        # look for a number to the left of the operator
+        for a in range(index - 1, -1, -1):
+
+            # locate the end of the number
+            if dict['algebra equation'][a] != ' ':
+
+                # save the index of the left-most digit found at this time
+                dict['normal equation']['start'] = a
+
+                # save the index of the right-most digit
+                dict['normal equation']['end'] = index
+
+                # add the most recently found digit to the entire number
+                dict['normal equation']['number 1'] = dict['algebra equation'][a] + dict['normal equation']['number 1']
+                
+            # exit loop once entire number has been found
             else:break
 
 
@@ -428,9 +453,9 @@ def solve(operation):
 # use the parser without the GUI
 if __name__ == '__main__':
     
-    equation = '4 + (!3 * (52 + 73 * #64 / 2 - 220) - 2 ^ (5 - 2)) / 15'
+    equation = '4 + (3! * (52 + 73 * #(64) / 2 - 220) - 2 ^ (5 - 2)) / 15'
 
-    '4 + (!3 * (52 + 73 * #64 / 2 - 220) - 2 ^ (5 - 2)) / 15'
+    '4 + (3! * (52 + 73 * #(64) / 2 - 220) - 2 ^ (5 - 2)) / 15'
 
     '53.06666666666667'
 
