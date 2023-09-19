@@ -39,7 +39,7 @@ def shunting_yard_converter(equation):
     dict['op stack']    = []
     dict['out stack']   = []
 
-    # step 1 is to convert factorials into a bracket function like sin() and cos()
+   # step 1 is to convert factorials into a bracket function like sin() and cos()
     for index, char, in enumerate(dict['in stack']):
 
         # look for factorial sign
@@ -63,24 +63,25 @@ def shunting_yard_converter(equation):
 
 
 
+    # fix syntax
     x = ('').join(dict['in stack'])
 
-    dict['in stack'] = x.replace(' ', '')
+    dict['in stack'] = list(x)
 
-    dict['in stack'] = list(dict['in stack'])
+
 
     # loop through every charcter
     while dict['in stack']:
 
         # read a character
-        char = next_char(dict['in stack'])
+        char = dict['in stack'][0]
 
         # check if char is a number or part of a number
-        if char in '1234567890.-':
+        if char in '1234567890.- ':
 
             # add number to output stack
             dict['out stack'].append(dict['in stack'].pop(0))
-            print_stacks()
+            print_stacks(1)
 
 
 
@@ -89,7 +90,7 @@ def shunting_yard_converter(equation):
 
             # add function to output stack
             dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks()
+            print_stacks(1)
 
 
 
@@ -106,12 +107,12 @@ def shunting_yard_converter(equation):
 
                 # pop last operator of op stack on to the out stack
                 dict['out stack'].append(dict['op stack'].pop())
-                print_stacks()
+                print_stacks(1)
 
 
             # pop char on to op stack
             dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks()
+            print_stacks(1)
 
         
 
@@ -120,7 +121,7 @@ def shunting_yard_converter(equation):
 
             # pop char on to op stack
             dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks()
+            print_stacks(1)
             
 
 
@@ -129,52 +130,134 @@ def shunting_yard_converter(equation):
 
             # remove right bracket
             dict['in stack'].pop(0)
-            print_stacks()
+            print_stacks(1)
 
             # loop through op stack until a left bracket is found
             while dict['op stack'] and dict['op stack'][-1] != '(':
 
                 # pop op stack to out stack
                 dict['out stack'].append(dict['op stack'].pop())
-                print_stacks()
+                print_stacks(1)
 
             # remove left bracket
             dict['op stack'].pop()
-            print_stacks()
+            print_stacks(1)
 
 
 
+    # put the op stack on to the out stack
     while dict['op stack']:
 
-        dict['out stack'].append(dict['op stack'].pop())
-        print_stacks()
+        dict['out stack'].append(' ' + dict['op stack'].pop())
+        print_stacks(1)
+
+
+    # remove double spaces
+    if '  ' in ('').join(dict['out stack']):
+
+        x = ('').join(dict['out stack'])
+
+        x = x.replace('  ', ' ')
+
+        dict['out stack'] = list(x)
+
+        print_stacks(1)
 
 
 
-def next_char(equation):
+# print information
+def print_stacks(type):
 
-    equation = ('').join(equation)
+    if type:
 
-    x = equation.replace(' ', '')
+        print('')
+        print(f"input stack: {dict['in stack']}")
+        print(f"operator stack: {dict['op stack']}")
+        print(f"output stack: {dict['out stack']}")
 
-    equation = list(x)
+    if not type:
 
-    return equation[0]
+        print('')
+        print(f"number 1: {dict['number 1']}")
+        print(f"number 2: {dict['number 2']}")
 
-
-def print_stacks():
-
-    print('')
-    print(f"input stack: {dict['in stack']}")
-    print(f"operator stack: {dict['op stack']}")
-    print(f"output stack: {dict['out stack']}")
 
 
 def shunting_yard_evaluator(equation):
 
-    # put spaces between everything
+    dict['equation'] = ('').join(equation)
+
+    for index, char in enumerate(dict['equation']):
+
+        if char in dict['type']:
+
+            find_numbers(index, dict['type'][char])
+
+
+
+
+
 
     pass
+
+
+def find_numbers(index, type):
+
+    dict['number 1'] = ''
+
+    dict['number 2'] = ''
+
+    dict['eval end'] = index
+
+
+    # look for a number to the left of the operator
+    for a in range(index - 2, -1, -1):
+
+        # locate the end of the number
+        if dict['equation'][a] != ' ':
+
+            # save the index of the left-most digit found at this time
+            dict['eval start'] = a
+
+            # add the most recently found digit to the entire number
+            dict['number 1'] = dict['equation'][a] + dict['number 1']
+
+            print_stacks(0)
+            print('it worked')
+            
+        # exit loop once entire number has been found
+        else:break
+
+
+
+    # check if operator is a function or not
+    if not type:
+
+        # set up variables
+        b = dict['eval start']
+
+        dict['number 2'] = dict['number 1']
+
+        dict['number 1'] = ''
+
+        # look for a number to the left of the operator
+        for a in range(b - 2, -1, -1):
+
+            # locate the end of the number
+            if dict['equation'][a] != ' ':
+
+                # save the index of the left-most digit found at this time
+                dict['eval start'] = a
+
+                # add the most recently found digit to the entire number
+                dict['number 1'] = dict['equation'][a] + dict['number 1']
+
+                print_stacks(0)
+                
+            # exit loop once entire number has been found
+            else:break
+
+
 
 
 
@@ -182,7 +265,7 @@ def shunting_yard_evaluator(equation):
 # use the parser without the GUI
 if __name__ == '__main__':
     
-    equation = '5 + 3! - 5'
+    equation = '5 + 3! _ 5'
 
     '4 + (3! * (52 + 73 * #(64) / 2 - 220) - 2 ^ (5 - 2)) / 15'
 
