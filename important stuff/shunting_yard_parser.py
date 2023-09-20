@@ -2,6 +2,8 @@ import math
 
 # this equation parser will convert inputs into reverse polish notation, and then solve the equation.
 
+# add numbers to out stack as one list item, rather than one item per character
+
 # how it works: https://en.m.wikipedia.org/wiki/Shunting_yard_algorithm 
 # how to solve RPN equations: https://www.youtube.com/watch?v=qN8LPIcY6K4&t 
 
@@ -25,21 +27,28 @@ def shunting_yard_parser(equation):
 
     print('')
     print(f"original equation: {equation}")
-    print(f"equation in RPN notation: {('').join(dict['out stack'])}")
+    print(f"equation in RPN notation: {(' ').join(dict['out stack'])}")
 
-    shunting_yard_evaluator(dict['out stack'])
+    shunting_yard_evaluator()
 
-    return dict['equation']
+    x = ('').join(dict['hist'])
+
+    dict['hist'] = x.strip()
+
+    print(f"answer: {dict['hist']}")
+
+    return dict['hist']
 
 
 
 def shunting_yard_converter(equation):
 
-    dict['in stack'] = list(equation)
+
+    dict['in stack']    = list(equation)
     dict['op stack']    = []
     dict['out stack']   = []
 
-   # step 1 is to convert factorials into a bracket function like sin() and cos()
+    # step 1 is to convert factorials into a bracket function like sin() and cos()
     for index, char, in enumerate(dict['in stack']):
 
         # look for factorial sign
@@ -52,15 +61,17 @@ def shunting_yard_converter(equation):
             for i in range(index, 0, -1):
 
                 # if a space is found, the number has ended
-                if dict['in stack'][i] == ' ':
+                if dict['in stack'][i] not in '1234567890.-':
 
                     # set start of equation
-                    dict['in stack'][i] = ' f('
+                    dict['in stack'].insert(i - 1, 'f(')
 
                     break
 
-            print(f"factorials fixed: {('').join(dict['in stack'])}")
+            # print info
+            print(f"original equation: {equation}")
 
+            print(f"factorials fixed: {('').join(dict['in stack'])}")
 
 
     # fix syntax
@@ -70,63 +81,81 @@ def shunting_yard_converter(equation):
 
 
 
-    # loop through every charcter
+    # loop through list until it is empty
     while dict['in stack']:
 
-        # read a character
-        char = dict['in stack'][0]
+        # create temproary list
+        temp_stack = []
 
-        # check if char is a number or part of a number
-        if char in '1234567890.- ':
+        print(f"char: {dict['in stack'][0]}")
 
-            # add number to output stack
-            dict['out stack'].append(dict['in stack'].pop(0))
+        # remove spaces
+        if dict['in stack'][0] == ' ':
+
+            dict['in stack'].pop(0)
+
+
+
+        # check if first character is part of a number
+        elif dict['in stack'][0] in '1234567890.-':
+
+            try:
+
+                # loop through each character in the stack until a character isn't part of a number
+                while dict['in stack'][0] in '1234567890.-':
+
+                    # add number to temporary list
+                    temp_stack.append(dict['in stack'].pop(0))
+            
+            except:pass
+
+            # add temporary list to out stack
+            dict['out stack'].append(('').join(temp_stack))
             print_stacks(1)
 
-
+            
 
         # check if char is a function
-        elif dict['type'][char] == 1:
+        elif dict['type'][dict['in stack'][0]] == 1:
 
             # add function to output stack
             dict['op stack'].append(dict['in stack'].pop(0))
             print_stacks(1)
 
 
-
-        # check if char is an operator
-        elif dict['type'][char] == 0:
+        # check if there is an operator
+        elif dict['type'][dict['in stack'][0]] == 0:
 
             d = dict['op stack']
 
             # loop through output stack to ensure order of operations is followed
             while len(d) and d[-1] != '(' and (
-                   dict['precedence'][d[-1]] > dict['precedence'][char] or 
-                   (dict['precedence'][d[-1]] == dict['precedence'][char] and 
-                    dict['l associated'][char])):
+                    dict['precedence'][d[-1]] > dict['precedence'][dict['in stack'][0]] or 
+                    (dict['precedence'][d[-1]] == dict['precedence'][dict['in stack'][0]] and 
+                    dict['l associated'][dict['in stack'][0]])):
 
                 # pop last operator of op stack on to the out stack
                 dict['out stack'].append(dict['op stack'].pop())
                 print_stacks(1)
 
 
+
             # pop char on to op stack
             dict['op stack'].append(dict['in stack'].pop(0))
             print_stacks(1)
 
-        
+
 
         # check if char is a left bracket
-        elif dict['type'][char] == 2:
+        elif dict['type'][dict['in stack'][0]] == 2:
 
-            # pop char on to op stack
+            # pop dict['in stack'][0] on to op stack
             dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks(1)
-            
+
 
 
         # check if char is a right bracket
-        elif dict['type'][char] == 3:
+        elif dict['type'][dict['in stack'][0]] == 3:
 
             # remove right bracket
             dict['in stack'].pop(0)
@@ -148,19 +177,7 @@ def shunting_yard_converter(equation):
     # put the op stack on to the out stack
     while dict['op stack']:
 
-        dict['out stack'].append(' ' + dict['op stack'].pop())
-        print_stacks(1)
-
-
-    # remove double spaces
-    if '  ' in ('').join(dict['out stack']):
-
-        x = ('').join(dict['out stack'])
-
-        x = x.replace('  ', ' ')
-
-        dict['out stack'] = list(x)
-
+        dict['out stack'].append(dict['op stack'].pop())
         print_stacks(1)
 
 
@@ -183,48 +200,80 @@ def print_stacks(type):
 
 
 
-def shunting_yard_evaluator(equation):
+def shunting_yard_evaluator():
 
-    dict['equation'] = ('').join(equation)
+    dict['hist'] = []
 
-    for index, char in enumerate(dict['equation']):
+    while dict['out stack']:
 
-        if char in dict['type']:
+        char = dict['out stack'].pop(0)
 
-            find_numbers(index, dict['type'][char])
+        if char in '1234567890.- ':
+
+            dict['hist'].append(char)
+
+        else:
+
+            if len(dict['hist']) == 1:
+
+                print('someone fucked up')
+
+            
+            else:
+
+                print(f"operator: {char}")
+                find_numbers(dict['type'][char])
+
+                solve(char)
+
+    return ('').join(dict['hist'])
 
 
 
+def find_numbers(type):
+
+    # remove double spaces
+    if '  ' in ('').join(dict['hist']):
+
+        x = ('').join(dict['hist'])
+
+        x = x.replace('  ', ' ')
+
+        dict['hist'] = list(x)
 
 
 
-    pass
+    print(f"all numbers: {dict['hist']}")
+
+    # fix list
+    x = ('').join(dict['hist'])
+
+    dict['hist'] = list(x)
+
+    dict['hist'] = list(dict['hist'])
 
 
-def find_numbers(index, type):
-
+    # set up variables
     dict['number 1'] = ''
 
     dict['number 2'] = ''
 
-    dict['eval end'] = index
+    dict['num end'] = len(dict['hist'])
+    
 
 
     # look for a number to the left of the operator
-    for a in range(index - 2, -1, -1):
+    for a in range(len(dict['hist']) - 2, -1, -1):
 
         # locate the end of the number
-        if dict['equation'][a] != ' ':
+        if dict['hist'][a] in '1234567890.-':
 
             # save the index of the left-most digit found at this time
-            dict['eval start'] = a
+            dict['num start'] = a
 
             # add the most recently found digit to the entire number
-            dict['number 1'] = dict['equation'][a] + dict['number 1']
+            dict['number 1'] = dict['hist'][a] + dict['number 1']
 
-            print_stacks(0)
-            print('it worked')
-            
         # exit loop once entire number has been found
         else:break
 
@@ -233,8 +282,16 @@ def find_numbers(index, type):
     # check if operator is a function or not
     if not type:
 
+        # fix list
+        # try:
+        x = ('').join(dict['hist'])
+        dict['hist'] = list(x)
+        # except:pass
+
+        dict['hist'] = list(dict['hist'])
+
         # set up variables
-        b = dict['eval start']
+        b = dict['num start']
 
         dict['number 2'] = dict['number 1']
 
@@ -244,18 +301,143 @@ def find_numbers(index, type):
         for a in range(b - 2, -1, -1):
 
             # locate the end of the number
-            if dict['equation'][a] != ' ':
+            if dict['hist'][a] in '1234567890.-':
 
                 # save the index of the left-most digit found at this time
-                dict['eval start'] = a
+                dict['num start'] = a
 
                 # add the most recently found digit to the entire number
-                dict['number 1'] = dict['equation'][a] + dict['number 1']
+                dict['number 1'] = dict['hist'][a] + dict['number 1']
 
-                print_stacks(0)
-                
             # exit loop once entire number has been found
             else:break
+
+    print_stacks(0)
+
+
+def solve(operation):
+
+    # print text to show where the process currently is
+    print('')
+    print('solving...')
+    print(f"operator/function: {operation}")
+    print(f"number 1: {dict['number 1']}")
+    print(f"number 2: {dict['number 2']}")
+
+    # logarithm
+    if operation == 'l':
+
+        dict['output'] = math.log(float(dict['number 1']))
+
+
+
+    # sine
+    if operation == 's':
+
+        dict['output'] = math.sin(math.radians(float(dict['number 1'])))
+
+
+
+    # cosine
+    if operation == 'c':
+
+        dict['output'] = math.cos(math.radians(float(dict['number 1'])))
+
+
+
+    # tangent
+    if operation == 't':
+
+        dict['output'] = math.tan(math.radians(float(dict['number 1'])))
+
+
+
+    # inverse sine
+    if operation == 'S':
+
+        dict['output'] = math.degrees(math.asin(float(dict['number 1'])))
+
+
+
+    # inverse cosine
+    if operation == 'C':
+
+        dict['output'] = math.degrees(math.acos(float(dict['number 1'])))
+
+
+
+    # inverse tangent
+    if operation == 'T':
+
+        dict['output'] = math.degrees(math.atan(float(dict['number 1'])))
+
+
+
+    # factorial
+    if operation == 'f':
+
+        dict['output'] = math.factorial(int(dict['number 1']))
+
+
+
+    # exponent
+    if operation == '^':
+
+        dict['output'] = float(dict['number 1']) ** float(dict['number 2'])
+
+
+
+    # square root
+    if operation == '#':
+
+        dict['output'] = float(dict['number 1']) ** 0.5
+
+
+
+    # modulus
+    if operation == '%':
+
+        dict['output'] = float(dict['number 1']) % float(dict['number 2'])
+
+
+
+    # division
+    if operation == '/':
+
+        dict['output'] = float(dict['number 1']) / float(dict['number 2'])
+
+
+
+    # multiplication
+    if operation == '*':
+
+        dict['output'] = float(dict['number 1']) * float(dict['number 2'])
+
+
+
+    # addition
+    if operation == '+':
+
+        dict['output'] = float(dict['number 1']) + float(dict['number 2'])
+
+
+
+    # subtraction
+    if operation == '_':
+
+        dict['output'] = float(dict['number 1']) - float(dict['number 2'])
+
+
+    dict['hist'] = dict['hist'][0:dict['num start']]
+
+    dict['hist'].append(str(dict['output']))
+    dict['hist'].append(' ')
+
+    print('')
+
+    # print info
+    print(f"output: {dict['hist']}")
+    print(f"remaining equation: {dict['out stack']}")
 
 
 
@@ -265,9 +447,11 @@ def find_numbers(index, type):
 # use the parser without the GUI
 if __name__ == '__main__':
     
-    equation = '5 + 3! _ 5'
+    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) - 2 ^ (5 _ 2)) / 15'
 
-    '4 + (3! * (52 + 73 * #(64) / 2 - 220) - 2 ^ (5 - 2)) / 15'
+    '5 + 3! _ 5'
+
+    '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
     '53.06666666666667'
 

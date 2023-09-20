@@ -96,6 +96,8 @@ def calculate():
 
     dict['gui']['display text'] = dict['numbers']['output']
 
+    dict['numbers']['bracketnum'] = 0
+
 
 
     # update display
@@ -578,7 +580,7 @@ def keybindings():
     elif keyboard.is_pressed('shift+0')  :brackets(False)
     elif keyboard.is_pressed('shift+1')  :factorials()
     elif keyboard.is_pressed('shift+6')  :exponent()
-    elif keyboard.is_pressed('shift+7')  :square_root()
+    elif keyboard.is_pressed('shift+3')  :square_root()
     elif keyboard.is_pressed('shift+9')  :brackets(True)
     elif keyboard.is_pressed('ctrl+s')   :trigonometry(True)
     elif keyboard.is_pressed('ctrl+c')   :trigonometry(False)
@@ -758,7 +760,7 @@ def scientific():
     dict['gui']['buttons']['factorial']      = tk.Button(root, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:factorials())
     dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponent())
     dict['gui']['buttons']['squared']        = tk.Button(root, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:exponent(2))
-    dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:exponent(0.5))
+    dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:square_root())
 
     # column 2
     dict['gui']['buttons']['memory add']     = tk.Button(root, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:memorystore())
