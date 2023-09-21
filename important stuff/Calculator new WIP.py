@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import *
 import keyboard
 import os
-from scientific_parser import *
+from scientific_parser import scientific_parser
+from shunting_yard_parser import shunting_yard_parser
+
 
 
 # likely bug: when deleting stuff, if an operator is deleted, while the last item in the equation will be a number, that number won't be in the display string, 
@@ -86,7 +88,7 @@ def calculate():
     dict['numbers']['equation'] = ('').join(dict['numbers']['equation'])
 
     # give the equation parser the equation string and set the output to a variable
-    dict['numbers']['output'] = scientific_parser(dict['numbers']['equation'])
+    dict['numbers']['output'] = shunting_yard_parser(dict['numbers']['equation'])
 
     # round the output to the specified number of decimal places
     dict['numbers']['output'] = str(round(float(dict['numbers']['output']), int(dict['numbers']['roundchoice'].get())))
