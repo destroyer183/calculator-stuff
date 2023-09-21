@@ -64,11 +64,13 @@ dict             = {}
 dict['operator'] = {}
 dict['numbers']  = {}
 dict['gui']      = {}
+dict['type']     = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, 'f': 1, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '_': 0}
 
-dict['numbers']['equation']    = ['']
-dict['numbers']['output']      = ''
-dict['numbers']['memory']      = []
-dict['numbers']['bracketnum']  = 0
+dict['numbers']['equation']   = ['']
+dict['numbers']['output']     = ''
+dict['numbers']['memory']     = []
+dict['numbers']['bracketnum'] = 0
+dict['numbers']['exponent']   = False
 
 dict['gui']['equation text'] = ['']
 dict['gui']['display text']  = ['', '']
@@ -139,7 +141,13 @@ def update(type = 0, string = None, index = None, update = 0):
         # edit main equation variables
         dict['numbers']['equation'] = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
 
-        dict['gui']['equation text'] = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
+        try:
+
+            if dict['numbers']['exponent']: dict['gui']['equation text'] = get_super(list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)])))
+
+            else: dict['gui']['equation text'] = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
+
+        except:pass
 
         dict['gui']['display text'] = list(string[2])
 
@@ -157,7 +165,13 @@ def update(type = 0, string = None, index = None, update = 0):
         # edit main equation variables
         dict['numbers']['equation'] = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
 
-        dict['gui']['equation text'] = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
+        try:
+
+            if dict['numbers']['exponent']: dict['gui']['equation text'] = get_super(list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)])))
+
+            else: dict['gui']['equation text'] = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
+
+        except:pass
 
         dict['gui']['display text'] = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
@@ -186,39 +200,41 @@ def update(type = 0, string = None, index = None, update = 0):
 # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
 def meth(operation):
 
-    # use numbers to represent different mathematical operators
-    if operation == 1:
+    if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in dict['type']:
 
-        # add addition sign to equation and display strings
-        update(string=[' + ', ' + ', ''], update=1)
+        # use numbers to represent different mathematical operators
+        if operation == 1:
 
-
-
-    if operation == 2:
-
-        # add subtraction sign to equation and display strings
-        update(string=[' - ', ' - ', ''], update=1)
+            # add addition sign to equation and display strings
+            update(string=[' + ', ' + ', ''], update=1)
 
 
 
-    if operation == 3:
+        if operation == 2:
 
-        # add multiplication sign to equation and display strings
-        update(string=[' * ', ' * ', ''], update=1)
-
-
-
-    if operation == 4:
-
-        # add division sign to equation and display strings
-        update(string=[' / ', ' / ', ''], update=1)
+            # add subtraction sign to equation and display strings
+            update(string=[' _ ', ' _ ', ''], update=1)
 
 
 
-    if operation == 5:
+        if operation == 3:
 
-        # add modulus sign to equation and display strings
-        update(string=[' % ', ' % ', ''], update=1)
+            # add multiplication sign to equation and display strings
+            update(string=[' * ', ' * ', ''], update=1)
+
+
+
+        if operation == 4:
+
+            # add division sign to equation and display strings
+            update(string=[' / ', ' / ', ''], update=1)
+
+
+
+        if operation == 5:
+
+            # add modulus sign to equation and display strings
+            update(string=[' % ', ' % ', ''], update=1)
 
 
 
@@ -300,26 +316,8 @@ def assign_integer():
 # function to input numbers.
 def assign(x):
 
-    try:
-
-        if dict['numbers']['equation'][-4] == '^': 
-
-            # make numbers superscript if they are exponents
-            update(type=1, string=[str(x), get_super(str(x)), str(x)])
-
-
-
-        else:
-
-            # put the number in the equation and display strings
-            update(type=1, string=[str(x), str(x), str(x)])
-
-
-
-    except:
-
-        # put the number in the equation and display strings
-        update(type=1, string=[str(x), str(x), str(x)])
+    # put the number in the equation and display strings
+    update(type=1, string=[str(x), str(x), str(x)])
 
 
 
@@ -338,6 +336,8 @@ def exponent(ctrlexp = -1):
     
 
     else:
+
+        dict['numbers']['exponent'] = not dict['numbers']['exponent']
 
         # update display
         dict['gui']['display'].configure(text = '0')
@@ -423,13 +423,15 @@ def brackets(type):
 
     else:
 
-        # start typing outside one more layer of brackets
-        if dict['numbers']['bracketnum'] > 0:
+        if dict['gui']['equation text'][-1 - dict['numbers']['bracketnum']] in '1234567890.-':
 
-            dict['numbers']['bracketnum'] -= 1
+            # start typing outside one more layer of brackets
+            if dict['numbers']['bracketnum'] > 0:
 
-            # display numbers within brackets
-            update(type=2, update=1)
+                dict['numbers']['bracketnum'] -= 1
+
+                # display numbers within brackets
+                update(type=2, update=1)
 
 
 

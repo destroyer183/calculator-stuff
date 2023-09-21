@@ -27,8 +27,8 @@ dict['brackets done']    = False
 dict['bracket equation']['start'] = 0
 
 # this stores information about each type of operator to allow for them to be correctly solved in the right order with less for loops
-dict['precedence'] = {'s': 5, 'c': 5, 't': 5, 'l': 5, 'S': 5, 'C': 5, 'T': 5, '!': 4, '^': 3, '#': 2, '/': 1, '*': 1, '%': 1, '+': 0, '-': 0}
-dict['type']       = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, '!': 2, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '-': 0}
+dict['precedence'] = {'s': 5, 'c': 5, 't': 5, 'l': 5, 'S': 5, 'C': 5, 'T': 5, '!': 4, '^': 3, '#': 2, '/': 1, '*': 1, '%': 1, '+': 0, '_': 0}
+dict['type']       = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, '!': 2, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '_': 0}
 
 
 
@@ -421,7 +421,7 @@ def solve(operation):
 
 
     # subtraction
-    if operation == '-':
+    if operation == '_':
 
         dict['normal equation']['output'] = float(dict['normal equation']['number 1']) - float(dict['normal equation']['number 2'])
 

@@ -202,115 +202,56 @@ def print_stacks(type):
 
 def shunting_yard_evaluator():
 
+    # set up number stack
     dict['hist'] = []
 
+    # loop through output stack
     while dict['out stack']:
 
-        char = dict['out stack'].pop(0)
+        # check if first item is an operator
+        if dict['out stack'][0] not in dict['type']:
 
-        if char in '1234567890.- ':
+            # if it isn't, add it to the number stack
+            dict['hist'].append(dict['out stack'].pop(0))
 
-            dict['hist'].append(char)
+        
 
+        # do something else if it is an operator
         else:
 
-            if len(dict['hist']) == 1:
+            # find what numbers correspond to the operator
+            find_numbers(dict['type'][dict['out stack'][0]])
 
-                print('someone fucked up')
+            # solve section of equation
+            solve(dict['out stack'][0])
 
-            
-            else:
-
-                print(f"operator: {char}")
-                find_numbers(dict['type'][char])
-
-                solve(char)
-
-    return ('').join(dict['hist'])
+            # remove operator from stack
+            dict['out stack'].pop(0)
 
 
 
 def find_numbers(type):
 
-    # remove double spaces
-    if '  ' in ('').join(dict['hist']):
-
-        x = ('').join(dict['hist'])
-
-        x = x.replace('  ', ' ')
-
-        dict['hist'] = list(x)
-
-
-
+    # print all numbers
     print(f"all numbers: {dict['hist']}")
-
-    # fix list
-    x = ('').join(dict['hist'])
-
-    dict['hist'] = list(x)
-
-    dict['hist'] = list(dict['hist'])
-
 
     # set up variables
     dict['number 1'] = ''
 
     dict['number 2'] = ''
 
-    dict['num end'] = len(dict['hist'])
+
+    if type:
+
+        dict['number 1'] = dict['hist'].pop(-1)
+
+
     
+    else:
 
+        dict['number 1'] = dict['hist'].pop(-2)
 
-    # look for a number to the left of the operator
-    for a in range(len(dict['hist']) - 2, -1, -1):
-
-        # locate the end of the number
-        if dict['hist'][a] in '1234567890.-':
-
-            # save the index of the left-most digit found at this time
-            dict['num start'] = a
-
-            # add the most recently found digit to the entire number
-            dict['number 1'] = dict['hist'][a] + dict['number 1']
-
-        # exit loop once entire number has been found
-        else:break
-
-
-
-    # check if operator is a function or not
-    if not type:
-
-        # fix list
-        # try:
-        x = ('').join(dict['hist'])
-        dict['hist'] = list(x)
-        # except:pass
-
-        dict['hist'] = list(dict['hist'])
-
-        # set up variables
-        b = dict['num start']
-
-        dict['number 2'] = dict['number 1']
-
-        dict['number 1'] = ''
-
-        # look for a number to the left of the operator
-        for a in range(b - 2, -1, -1):
-
-            # locate the end of the number
-            if dict['hist'][a] in '1234567890.-':
-
-                # save the index of the left-most digit found at this time
-                dict['num start'] = a
-
-                # add the most recently found digit to the entire number
-                dict['number 1'] = dict['hist'][a] + dict['number 1']
-
-            # exit loop once entire number has been found
-            else:break
+        dict['number 2'] = dict['hist'].pop(-1)
 
     print_stacks(0)
 
@@ -428,10 +369,9 @@ def solve(operation):
         dict['output'] = float(dict['number 1']) - float(dict['number 2'])
 
 
-    dict['hist'] = dict['hist'][0:dict['num start']]
 
+    # add solution to output stack
     dict['hist'].append(str(dict['output']))
-    dict['hist'].append(' ')
 
     print('')
 
@@ -447,7 +387,7 @@ def solve(operation):
 # use the parser without the GUI
 if __name__ == '__main__':
     
-    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) - 2 ^ (5 _ 2)) / 15'
+    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
 
     '5 + 3! _ 5'
 
