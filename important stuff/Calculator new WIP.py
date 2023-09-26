@@ -200,41 +200,22 @@ def update(type = 0, string = None, index = None, update = 0):
 
 
 # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
-def meth(operation):
+def meth(operation = None):
 
     try:
 
         if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in dict['type']:
 
-            # use numbers to represent different mathematical operators
-            if operation == 1:
+            if operation == ' _ ':
+
+                update(string=[operation, ' - ', ''], update=1)
+
+            
+
+            else:
 
                 # add addition sign to equation and display strings
-                update(string=[' + ', ' + ', ''], update=1)
-
-
-
-            if operation == 2:
-
-                update(string=[' _ ', ' - ', ''], update=1)
-
-
-
-            if operation == 3:
-
-                update(string=[' * ', ' * ', ''], update=1)
-
-
-
-            if operation == 4:
-
-                update(string=[' / ', ' / ', ''], update=1)
-
-
-
-            if operation == 5:
-
-                update(string=[' % ', ' % ', ''], update=1)
+                update(string=[{operation}, {operation}, ''], update=1)
 
     except:
 
@@ -301,7 +282,7 @@ def assign_decimal():
 
 
 # function bound to the integer button to allow the user to toggle a number between positive and negative.
-def assign_integer():
+def negative():
     
     try:
 
@@ -598,9 +579,9 @@ def shifte():
 # a function to handle all key inputs
 def keybindings():
 
-    if   keyboard.is_pressed('shift+=')  :meth(1)
-    elif keyboard.is_pressed('shift+8')  :meth(3)
-    elif keyboard.is_pressed('shift+5')  :meth(5)
+    if   keyboard.is_pressed('shift+=')  :meth(' + ')
+    elif keyboard.is_pressed('shift+8')  :meth(' * ')
+    elif keyboard.is_pressed('shift+5')  :meth(' % ')
     elif keyboard.is_pressed('ctrl+0')   :exponent(0)
     elif keyboard.is_pressed('ctrl+1')   :exponent(1)
     elif keyboard.is_pressed('ctrl+2')   :exponent(2)
@@ -623,14 +604,14 @@ def keybindings():
     elif keyboard.is_pressed('ctrl+e')   :e()
     elif keyboard.is_pressed('ctrl+l')   :logarithm()
     elif keyboard.is_pressed('ctrl+p')   :pi()
-    elif keyboard.is_pressed('shift+-')  :assign_integer()
+    elif keyboard.is_pressed('shift+-')  :negative()
     elif keyboard.is_pressed('shift+m')  :memorystore()
     elif keyboard.is_pressed('ctrl+m')   :memoryclear()
     elif keyboard.is_pressed('shift+backspace'):clear(False)
     elif keyboard.is_pressed('enter')    :calculate()
     elif keyboard.is_pressed('m')        :memoryrecall()
-    elif keyboard.is_pressed('-')        :meth(2)
-    elif keyboard.is_pressed('/')        :meth(4)
+    elif keyboard.is_pressed('-')        :meth(' _ ')
+    elif keyboard.is_pressed('/')        :meth(' / ')
     elif keyboard.is_pressed('.')        :assign_decimal()
     elif keyboard.is_pressed('0')        :assign(0)
     elif keyboard.is_pressed('1')        :assign(1)
@@ -763,13 +744,13 @@ def scientific():
 
     # column 7
     dict['gui']['buttons']['clear']          = tk.Button(root, text='CE',                 anchor='center', bg='lightcoral',     command=lambda:clear())
-    dict['gui']['buttons']['divide']         = tk.Button(root, text='/',                  anchor='center', bg='gainsboro',      command=lambda:meth(4))
-    dict['gui']['buttons']['multiply']       = tk.Button(root, text='x',                  anchor='center', bg='gainsboro',      command=lambda:meth(3))
-    dict['gui']['buttons']['minus']          = tk.Button(root, text='-',                  anchor='center', bg='gainsboro',      command=lambda:meth(2))
-    dict['gui']['buttons']['plus']           = tk.Button(root, text='+',                  anchor='center', bg='gainsboro',      command=lambda:meth(1))
+    dict['gui']['buttons']['divide']         = tk.Button(root, text='/',                  anchor='center', bg='gainsboro',      command=lambda:meth(' / '))
+    dict['gui']['buttons']['multiply']       = tk.Button(root, text='x',                  anchor='center', bg='gainsboro',      command=lambda:meth(' * '))
+    dict['gui']['buttons']['minus']          = tk.Button(root, text='-',                  anchor='center', bg='gainsboro',      command=lambda:meth(' _ '))
+    dict['gui']['buttons']['plus']           = tk.Button(root, text='+',                  anchor='center', bg='gainsboro',      command=lambda:meth(' + '))
 
     # column 6
-    dict['gui']['buttons']['modulus']        = tk.Button(root, text='%',                  anchor='center', bg='gainsboro',      command=lambda:meth(5))
+    dict['gui']['buttons']['modulus']        = tk.Button(root, text='%',                  anchor='center', bg='gainsboro',      command=lambda:meth(' % '))
     dict['gui']['buttons']['num9']           = tk.Button(root, text='9',                  anchor='center', bg='white',          command=lambda:assign(9))
     dict['gui']['buttons']['num6']           = tk.Button(root, text='6',                  anchor='center', bg='white',          command=lambda:assign(6))
     dict['gui']['buttons']['num3']           = tk.Button(root, text='3',                  anchor='center', bg='white',          command=lambda:assign(3))
@@ -787,7 +768,7 @@ def scientific():
     dict['gui']['buttons']['num7']           = tk.Button(root, text='7',                  anchor='center', bg='white',          command=lambda:assign(7))
     dict['gui']['buttons']['num4']           = tk.Button(root, text='4',                  anchor='center', bg='white',          command=lambda:assign(4))
     dict['gui']['buttons']['num1']           = tk.Button(root, text='1',                  anchor='center', bg='white',          command=lambda:assign(1))
-    dict['gui']['buttons']['integer']        = tk.Button(root, text='+/-',                anchor='center', bg='white',          command=lambda:assign_integer())
+    dict['gui']['buttons']['integer']        = tk.Button(root, text='+/-',                anchor='center', bg='white',          command=lambda:negative())
 
     # column 3
     dict['gui']['buttons']['memory recall']  = tk.Button(root, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:memoryrecall())
