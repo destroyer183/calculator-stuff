@@ -219,33 +219,16 @@ def meth(operation = None):
 
     except:
 
-        if operation == 1:
+        if operation == ' _ ':
 
-            update(string=[' + ', ' + ', ''], update=1)
+            update(string=[operation, ' - ', ''], update=1)
 
+        
 
+        else:
 
-        if operation == 2:
-
-            update(string=[' _ ', ' _ ', ''], update=1)
-
-
-
-        if operation == 3:
-
-            update(string=[' * ', ' * ', ''], update=1)
-
-
-
-        if operation == 4:
-
-            update(string=[' / ', ' / ', ''], update=1)
-
-
-
-        if operation == 5:
-
-            update(string=[' % ', ' % ', ''], update=1)
+            # add addition sign to equation and display strings
+            update(string=[{operation}, {operation}, ''], update=1)
 
 
 
