@@ -66,7 +66,6 @@ dict             = {}
 dict['operator'] = {}
 dict['numbers']  = {}
 dict['gui']      = {}
-dict['type']     = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, 'f': 1, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '_': 0}
 
 dict['numbers']['equation']   = ['']
 dict['numbers']['output']     = ''
@@ -204,7 +203,7 @@ def meth(operation = None):
 
     try:
 
-        if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in dict['type']:
+        if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in 'sctSCTlf^#/*%+_':
 
             if operation == ' _ ':
 
