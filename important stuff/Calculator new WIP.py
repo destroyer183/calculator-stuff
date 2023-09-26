@@ -202,41 +202,71 @@ def update(type = 0, string = None, index = None, update = 0):
 # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
 def meth(operation):
 
-    if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in dict['type']:
+    try:
 
-        # use numbers to represent different mathematical operators
+        if dict['gui']['equation text'][-2 - dict['numbers']['bracketnum']] not in dict['type']:
+
+            # use numbers to represent different mathematical operators
+            if operation == 1:
+
+                # add addition sign to equation and display strings
+                update(string=[' + ', ' + ', ''], update=1)
+
+
+
+            if operation == 2:
+
+                update(string=[' _ ', ' - ', ''], update=1)
+
+
+
+            if operation == 3:
+
+                update(string=[' * ', ' * ', ''], update=1)
+
+
+
+            if operation == 4:
+
+                update(string=[' / ', ' / ', ''], update=1)
+
+
+
+            if operation == 5:
+
+                update(string=[' % ', ' % ', ''], update=1)
+
+    except:
+
         if operation == 1:
 
-            # add addition sign to equation and display strings
             update(string=[' + ', ' + ', ''], update=1)
 
 
 
         if operation == 2:
 
-            # add subtraction sign to equation and display strings
             update(string=[' _ ', ' _ ', ''], update=1)
 
 
 
         if operation == 3:
 
-            # add multiplication sign to equation and display strings
             update(string=[' * ', ' * ', ''], update=1)
 
 
 
         if operation == 4:
 
-            # add division sign to equation and display strings
             update(string=[' / ', ' / ', ''], update=1)
 
 
 
         if operation == 5:
 
-            # add modulus sign to equation and display strings
             update(string=[' % ', ' % ', ''], update=1)
+
+
 
 
 
