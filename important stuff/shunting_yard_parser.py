@@ -265,11 +265,6 @@ def solve(operation):
     print(f"number 1: {dict['number 1']}")
     print(f"number 2: {dict['number 2']}")
 
-    # logarithm
-    if operation == 'l':
-
-        dict['output'] = math.log(float(dict['number 1']))
-
 
 
     # sine
@@ -311,6 +306,13 @@ def solve(operation):
     if operation == 'T':
 
         dict['output'] = math.degrees(math.atan(float(dict['number 1'])))
+
+
+
+    # logarithm
+    if operation == 'l':
+
+        dict['output'] = math.log(float(dict['number 1']))
 
 
 

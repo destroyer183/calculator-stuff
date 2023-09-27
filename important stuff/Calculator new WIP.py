@@ -13,6 +13,8 @@ from shunting_yard_parser import shunting_yard_parser
 
 # things to update:
 
+# iINTEGER BUTTON IS STILL BUGGED FFS
+
 # MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
 
 # LEARN CLASSES
@@ -214,7 +216,7 @@ def meth(operation = None):
             else:
 
                 # add addition sign to equation and display strings
-                update(string=[{operation}, {operation}, ''], update=1)
+                update(string=[operation, operation, ''], update=1)
 
     except:
 
@@ -227,7 +229,7 @@ def meth(operation = None):
         else:
 
             # add addition sign to equation and display strings
-            update(string=[{operation}, {operation}, ''], update=1)
+            update(string=[operation, operation, ''], update=1)
 
 
 
@@ -269,7 +271,7 @@ def negative():
     try:
 
         # check to see if there is anything in the display text
-        if dict['gui']['display text'] == '':
+        if dict['gui']['display text'] == ['']:
 
             # add the integer sign to the number if there is nothing else in the equation
             update(string=['-', '-', '-'])
