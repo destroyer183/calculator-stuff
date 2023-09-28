@@ -13,7 +13,7 @@ from shunting_yard_parser import shunting_yard_parser
 
 # things to update:
 
-# iINTEGER BUTTON IS STILL BUGGED FFS
+# multiplying functions without pressing '*' doesn't work
 
 # MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
 
@@ -420,7 +420,7 @@ def brackets(type):
 
     else:
 
-        if dict['gui']['equation text'][-1 - dict['numbers']['bracketnum']] in '1234567890.-':
+        if dict['gui']['equation text'][-1 - dict['numbers']['bracketnum']] in '1234567890.-)':
 
             # start typing outside one more layer of brackets
             if dict['numbers']['bracketnum'] > 0:
@@ -710,7 +710,7 @@ def scientific():
     dict['numbers']['roundchoice'] = StringVar(root)
     dict['numbers']['roundchoice'].set(11)
 
-    dict['gui']['roundnumbers'] = OptionMenu(root, dict['numbers']['roundchoice'], 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+    dict['gui']['roundnumbers'] = OptionMenu(root, dict['numbers']['roundchoice'], 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
     dict['gui']['roundnumbers'].configure(font=('Arial', 15, 'bold'))
     dict['gui']['roundnumbers'].place(x = 470, y = 185)
 
