@@ -166,18 +166,23 @@ def print_stacks(type):
 
 
 
-# use the parser without the GUI
-if __name__ == '__main__':
+# # use the parser without the GUI
+# if __name__ == '__main__':
     
-    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
+#     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    '5 + 3! _ 5'
+#     '5 + 3! _ 5'
 
-    '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
+#     '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15', '/', '+']
+#     ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15', '/', '+']
 
-    '53.06666666666667'
+#     '53.06666666666667'
 
-    # run parser with inputted equation
-    shunting_yard_converter(equation)
+#     # run parser with inputted equation
+#     shunting_yard_converter(equation)
+
+
+for i in range(8):
+
+    print(i)
