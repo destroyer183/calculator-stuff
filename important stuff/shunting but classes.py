@@ -2,8 +2,8 @@ import math
 
 # might have to replace every 'token' variable with 'token'
 
-LEFT = False 
-RIGHT = True
+LEFT = True
+RIGHT = False
 
 NUMBER = 0
 OPERATOR = 0
@@ -142,116 +142,96 @@ def shunting_yard_converter(equation):
     # loop through list until it is empty
     while in_stack:
 
+        # create temporary list
         temp_stack = []
 
-        try: print(f"char: {in_stack[0]}, char2: {token.value}")
-        except: print(f"char: {in_stack[0]}")
+        print(f"char: {in_stack[0]}")
 
-        token = get_token(in_stack.pop(0))
 
         # remove spaces
-        if token == ' ':
+        if get_token(in_stack[0]) == ' ':
 
-            continue
+            in_stack.pop(0)
 
 
 
         # check if first character is part of a number
-        elif type(token) == str:
+        elif type(get_token(in_stack[0])) == str:
 
-            if token in '1234567890.-':
+            if get_token(in_stack[0]) in '123456789.-':
 
                 try:
 
                     # loop through each character in the stack until a character isn't part of a number
-                    while token in '1234567890.-':
+                    while get_token(in_stack[0]) in '1234567890.-':
 
                         # add number to temporary list
-                        temp_stack.append(token)
-
-                        token = get_token(in_stack.pop(0))
-
+                        temp_stack.append(get_token(in_stack.pop(0)))
 
                 except:pass
-                    # # add temporary list to out stack
-                    # out_stack.append(('').join(temp_stack))
-                    # print_stacks(in_stack, op_stack, out_stack, print_type = True)
-                    # print('it errored')
-                    # continue
 
                 # add temporary list to out stack
                 out_stack.append(('').join(temp_stack))
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
                 
-                
 
+        # check if char is a function
+        elif get_token(in_stack[0]).type == FUNCTION:
 
-        try:
+            # add function to output stack
+            op_stack.append(get_token(in_stack.pop(0)))
+            print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
+        
 
-            # check if char is a function
-            if token.type == FUNCTION:
+        # check if there is an operator
+        elif get_token(in_stack[0]).type == OPERATOR:
 
-                # add function to output stack
-                op_stack.append(token)
-                print_stacks(in_stack, op_stack, out_stack, print_type = True)
-                print('function')
+            # loop through output stack to ensure order of operations is followed
+            while len(op_stack) and op_stack[-1].value != '(' and (
+                    op_stack[-1].precedence > get_token(in_stack[0]).precedence or 
+                    (op_stack[-1].precedence == get_token(in_stack[0]).precedence and 
+                    get_token(in_stack[0]).associativity)):
 
-            
-
-            # check if there is an operator
-            elif token.type == OPERATOR:
-
-                # loop through output stack to ensure order of operations is followed
-                while len(op_stack) and op_stack[-1] != '(' and (
-                        op_stack[-1].precedence > token.precedence or 
-                        (op_stack[-1].precedence == token.precedence and 
-                        token.associativity)):
-
-                    # pop last operator of op stack on to the out stack
-                    out_stack.append(op_stack.pop())
-                    print_stacks(in_stack, op_stack, out_stack, print_type = True)
-
-
-
-                # pop char on to op stack
-                op_stack.append(token)
-                print_stacks(in_stack, op_stack, out_stack, print_type = True)
-                print('operator')
-
-
-
-
-            # check if char is a left bracket
-            elif token.type == LEFT_BRACKET:
-
-                # pop in_stack[0] on to op stack
-                op_stack.append(token)
-                print('l bracket')
-
-
-
-            # check if char is a right bracket
-            elif token.type == RIGHT_BRACKET:
-
-                # remove right bracket
+                # pop last operator of op stack on to the out stack
+                out_stack.append(op_stack.pop())
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
-                # loop through op stack until a left bracket is found
-                while op_stack and op_stack[-1].type != LEFT_BRACKET:
 
-                    # pop op stack to out stack
-                    out_stack.append(op_stack.pop())
-                    print_stacks(in_stack, op_stack, out_stack, print_type = True)
-                    print('r bracket')
 
-                # remove left bracket
-                op_stack.pop()
+            # pop char on to op stack
+            op_stack.append(get_token(in_stack.pop(0)))
+            print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+
+
+        # check if char is a left bracket
+        elif get_token(in_stack[0]).type == LEFT_BRACKET:
+
+            # pop in_stack[0] on to op stack
+            op_stack.append(get_token(in_stack.pop(0)))
+
+
+
+        # check if char is a right bracket
+        elif get_token(in_stack[0]).type == RIGHT_BRACKET:
+
+            # remove right bracket
+            in_stack.pop(0)
+            print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+            # loop through op stack until a left bracket is found
+            while op_stack and op_stack[-1].type != LEFT_BRACKET:
+
+                # pop op stack to out stack
+                out_stack.append(op_stack.pop())
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
-                print('r bracket2')
 
-        except:pass
+            # remove left bracket
+            op_stack.pop()
+            print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
 
 
         
