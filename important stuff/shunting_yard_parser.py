@@ -21,12 +21,12 @@ def shunting_yard_parser(equation):
     dict['input stack'] = list(equation)
 
     # print current equation
-    print(f"equation: {dict['input stack']}")
+    print(f"equation: {('').join(dict['input stack'])}")
 
     shunting_yard_converter(dict['input stack'])
 
     print('')
-    print(f"original equation: {equation}")
+    print(f"original equation: {('').join(equation)}")
     print(f"equation in RPN notation: {(' ').join(dict['out stack'])}")
 
     shunting_yard_evaluator()
@@ -69,7 +69,7 @@ def shunting_yard_converter(equation):
                     break
 
             # print info
-            print(f"original equation: {equation}")
+            print(f"original equation: {('').join(equation)}")
 
             print(f"factorials fixed: {('').join(dict['in stack'])}")
 
@@ -188,7 +188,7 @@ def print_stacks(type):
     if type:
 
         print('')
-        print(f"input stack: {dict['in stack']}")
+        print(f"input stack: {('').join(dict['in stack'])}")
         print(f"operator stack: {dict['op stack']}")
         print(f"output stack: {dict['out stack']}")
 

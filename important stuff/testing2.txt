@@ -1,0 +1,240 @@
+equation: 4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+original equation: 4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+factorials fixed: 4 + (f(3) * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+char: 4
+
+input stack:  + (f(3) * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: []
+output stack: ['4']
+char:
+char: +
+
+input stack:  (f(3) * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+']
+output stack: ['4']
+char:
+char: (
+char: f
+
+input stack: (3) * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', 'f']
+output stack: ['4']
+char: (
+char: 3
+
+input stack: ) * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', 'f', '(']
+output stack: ['4', '3']
+char: )
+
+input stack:  * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', 'f', '(']
+output stack: ['4', '3']
+
+input stack:  * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', 'f']
+output stack: ['4', '3']
+char:
+char: *
+
+input stack: * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(']
+output stack: ['4', '3', 'f']
+
+input stack:  (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*']
+output stack: ['4', '3', 'f']
+char:
+char: (
+char: 5
+
+input stack:  + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(']
+output stack: ['4', '3', 'f', '52']
+char:
+char: +
+
+input stack:  73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+']
+output stack: ['4', '3', 'f', '52']
+char:
+char: 7
+
+input stack:  * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+']
+output stack: ['4', '3', 'f', '52', '73']
+char:
+char: *
+
+input stack:  #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*']
+output stack: ['4', '3', 'f', '52', '73']
+char:
+char: #
+
+input stack: (64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*', '#']
+output stack: ['4', '3', 'f', '52', '73']
+char: (
+char: 6
+
+input stack: ) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*', '#', '(']
+output stack: ['4', '3', 'f', '52', '73', '64']
+char: )
+
+input stack:  / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*', '#', '(']
+output stack: ['4', '3', 'f', '52', '73', '64']
+
+input stack:  / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*', '#']
+output stack: ['4', '3', 'f', '52', '73', '64']
+char:
+char: /
+
+input stack: / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '*']
+output stack: ['4', '3', 'f', '52', '73', '64', '#']
+
+input stack: / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*']
+
+input stack:  2 _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '/']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*']
+char:
+char: 2
+
+input stack:  _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+', '/']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2']
+char:
+char: _
+
+input stack: _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '+']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/']
+
+input stack: _ 220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+']
+
+input stack:  220) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+']
+char:
+char: 2
+
+input stack: ) _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220']
+char: )
+
+input stack:  _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220']
+
+input stack:  _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_']
+
+input stack:  _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '*']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_']
+char:
+char: _
+
+input stack: _  2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*']
+
+input stack:   2 ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*']
+char:
+char:
+char: 2
+
+input stack:  ^ (5 _ 2)) / 15
+operator stack: ['+', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2']
+char:
+char: ^
+
+input stack:  (5 _ 2)) / 15
+operator stack: ['+', '(', '_', '^']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2']
+char:
+char: (
+char: 5
+
+input stack:  _ 2)) / 15
+operator stack: ['+', '(', '_', '^', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5']
+char:
+char: _
+
+input stack:  2)) / 15
+operator stack: ['+', '(', '_', '^', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5']
+char:
+char: 2
+
+input stack: )) / 15
+operator stack: ['+', '(', '_', '^', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2']
+char: )
+
+input stack: ) / 15
+operator stack: ['+', '(', '_', '^', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2']
+
+input stack: ) / 15
+operator stack: ['+', '(', '_', '^', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_']
+
+input stack: ) / 15
+operator stack: ['+', '(', '_', '^']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_']
+char: )
+
+input stack:  / 15
+operator stack: ['+', '(', '_', '^']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_']
+
+input stack:  / 15
+operator stack: ['+', '(', '_']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^']
+
+input stack:  / 15
+operator stack: ['+', '(']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_']
+
+input stack:  / 15
+operator stack: ['+']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_']
+char:
+char: /
+
+input stack:  15
+operator stack: ['+', '/']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_']
+char:
+char: 1
+
+input stack:
+operator stack: ['+', '/']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15']
+
+input stack:
+operator stack: ['+']
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15', '/']
+
+input stack:
+operator stack: []
+output stack: ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15', '/', '+']
+
+original equation: 4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15
+equation in RPN notation: 4 3 f 52 73 64 # * 2 / + 220 _ * 2 5 2 _ ^ _ 15 / +
