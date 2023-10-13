@@ -194,7 +194,6 @@ def print_stacks(type):
 
     if not type:
 
-        print('')
         print(f"number 1: {dict['number 1']}")
         print(f"number 2: {dict['number 2']}")
 
@@ -253,7 +252,6 @@ def find_numbers(type):
 
         dict['number 2'] = dict['hist'].pop(-1)
 
-    print_stacks(0)
 
 
 def solve(operation):
@@ -262,8 +260,7 @@ def solve(operation):
     print('')
     print('solving...')
     print(f"operator/function: {operation}")
-    print(f"number 1: {dict['number 1']}")
-    print(f"number 2: {dict['number 2']}")
+    print_stacks(0)
 
 
 

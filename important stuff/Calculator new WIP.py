@@ -3,7 +3,7 @@ from tkinter import *
 import keyboard
 import os
 from scientific_parser import scientific_parser
-from shunting_yard_parser import shunting_yard_parser
+from shunting_parser import shunting_yard_evaluator
 
 
 
@@ -89,7 +89,7 @@ def calculate():
     dict['numbers']['equation'] = ('').join(dict['numbers']['equation'])
 
     # give the equation parser the equation string and set the output to a variable
-    dict['numbers']['output'] = shunting_yard_parser(dict['numbers']['equation'])
+    dict['numbers']['output'] = shunting_yard_evaluator(dict['numbers']['equation'])
 
     # round the output to the specified number of decimal places
     dict['numbers']['output'] = str(round(float(dict['numbers']['output']), int(dict['numbers']['roundchoice'].get())))

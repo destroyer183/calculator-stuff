@@ -25,26 +25,42 @@ class Token:
         self.value = value
         self.apply = apply
 
+    
+    def solve(self, a, b = ''):
+
+        print('')
+        print('solving...')
+        print(f"operator/function: {self.value}")
+        print_stacks(a, b, print_type = False)
+
+        if self.type: output = self.apply(a)
+
+        else: output = self.apply(a, b)
+
+        print('')
+
+        return output
+
 
 
 TOKENS = [
 
-    Token(FUNCTION, 5, LEFT,  value='s', apply=lambda x: math.sin(math.radians(x))),
-    Token(FUNCTION, 5, LEFT,  value='c', apply=lambda x: math.cos(math.radians(x))),
-    Token(FUNCTION, 5, LEFT,  value='t', apply=lambda x: math.tan(math.radians(x))),
-    Token(FUNCTION, 5, LEFT,  value='S', apply=lambda x: math.degrees(math.asin(x))),
-    Token(FUNCTION, 5, LEFT,  value='C', apply=lambda x: math.degrees(math.acos(x))),
-    Token(FUNCTION, 5, LEFT,  value='T', apply=lambda x: math.degrees(math.atan(x))),
-    Token(FUNCTION, 5, LEFT,  value='l', apply=lambda x: math.log((x))),
-    Token(FUNCTION, 4, LEFT,  value='f', apply=lambda x: math.factorial((x))),
-    Token(FUNCTION, 2, LEFT,  value='#', apply=lambda x: x ** 0.5),
+    Token(FUNCTION, 5, LEFT,  value='s', apply=lambda x: math.sin(math.radians(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='c', apply=lambda x: math.cos(math.radians(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='t', apply=lambda x: math.tan(math.radians(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='S', apply=lambda x: math.degrees(math.asin(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='C', apply=lambda x: math.degrees(math.acos(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='T', apply=lambda x: math.degrees(math.atan(float(x)))),
+    Token(FUNCTION, 5, LEFT,  value='l', apply=lambda x: math.log((float(x)))),
+    Token(FUNCTION, 4, LEFT,  value='f', apply=lambda x: math.factorial((int(x)))),
+    Token(FUNCTION, 2, LEFT,  value='#', apply=lambda x: float(x) ** 0.5),
     
-    Token(OPERATOR, 3, RIGHT, value='^', apply=lambda a,b: a ** b),
-    Token(OPERATOR, 1, LEFT,  value='%', apply=lambda a,b: a % b),
-    Token(OPERATOR, 1, LEFT,  value='/', apply=lambda a,b: a / b),
-    Token(OPERATOR, 1, LEFT,  value='*', apply=lambda a,b: a * b),
-    Token(OPERATOR, 0, LEFT,  value='+', apply=lambda a,b: a + b),
-    Token(OPERATOR, 0, LEFT,  value='_', apply=lambda a,b: a - b),
+    Token(OPERATOR, 3, RIGHT, value='^', apply=lambda a,b: float(a) ** float(b)),
+    Token(OPERATOR, 1, LEFT,  value='%', apply=lambda a,b: float(a) % float(b)),
+    Token(OPERATOR, 1, LEFT,  value='/', apply=lambda a,b: float(a) / float(b)),
+    Token(OPERATOR, 1, LEFT,  value='*', apply=lambda a,b: float(a) * float(b)),
+    Token(OPERATOR, 0, LEFT,  value='+', apply=lambda a,b: float(a) + float(b)),
+    Token(OPERATOR, 0, LEFT,  value='_', apply=lambda a,b: float(a) - float(b)),
 
     Token(LEFT_BRACKET, 0, RIGHT, value='('),
     Token(RIGHT_BRACKET, 0, LEFT, value=')')
@@ -76,15 +92,15 @@ def shunting_yard_parser(equation):
 
     print(f"equation in RPN notation: {(' ').join(temp_stack)}")
 
-    # hist = shunting_yard_evaluator(in_stack)
+    hist = shunting_yard_evaluator(in_stack)
 
-    # x = ('').join(hist)
+    x = ('').join(hist)
 
-    # hist = x.strip()
+    hist = x.strip()
 
-    # print(f"answer: {hist}")
+    print(f"answer: {hist}")
 
-    # return hist
+    return hist
 
 
 
@@ -295,7 +311,6 @@ def print_stacks(*stacks, print_type):
 
     if not print_type:
 
-        print('')
         print(f"number 1: {stacks[0]}")
         print(f"number 2: {stacks[1]}")
 
@@ -316,11 +331,15 @@ def shunting_yard_evaluator(equation):
         else: temp_stack.append(i)
 
     print(f"stack: {temp_stack}")
+
     hist = []
 
     while stack:
 
         i = stack.pop(0)
+
+        try: print(f"char: {i.value}")
+        except: print(f"char: {i}")
 
         # check if first item is an operator
         if type(i) == str:
@@ -337,20 +356,20 @@ def shunting_yard_evaluator(equation):
             a, b, hist = find_numbers(i.type, hist)
 
             # solve section of equation
-            if i.type:
+            hist.append(str(i.solve(a, b)))
 
-                print(i.value)
+            temp_stack = []
 
-                if i.value == 'f': hist.append(str(i.apply(int(a))))
+            for i in stack:
 
-                else: hist.append(str(i.apply(float(a))))
+                if type(i) == Token:
 
-            else:
+                    temp_stack.append(i.value)
 
-                hist.append(str(i.apply(float(a), float(b))))
+                else: temp_stack.append(i)
 
-            # remove operator from stack
-            stack.pop(0)
+            print(f"output: {hist}")
+            print(f"remaining equation: {temp_stack}")
 
     return hist
 
