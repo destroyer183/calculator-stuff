@@ -148,7 +148,18 @@ def shunting_yard_converter(equation):
         try: print(f"char: {in_stack[0]}, char2: {token.value}")
         except: print(f"char: {in_stack[0]}")
 
-        token = get_token(in_stack.pop(0))
+        try: 
+
+            if type(token) != str:
+
+                if token.value != ')':
+
+                    token = get_token(in_stack.pop(0))
+                
+            else: token = get_token(in_stack.pop(0))
+        
+        except: token = get_token(in_stack.pop(0))
+
 
 
         # remove spaces
@@ -178,6 +189,8 @@ def shunting_yard_converter(equation):
                 # add temporary list to out stack
                 out_stack.append(('').join(temp_stack))
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
+                try: print(f"char: {token.value}, char3: {in_stack[0]}, this")
+                except: print(f"char: {token}, this")
 
                 
 
@@ -196,7 +209,7 @@ def shunting_yard_converter(equation):
             elif token.type == OPERATOR:
 
                 # loop through output stack to ensure order of operations is followed
-                while len(op_stack) and op_stack[-1].value != '(' and (
+                while op_stack and op_stack[-1].value != '(' and (
                         op_stack[-1].precedence > token.precedence or 
                         (op_stack[-1].precedence == token.precedence and 
                         token.associativity)):
@@ -205,7 +218,7 @@ def shunting_yard_converter(equation):
                     out_stack.append(op_stack.pop())
                     print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
-
+                print('operator stack changed')
 
                 # pop char on to op stack
                 op_stack.append(token)
@@ -224,8 +237,10 @@ def shunting_yard_converter(equation):
             # check if char is a right bracket
             elif token.type == RIGHT_BRACKET:
 
+                print('it sees it')
+
                 # remove right bracket
-                token = get_token(in_stack.pop(0))
+                token = get_token(in_stack.pop(0)) # this is the problem I think
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
                 # loop through op stack until a left bracket is found
@@ -235,11 +250,15 @@ def shunting_yard_converter(equation):
                     out_stack.append(op_stack.pop())
                     print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
+                print('l bracket removed')
+
                 # remove left bracket
                 op_stack.pop()
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
-        except:pass
+        except: 
+            try: print(f"error at char = {token.value}")
+            except: print(f"error at char = {token}")
 
 
         
@@ -285,6 +304,18 @@ def print_stacks(*stacks, print_type):
 def shunting_yard_evaluator(equation):
 
     stack = shunting_yard_converter(equation)
+
+    temp_stack = []
+
+    for i in stack:
+
+        if type(i) == Token:
+
+            temp_stack.append(i.value)
+
+        else: temp_stack.append(i)
+
+    print(f"stack: {temp_stack}")
     hist = []
 
     while stack:
@@ -308,6 +339,8 @@ def shunting_yard_evaluator(equation):
             # solve section of equation
             if i.type:
 
+                print(i.value)
+
                 if i.value == 'f': hist.append(str(i.apply(int(a))))
 
                 else: hist.append(str(i.apply(float(a))))
@@ -329,15 +362,9 @@ def find_numbers(type, hist):
     # print all numbers
     print(f"all numbers: {hist}")
 
-    if type:
+    if type: return hist.pop(-1), None, hist
 
-        return hist.pop(-1), None, hist
-
-
-    
-    else:
-
-        return hist.pop(-2), hist.pop(-1), hist
+    else: return hist.pop(-2), hist.pop(-1), hist
     
 
 

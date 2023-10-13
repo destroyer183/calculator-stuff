@@ -129,7 +129,7 @@ def shunting_yard_converter(equation):
             d = dict['op stack']
 
             # loop through output stack to ensure order of operations is followed
-            while len(d) and d[-1] != '(' and (
+            while d and d[-1] != '(' and (
                     dict['precedence'][d[-1]] > dict['precedence'][dict['in stack'][0]] or 
                     (dict['precedence'][d[-1]] == dict['precedence'][dict['in stack'][0]] and 
                     dict['l associated'][dict['in stack'][0]])):

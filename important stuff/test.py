@@ -1,188 +1,356 @@
-dict = {}
-dict['precedence']      = {'s': 5, 'c': 5, 't': 5, 'l': 5, 'S': 5, 'C': 5, 'T': 5, 'f': 4, '^': 3, '#': 2, '/': 1, '*': 1, '%': 1, '+': 0, '_': 0, '(': 0, ')': 0}
-dict['type']            = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, 'f': 1, '^': 0, '#': 1, '/': 0, '*': 0, '%': 0, '+': 0, '_': 0, '(': 2, ')': 3} # 3 means R bracket, 2 means L bracket, 1 means function, 0 means operator
-dict['l associated']    = {'s': 1, 'c': 1, 't': 1, 'l': 1, 'S': 1, 'C': 1, 'T': 1, 'f': 1, '^': 0, '#': 1, '/': 1, '*': 1, '%': 1, '+': 1, '_': 1, '(': 0, ')': 1}
+import math
 
+# might have to replace every 'token' variable with 'token'
+
+LEFT = True
+RIGHT = False
+
+NUMBER = 0
+OPERATOR = 0
+BRACKET = 3
+FUNCTION = 1
+COMMA = 5
+LEFT_BRACKET = 2
+RIGHT_BRACKET = 3
+
+
+
+class Token:
+
+    def __init__(self, type: int, precedence: int, associativity: bool, value, apply=None) -> None:
+        
+        self.type  = type
+        self.precedence = precedence
+        self.associativity = associativity
+        self.value = value
+        self.apply = apply
+
+
+
+TOKENS = [
+
+    Token(FUNCTION, 5, LEFT,  value='s', apply=lambda x: math.sin(math.radians(x))),
+    Token(FUNCTION, 5, LEFT,  value='c', apply=lambda x: math.cos(math.radians(x))),
+    Token(FUNCTION, 5, LEFT,  value='t', apply=lambda x: math.tan(math.radians(x))),
+    Token(FUNCTION, 5, LEFT,  value='S', apply=lambda x: math.degrees(math.asin(x))),
+    Token(FUNCTION, 5, LEFT,  value='C', apply=lambda x: math.degrees(math.acos(x))),
+    Token(FUNCTION, 5, LEFT,  value='T', apply=lambda x: math.degrees(math.atan(x))),
+    Token(FUNCTION, 5, LEFT,  value='l', apply=lambda x: math.log((x))),
+    Token(FUNCTION, 4, LEFT,  value='f', apply=lambda x: math.factorial((x))),
+    Token(FUNCTION, 2, LEFT,  value='#', apply=lambda x: x ** 0.5),
+    
+    Token(OPERATOR, 3, RIGHT, value='^', apply=lambda a,b: a ** b),
+    Token(OPERATOR, 1, LEFT,  value='%', apply=lambda a,b: a % b),
+    Token(OPERATOR, 1, LEFT,  value='/', apply=lambda a,b: a / b),
+    Token(OPERATOR, 1, LEFT,  value='*', apply=lambda a,b: a * b),
+    Token(OPERATOR, 0, LEFT,  value='+', apply=lambda a,b: a + b),
+    Token(OPERATOR, 0, LEFT,  value='_', apply=lambda a,b: a - b),
+
+    Token(LEFT_BRACKET, 0, RIGHT, value='('),
+    Token(RIGHT_BRACKET, 0, LEFT, value=')')
+
+    ]
+
+def shunting_yard_parser(equation):
+
+    # set dict variable to inputted equation
+    in_stack = list(equation)
+
+    # print current equation
+    print(f"equation: {('').join(in_stack)}")
+
+    out_stack = shunting_yard_converter(in_stack)
+
+    print('')
+    print(f"original equation: {('').join(equation)}")
+
+    temp_stack = []
+
+    for i in out_stack:
+
+        if type(i) == Token:
+
+            temp_stack.append(i.value)
+
+        else: temp_stack.append(i)
+
+    print(f"equation in RPN notation: {(' ').join(temp_stack)}")
+
+    # hist = shunting_yard_evaluator(in_stack)
+
+    # x = ('').join(hist)
+
+    # hist = x.strip()
+
+    # print(f"answer: {hist}")
+
+    # return hist
+
+
+
+def get_token(value: str):
+
+    for i in TOKENS:
+
+        if i.value == value:
+
+            return i 
+        
+    return value
+        
 
 
 def shunting_yard_converter(equation):
 
-    dict['in stack']    = list(equation)
-    dict['op stack']    = []
-    dict['out stack']   = []
+    in_stack = list(equation)
+    op_stack = []
+    out_stack = []
 
     # step 1 is to convert factorials into a bracket function like sin() and cos()
-    for index, char, in enumerate(dict['in stack']):
+    for index, char, in enumerate(in_stack):
 
         # look for factorial sign
         if char == '!':
 
             # set end of function
-            dict['in stack'][index] = ')'
+            in_stack[index] = ')'
 
             # look for start of number next to factorial sign
             for i in range(index, 0, -1):
 
                 # if a space is found, the number has ended
-                if dict['in stack'][i] not in '1234567890.-':
+                if in_stack[i] not in '1234567890.-':
 
                     # set start of equation
-                    dict['in stack'].insert(i - 1, 'f(')
+                    in_stack.insert(i - 1, 'f(')
 
                     break
 
             # print info
-            print(f"original equation: {equation}")
+            print(f"original equation: {('').join(equation)}")
 
-            print(f"factorials fixed: {('').join(dict['in stack'])}")
+            print(f"factorials fixed: {('').join(in_stack)}")
 
 
     # fix syntax
-    x = ('').join(dict['in stack'])
+    x = ('').join(in_stack)
 
-    dict['in stack'] = list(x)
+    in_stack = list(x)
 
 
 
     # loop through list until it is empty
-    while dict['in stack']:
+    while in_stack:
 
-        # create temproary list
+        # create temporary list
         temp_stack = []
 
-        print(f"char: {dict['in stack'][0]}")
+        try: print(f"char: {in_stack[0]}, char2: {token.value}")
+        except: print(f"char: {in_stack[0]}")
+
+        token = get_token(in_stack.pop(0))
+
 
         # remove spaces
-        if dict['in stack'][0] == ' ':
+        if token == ' ':
 
-            dict['in stack'].pop(0)
+            continue
 
 
 
         # check if first character is part of a number
-        elif dict['in stack'][0] in '1234567890.-':
+        elif type(token) == str:
 
-            try:
+            if token in '1234567890.-':
 
-                # loop through each character in the stack until a character isn't part of a number
-                while dict['in stack'][0] in '1234567890.-':
+                try:
 
-                    # add number to temporary list
-                    temp_stack.append(dict['in stack'].pop(0))
+                    # loop through each character in the stack until a character isn't part of a number
+                    while token in '1234567890.-':
+
+                        # add number to temporary list
+                        temp_stack.append(token)
+
+                        token = get_token(in_stack.pop(0))
+
+                except:pass
+
+                # add temporary list to out stack
+                out_stack.append(('').join(temp_stack))
+                print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+                
+
+        try:
+
+            # check if char is a function
+            if token.type == FUNCTION:
+
+                # add function to output stack
+                op_stack.append(token)
+                print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
             
-            except:pass
 
-            # add temporary list to out stack
-            dict['out stack'].append(('').join(temp_stack))
-            print_stacks(1)
+            # check if there is an operator
+            elif token.type == OPERATOR:
 
-            
+                # loop through output stack to ensure order of operations is followed
+                while len(op_stack) and op_stack[-1].value != '(' and (
+                        op_stack[-1].precedence > token.precedence or 
+                        (op_stack[-1].precedence == token.precedence and 
+                        token.associativity)):
 
-        # check if char is a function
-        elif dict['type'][dict['in stack'][0]] == 1:
-
-            # add function to output stack
-            dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks(1)
-
-
-        # check if there is an operator
-        elif dict['type'][dict['in stack'][0]] == 0:
-
-            d = dict['op stack']
-
-            # loop through output stack to ensure order of operations is followed
-            while len(d) and d[-1] != '(' and (
-                    dict['precedence'][d[-1]] > dict['precedence'][dict['in stack'][0]] or 
-                    (dict['precedence'][d[-1]] == dict['precedence'][dict['in stack'][0]] and 
-                    dict['l associated'][dict['in stack'][0]])):
-
-                # pop last operator of op stack on to the out stack
-                dict['out stack'].append(dict['op stack'].pop())
-                print_stacks(1)
+                    # pop last operator of op stack on to the out stack
+                    out_stack.append(op_stack.pop())
+                    print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
 
 
-            # pop char on to op stack
-            dict['op stack'].append(dict['in stack'].pop(0))
-            print_stacks(1)
+                # pop char on to op stack
+                op_stack.append(token)
+                print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
 
 
-        # check if char is a left bracket
-        elif dict['type'][dict['in stack'][0]] == 2:
+            # check if char is a left bracket
+            elif token.type == LEFT_BRACKET:
 
-            # pop dict['in stack'][0] on to op stack
-            dict['op stack'].append(dict['in stack'].pop(0))
-
-
-
-        # check if char is a right bracket
-        elif dict['type'][dict['in stack'][0]] == 3:
-
-            # remove right bracket
-            dict['in stack'].pop(0)
-            print_stacks(1)
-
-            # loop through op stack until a left bracket is found
-            while dict['op stack'] and dict['op stack'][-1] != '(':
-
-                # pop op stack to out stack
-                dict['out stack'].append(dict['op stack'].pop())
-                print_stacks(1)
-
-            # remove left bracket
-            dict['op stack'].pop()
-            print_stacks(1)
+                # pop in_stack[0] on to op stack
+                op_stack.append(token)
 
 
 
+            # check if char is a right bracket
+            elif token.type == RIGHT_BRACKET:
+
+                # remove right bracket
+                token = get_token(in_stack.pop(0))
+                print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+                # loop through op stack until a left bracket is found
+                while op_stack and op_stack[-1].type != LEFT_BRACKET:
+
+                    # pop op stack to out stack
+                    out_stack.append(op_stack.pop())
+                    print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+                # remove left bracket
+                op_stack.pop()
+                print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
+        except:pass
+
+
+        
     # put the op stack on to the out stack
-    while dict['op stack']:
+    while op_stack:
 
-        dict['out stack'].append(dict['op stack'].pop())
-        print_stacks(1)
+        out_stack.append(op_stack.pop())
+        print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
-
-    print(dict['out stack'])
+    return out_stack
 
 
 
 # print information
-def print_stacks(type):
+def print_stacks(*stacks, print_type):
+
+    if print_type:
+
+        print('')
+        print(f"input stack: {('').join(stacks[0])}")
+        print(f"operator stack: {[x.value for x in stacks[1]]}")
+
+        temp_stack = []
+
+        for i in stacks[2]:
+
+            if type(i) == Token:
+
+                temp_stack.append(i.value)
+
+            else: temp_stack.append(i)
+
+        print(f"output stack: {temp_stack}")
+
+    if not print_type:
+
+        print('')
+        print(f"number 1: {stacks[0]}")
+        print(f"number 2: {stacks[1]}")
+
+
+
+def shunting_yard_evaluator(equation):
+
+    stack = shunting_yard_converter(equation)
+    hist = []
+
+    while stack:
+
+        i = stack.pop(0)
+
+        # check if first item is an operator
+        if type(i) == str:
+
+            # if it isn't, add it to the number stack
+            hist.append(i)
+
+        
+
+        # do something else if it is an operator
+        else:
+
+            # find what numbers correspond to the operator
+            a, b, hist = find_numbers(i.type, hist)
+
+            # solve section of equation
+            if i.type:
+
+                if i.value == 'f': hist.append(str(i.apply(int(a))))
+
+                else: hist.append(str(i.apply(float(a))))
+
+            else:
+
+                hist.append(str(i.apply(float(a), float(b))))
+
+            # remove operator from stack
+            stack.pop(0)
+
+    return hist
+
+
+
+
+def find_numbers(type, hist):
+
+    # print all numbers
+    print(f"all numbers: {hist}")
 
     if type:
 
-        print('')
-        print(f"input stack: {dict['in stack']}")
-        print(f"operator stack: {dict['op stack']}")
-        print(f"output stack: {dict['out stack']}")
-
-    if not type:
-
-        print('')
-        print(f"number 1: {dict['number 1']}")
-        print(f"number 2: {dict['number 2']}")
+        return hist.pop(-1), None, hist
 
 
-
-# # use the parser without the GUI
-# if __name__ == '__main__':
     
-#     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
+    else:
 
-#     '5 + 3! _ 5'
-
-#     '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
-
-#     ['4', '3', 'f', '52', '73', '64', '#', '*', '2', '/', '+', '220', '_', '*', '2', '5', '2', '_', '^', '_', '15', '/', '+']
-
-#     '53.06666666666667'
-
-#     # run parser with inputted equation
-#     shunting_yard_converter(equation)
+        return hist.pop(-2), hist.pop(-1), hist
+    
 
 
-for i in range(8):
+if __name__ == '__main__':
 
-    print(i)
+    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
+
+    '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
+
+    '53.06666666666667'
+
+    '4 3 52 3 64 20 2 5 ^ _ * + 5 f +'
+    '4 3 f 52 73 64 # * 2 / + 220 _ * 2 5 2 _ ^ _ 15 / +'
+
+    # run parser with inputted equation
+    shunting_yard_parser(equation)
