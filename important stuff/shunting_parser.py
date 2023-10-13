@@ -25,13 +25,6 @@ class Token:
         self.value = value
         self.apply = apply
 
-    
-    def solve(self, a, b):
-
-        if self.type: return self.apply(a)
-
-        else: return self.apply(a, b)
-
 
 
 TOKENS = [
