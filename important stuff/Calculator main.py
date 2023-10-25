@@ -45,6 +45,9 @@ from shunting_parser import shunting_yard_evaluator
 
 
 
+# ALL THE TRIG BUTTONS ARE BROKEN
+
+
 # setup
 root = tk.Tk()
 
@@ -319,7 +322,7 @@ def assign(x):
 
 
 # function bound to the exponent button that allows for exponents to be used.
-def exponent(ctrlexp = -1):
+def exponential(ctrlexp = -1):
 
     # check if a keybinding was used
     if ctrlexp != -1:
@@ -433,7 +436,7 @@ def brackets(type):
 
 
 # function bound to the trigonometry buttons to allow them to be used.
-def trigonometry(type = 0):
+def trigonometry(type = None):
 
     # add an alternate function for inverse trigonometry functions
     if dict['gui']['shift']:
@@ -445,17 +448,17 @@ def trigonometry(type = 0):
 
 
 
+        elif type is None:
+            
+            # add the inverse tangent indicator to the equation and display strings
+            update(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
+
+
+
         elif not type:
             
             # add the inverse cosine indicator to the equation and display strings
             update(string=['C()', 'cos' + get_super('-1') + '()', ''], update=1)
-
-
-
-        else:
-            
-            # add the inverse tangent indicator to the equation and display strings
-            update(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
 
 
 
@@ -468,6 +471,13 @@ def trigonometry(type = 0):
 
 
 
+        elif type is None:
+            
+            # add the tangent indicator to the equation and display strings
+            update(string=['t()', 'tan()', ''], update=1)
+
+
+
         elif not type:
             
             # add the cosine indicator to the equation and display strings
@@ -475,10 +485,7 @@ def trigonometry(type = 0):
 
 
 
-        else:
-            
-            # add the tangent indicator to the equation and display strings
-            update(string=['t()', 'tan()', ''], update=1)
+       
 
     # allow for more brackets
     dict['numbers']['bracketnum'] += 1
@@ -566,19 +573,19 @@ def keybindings():
     if   keyboard.is_pressed('shift+=')  :meth(' + ')
     elif keyboard.is_pressed('shift+8')  :meth(' * ')
     elif keyboard.is_pressed('shift+5')  :meth(' % ')
-    elif keyboard.is_pressed('ctrl+0')   :exponent(0)
-    elif keyboard.is_pressed('ctrl+1')   :exponent(1)
-    elif keyboard.is_pressed('ctrl+2')   :exponent(2)
-    elif keyboard.is_pressed('ctrl+3')   :exponent(3)
-    elif keyboard.is_pressed('ctrl+4')   :exponent(4)
-    elif keyboard.is_pressed('ctrl+5')   :exponent(5)
-    elif keyboard.is_pressed('ctrl+6')   :exponent(6)
-    elif keyboard.is_pressed('ctrl+7')   :exponent(7)
-    elif keyboard.is_pressed('ctrl+8')   :exponent(8)
-    elif keyboard.is_pressed('ctrl+9')   :exponent(9)
+    elif keyboard.is_pressed('ctrl+0')   :exponential(0)
+    elif keyboard.is_pressed('ctrl+1')   :exponential(1)
+    elif keyboard.is_pressed('ctrl+2')   :exponential(2)
+    elif keyboard.is_pressed('ctrl+3')   :exponential(3)
+    elif keyboard.is_pressed('ctrl+4')   :exponential(4)
+    elif keyboard.is_pressed('ctrl+5')   :exponential(5)
+    elif keyboard.is_pressed('ctrl+6')   :exponential(6)
+    elif keyboard.is_pressed('ctrl+7')   :exponential(7)
+    elif keyboard.is_pressed('ctrl+8')   :exponential(8)
+    elif keyboard.is_pressed('ctrl+9')   :exponential(9)
     elif keyboard.is_pressed('shift+0')  :brackets(False)
     elif keyboard.is_pressed('shift+1')  :factorials()
-    elif keyboard.is_pressed('shift+6')  :exponent()
+    elif keyboard.is_pressed('shift+6')  :exponential()
     elif keyboard.is_pressed('shift+3')  :square_root()
     elif keyboard.is_pressed('shift+9')  :brackets(True)
     elif keyboard.is_pressed('ctrl+s')   :trigonometry(True)
@@ -757,8 +764,8 @@ def scientific():
     # column 3
     dict['gui']['buttons']['memory recall']  = tk.Button(root, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:memoryrecall())
     dict['gui']['buttons']['factorial']      = tk.Button(root, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:factorials())
-    dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponent())
-    dict['gui']['buttons']['squared']        = tk.Button(root, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:exponent(2))
+    dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponential())
+    dict['gui']['buttons']['squared']        = tk.Button(root, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:exponential(2))
     dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:square_root())
 
     # column 2
