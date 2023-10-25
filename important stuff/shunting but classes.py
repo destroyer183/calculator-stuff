@@ -25,21 +25,6 @@ class Token:
         self.value = value
         self.apply = apply
 
-    
-    def solve(self, a, b = ''):
-
-        print('')
-        print('solving...')
-        print(f"operator/function: {self.value}")
-        print_stacks(a, b, print_type = False)
-
-        if self.type: output = self.apply(a)
-
-        else: output = self.apply(a, b)
-
-        print('')
-
-        return output
 
 
 
@@ -256,7 +241,7 @@ def shunting_yard_converter(equation):
                 print('it sees it')
 
                 # remove right bracket
-                token = get_token(in_stack.pop(0)) # this is the problem I think
+                token = get_token(op_stack.pop(0)) # this is the problem I think
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
                 # loop through op stack until a left bracket is found
@@ -356,7 +341,9 @@ def shunting_yard_evaluator(equation):
             a, b, hist = find_numbers(i.type, hist)
 
             # solve section of equation
-            hist.append(str(i.solve(a, b)))
+            if i.type: hist.append(str(i.apply(a)))
+
+            else: hist.append(str(i.apply(a, b)))
 
             temp_stack = []
 
@@ -398,5 +385,9 @@ if __name__ == '__main__':
     '4 3 52 3 64 20 2 5 ^ _ * + 5 f +'
     '4 3 f 52 73 64 # * 2 / + 220 _ * 2 5 2 _ ^ _ 15 / +'
 
+    equation = 'T(4.54 / 2 / 100)'
+
     # run parser with inputted equation
-    shunting_yard_parser(equation)
+    output = shunting_yard_evaluator(equation)
+
+    print(f"output: {('').join(output)}")
