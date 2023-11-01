@@ -64,7 +64,6 @@ dict['numbers']['exponent']   = False
 dict['gui']['equation text'] = ['']
 dict['gui']['display text']  = ['', '']
 dict['gui']['buttons']       = {}
-dict['gui']['shift']         = False
 
 
 
@@ -422,7 +421,7 @@ def brackets(type):
 def trigonometry(type = 0):
 
     # add an alternate function for inverse trigonometry functions
-    if dict['gui']['shift']:
+    if Window.shift_toggle:
 
         if type:
 
@@ -509,51 +508,51 @@ def answer():
 # a function to handle all key inputs
 def keybindings():
 
-    if   keyboard.is_pressed('shift+=')  :meth(' + ')
-    elif keyboard.is_pressed('shift+8')  :meth(' * ')
-    elif keyboard.is_pressed('shift+5')  :meth(' % ')
-    elif keyboard.is_pressed('ctrl+0')   :exponential(0)
-    elif keyboard.is_pressed('ctrl+1')   :exponential(1)
-    elif keyboard.is_pressed('ctrl+2')   :exponential(2)
-    elif keyboard.is_pressed('ctrl+3')   :exponential(3)
-    elif keyboard.is_pressed('ctrl+4')   :exponential(4)
-    elif keyboard.is_pressed('ctrl+5')   :exponential(5)
-    elif keyboard.is_pressed('ctrl+6')   :exponential(6)
-    elif keyboard.is_pressed('ctrl+7')   :exponential(7)
-    elif keyboard.is_pressed('ctrl+8')   :exponential(8)
-    elif keyboard.is_pressed('ctrl+9')   :exponential(9)
-    elif keyboard.is_pressed('shift+0')  :brackets(False)
-    elif keyboard.is_pressed('shift+1')  :factorials()
-    elif keyboard.is_pressed('shift+6')  :exponential()
-    elif keyboard.is_pressed('shift+3')  :square_root()
-    elif keyboard.is_pressed('shift+9')  :brackets(True)
-    elif keyboard.is_pressed('ctrl+s')   :trigonometry(True)
-    elif keyboard.is_pressed('ctrl+c')   :trigonometry(False)
-    elif keyboard.is_pressed('ctrl+t')   :trigonometry()
-    elif keyboard.is_pressed('ctrl+a')   :answer()
-    elif keyboard.is_pressed('ctrl+e')   :e()
-    elif keyboard.is_pressed('ctrl+l')   :logarithm()
-    elif keyboard.is_pressed('ctrl+p')   :pi()
-    elif keyboard.is_pressed('shift+-')  :negative()
-    elif keyboard.is_pressed('shift+m')  :memorystore()
-    elif keyboard.is_pressed('ctrl+m')   :memoryclear()
-    elif keyboard.is_pressed('shift+backspace'):clear(False)
-    elif keyboard.is_pressed('enter')    :calculate()
-    elif keyboard.is_pressed('m')        :memoryrecall()
-    elif keyboard.is_pressed('-')        :meth(' _ ')
-    elif keyboard.is_pressed('/')        :meth(' / ')
-    elif keyboard.is_pressed('.')        :assign_decimal()
-    elif keyboard.is_pressed('0')        :assign(0)
-    elif keyboard.is_pressed('1')        :assign(1)
-    elif keyboard.is_pressed('2')        :assign(2)
-    elif keyboard.is_pressed('3')        :assign(3)
-    elif keyboard.is_pressed('4')        :assign(4)
-    elif keyboard.is_pressed('5')        :assign(5)
-    elif keyboard.is_pressed('6')        :assign(6)
-    elif keyboard.is_pressed('7')        :assign(7)
-    elif keyboard.is_pressed('8')        :assign(8)
-    elif keyboard.is_pressed('9')        :assign(9)
-    elif keyboard.is_pressed('backspace'):clear()
+    keyboard.add_hotkey('shift+=',   lambda:meth(' + '))
+    keyboard.add_hotkey('shift+8',   lambda:meth(' * '))
+    keyboard.add_hotkey('shift+5',   lambda:meth(' % '))
+    keyboard.add_hotkey('ctrl+0',    lambda:exponential(0))
+    keyboard.add_hotkey('ctrl+1',    lambda:exponential(1))
+    keyboard.add_hotkey('ctrl+2',    lambda:exponential(2))
+    keyboard.add_hotkey('ctrl+3',    lambda:exponential(3))
+    keyboard.add_hotkey('ctrl+4',    lambda:exponential(4))
+    keyboard.add_hotkey('ctrl+5',    lambda:exponential(5))
+    keyboard.add_hotkey('ctrl+6',    lambda:exponential(6))
+    keyboard.add_hotkey('ctrl+7',    lambda:exponential(7))
+    keyboard.add_hotkey('ctrl+8',    lambda:exponential(8))
+    keyboard.add_hotkey('ctrl+9',    lambda:exponential(9))
+    keyboard.add_hotkey('shift+0',   lambda:brackets(False))
+    keyboard.add_hotkey('shift+1',   lambda:factorials())
+    keyboard.add_hotkey('shift+6',   lambda:exponential())
+    keyboard.add_hotkey('shift+3',   lambda:square_root())
+    keyboard.add_hotkey('shift+9',   lambda:brackets(True))
+    keyboard.add_hotkey('ctrl+s',    lambda:trigonometry(True))
+    keyboard.add_hotkey('ctrl+c',    lambda:trigonometry(False))
+    keyboard.add_hotkey('ctrl+t',    lambda:trigonometry())
+    keyboard.add_hotkey('ctrl+a',    lambda:answer())
+    keyboard.add_hotkey('ctrl+e',    lambda:e())
+    keyboard.add_hotkey('ctrl+l',    lambda:logarithm())
+    keyboard.add_hotkey('ctrl+p',    lambda:pi())
+    keyboard.add_hotkey('shift+-',   lambda:negative())
+    keyboard.add_hotkey('shift+m',   lambda:memorystore())
+    keyboard.add_hotkey('ctrl+m',    lambda:memoryclear())
+    keyboard.add_hotkey('shift+backspace', lambda:clear(False))
+    keyboard.add_hotkey('enter',     lambda:calculate())
+    keyboard.add_hotkey('m',         lambda:memoryrecall())
+    keyboard.add_hotkey('-',         lambda:meth(' _ '))
+    keyboard.add_hotkey('/',         lambda:meth(' / '))
+    keyboard.add_hotkey('.',         lambda:assign_decimal())
+    keyboard.add_hotkey('0',         lambda:assign(0))
+    keyboard.add_hotkey('1',         lambda:assign(1))
+    keyboard.add_hotkey('2',         lambda:assign(2))
+    keyboard.add_hotkey('3',         lambda:assign(3))
+    keyboard.add_hotkey('4',         lambda:assign(4))
+    keyboard.add_hotkey('5',         lambda:assign(5))
+    keyboard.add_hotkey('6',         lambda:assign(6))
+    keyboard.add_hotkey('7',         lambda:assign(7))
+    keyboard.add_hotkey('8',         lambda:assign(8))
+    keyboard.add_hotkey('9',         lambda:assign(9))
+    keyboard.add_hotkey('backspace', lambda:clear())
 
 
 
@@ -623,22 +622,21 @@ def clear(type = True):
 # function to detect optionmenu changes
 def options_callback(var, index, mode):
 
-    print(f"current type: {dict['gui']['option choices'].get()}")
+    print(f"current type: {Window.option_choices.get()}")
 
-    if dict['gui']['option choices'].get() == 'Scientific':
+    if Window.option_choices.get() == 'Scientific':
 
-        try: 
-            if type(window) != Window: window = Window()
-        except: window = Window()
-
-        window.scientific()
+        root.scientific()
 
 
 
 # main class to handle all the gui stuff
 class Window:
 
-    def __init__(self, parent = tk.Tk()) -> None:
+    option_choices = None
+    shift_toggle = False
+
+    def __init__(self, parent) -> None:
         
         self.parent = parent
 
@@ -672,7 +670,7 @@ class Window:
         round_numbers.place(x = 470, y = 185)
 
         # options to switch between calculators
-        options = OptionMenu(self.parent, dict['gui']['option choices'], 'Scientific', 'Quadratic', 'Factoring')
+        options = OptionMenu(self.parent, Window.option_choices, 'Scientific', 'Quadratic', 'Factoring')
         options.configure(font=('Arial', 15, 'bold'))
         options.place(x = 10, y = 185)
 
@@ -847,10 +845,10 @@ class Window:
     def shifte(self):
 
         # flip the variable whenever the button is pressed
-        dict['gui']['shift'] = not dict['gui']['shift']
+        Window.shift_toggle = not Window.shift_toggle
 
         # change the button text to inverted functions
-        if dict['gui']['shift']:
+        if Window.shift_toggle:
 
             sine    = tk.Button(self.parent, text='sin' + get_super('-1'), anchor='center', bg='gainsboro', command=lambda:trigonometry(True))
             cosine  = tk.Button(self.parent, text='cos' + get_super('-1'), anchor='center', bg='gainsboro', command=lambda:trigonometry(False))
@@ -935,9 +933,9 @@ def Trigonometry():
 
 
 def main():
+    global root
 
-    root = tk.Tk()
-    root.widthdraw()
+    root = Window(tk.Tk())
 
     if os.name == 'nt':
         try:
@@ -949,18 +947,19 @@ def main():
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
 
-    dict['gui']['option choices'] = StringVar(root)
-    dict['gui']['option choices'].trace('w', options_callback)
-    dict['gui']['option choices'].set('Scientific')
+    Window.option_choices = StringVar(root.parent)
+    Window.option_choices.trace('w', options_callback)
+    Window.option_choices.set('Scientific')
 
     # keybindings
-    keyboard.hook(lambda _:keybindings())
+    # keyboard.hook(lambda _:keybindings())
+    keybindings()
 
     # prevent calculator from being resized
-    root.resizable(False, False)
+    root.parent.resizable(False, False)
 
     # run the gui
-    root.mainloop()
+    root.parent.mainloop()
 
     
 
