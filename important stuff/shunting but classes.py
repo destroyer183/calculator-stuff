@@ -238,10 +238,8 @@ def shunting_yard_converter(equation):
             # check if char is a right bracket
             elif token.type == RIGHT_BRACKET:
 
-                print('it sees it')
+                print('right bracket found')
 
-                # remove right bracket
-                token = get_token(op_stack.pop(0)) # this is the problem I think
                 print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
                 # loop through op stack until a left bracket is found
@@ -385,7 +383,7 @@ if __name__ == '__main__':
     '4 3 52 3 64 20 2 5 ^ _ * + 5 f +'
     '4 3 f 52 73 64 # * 2 / + 220 _ * 2 5 2 _ ^ _ 15 / +'
 
-    equation = 'T(4.54 / 2 / 100)'
+    equation = '#(4)'
 
     # run parser with inputted equation
     output = shunting_yard_evaluator(equation)

@@ -157,8 +157,6 @@ def shunting_yard_converter(equation):
 
             elif token.type == RIGHT_BRACKET:
 
-                token = get_token(op_stack.pop(0))
-
                 while op_stack and op_stack[-1].type != LEFT_BRACKET:
 
                     out_stack.append(op_stack.pop())
@@ -219,7 +217,7 @@ if __name__ == '__main__':
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
 
-    equation = 'T(4.54 / 2 / 100)'
+    equation = '#(4)'
 
     output = shunting_yard_evaluator(equation)
 

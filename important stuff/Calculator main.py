@@ -6,47 +6,48 @@ from scientific_parser import scientific_parser
 from shunting_parser import shunting_yard_evaluator
 
 
-
-# likely bug: when deleting stuff, if an operator is deleted, while the last item in the equation will be a number, that number won't be in the display string, 
-# which could cause errors with the decimal and exponent buttons.
-
-
-# things to update:
-
-# multiplying functions without pressing '*' doesn't work
-
-# MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
-
-# LEARN CLASSES
-
-# allow the exponent button to be toggled to allow for complex equations to be superscripted
-
-# make shift+backspace work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
-
-# MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
+''' NOTES
+likely bug: when deleting stuff, if an operator is deleted, while the last item in the equation will be a number, that number won't be in the display string, 
+which could cause errors with the decimal and exponent buttons.
 
 
+things to update:
 
-# things this needs to do to integrate the complex parser:
+multiplying functions without pressing '*' doesn't work
 
-# have separate display options for scientific calculator, factoring calculator, quadratic calculator, and trig calculator
-# have proper inputs for each display option
-# possibly have separate dict lists for each kind of calculations
-# allow the display size to change
+MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
 
-# ideal order of completion:
+LEARN CLASSES
 
-# create button to switch between displays - DONE
-# create GUIs for different displays
-# create the necessary button functions
-# create the necessary variables
-# create logic for parser
-# link parser & display
+allow the exponent button to be toggled to allow for complex equations to be superscripted
+
+make shift+backspace work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
+
+MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
 
 
 
-# ALL THE TRIG BUTTONS ARE BROKEN
+things this needs to do to integrate the complex parser:
 
+have separate display options for scientific calculator, factoring calculator, quadratic calculator, and trig calculator
+have proper inputs for each display option
+possibly have separate dict lists for each kind of calculations
+allow the display size to change
+
+ideal order of completion:
+
+create button to switch between displays - DONE
+create GUIs for different displays
+create the necessary button functions
+create the necessary variables
+create logic for parser
+link parser & display
+
+
+
+the integer button is broken (it won't flip a number's sign)
+the sqrt button is also broken
+'''
 
 # setup
 root = tk.Tk()
@@ -281,12 +282,14 @@ def negative():
 
 
 
-        elif  '-' not in dict['gui']['display text']:
+        # find where display text is within the equation text
+        index = ('').join(dict['gui']['equation text']).find(('').join(dict['gui']['display text'])) 
+        # this breaks when brackets are involved, or when the number in the display text appears in the equation text more than once.
+        # maybe find the index manually by looping through the equation text backwards.
 
-            # find where display text is within the equation text
-            index = ('').join(dict['gui']['equation text']).find(('').join(dict['gui']['display text']))
 
 
+        if  '-' not in dict['gui']['display text']:
 
             if dict['gui']['equation text'][index] != '-':
 
@@ -303,6 +306,8 @@ def negative():
             dict['gui']['equation text'].pop(index)
 
             dict['gui']['display text'].pop(0)
+
+            update(type=2)
 
 
 
@@ -764,7 +769,7 @@ def scientific():
     dict['gui']['buttons']['factorial']      = tk.Button(root, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:factorials())
     dict['gui']['buttons']['exponent']       = tk.Button(root, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:exponential())
     dict['gui']['buttons']['squared']        = tk.Button(root, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:exponential(2))
-    dict['gui']['buttons']['square root']    = tk.Button(root, text='sqr',                anchor='center', bg='gainsboro',      command=lambda:square_root())
+    dict['gui']['buttons']['square root']    = tk.Button(root, text='sqrt',               anchor='center', bg='gainsboro',      command=lambda:square_root())
 
     # column 2
     dict['gui']['buttons']['memory add']     = tk.Button(root, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:memorystore())
