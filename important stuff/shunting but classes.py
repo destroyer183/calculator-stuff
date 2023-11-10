@@ -1,4 +1,5 @@
 import math
+import time
 
 # might have to replace every 'token' variable with 'token'
 
@@ -151,11 +152,7 @@ def shunting_yard_converter(equation):
 
         try: 
 
-            if type(token) != str:
-
-                if token.value != ')':
-
-                    token = get_token(in_stack.pop(0))
+            if type(token) != str and token.value != ')': token = get_token(in_stack.pop(0))
                 
             else: token = get_token(in_stack.pop(0))
         
@@ -258,6 +255,8 @@ def shunting_yard_converter(equation):
         except: 
             try: print(f"error at char = {token.value}")
             except: print(f"error at char = {token}")
+
+        # time.sleep(5)
 
 
         
@@ -383,7 +382,7 @@ if __name__ == '__main__':
     '4 3 52 3 64 20 2 5 ^ _ * + 5 f +'
     '4 3 f 52 73 64 # * 2 / + 220 _ * 2 5 2 _ ^ _ 15 / +'
 
-    equation = '#(4)'
+    equation = '(5 + 3) * (6 + 2)'
 
     # run parser with inputted equation
     output = shunting_yard_evaluator(equation)

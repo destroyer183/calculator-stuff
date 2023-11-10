@@ -96,11 +96,7 @@ def shunting_yard_converter(equation):
 
         try: 
 
-            if type(token) != str:
-
-                if token.value != ')':
-
-                    token = get_token(in_stack.pop(0))
+            if type(token) != str and token.value != ')': token = get_token(in_stack.pop(0))
                 
             else: token = get_token(in_stack.pop(0))
         

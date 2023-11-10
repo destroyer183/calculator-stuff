@@ -134,6 +134,10 @@ def update(type = 0, string = None, index = None, update = 0):
 
         index = [len(dict['numbers']['equation']), len(dict['gui']['equation text']), len(dict['gui']['display text'])]
 
+        d = dict['numbers']['bracketnum']
+
+    else: d = 0
+
 
 
     if type == 0:
@@ -143,7 +147,6 @@ def update(type = 0, string = None, index = None, update = 0):
         a = dict['numbers']['equation']
         b = dict['gui']['equation text']
         c = dict['gui']['display text']
-        d = dict['numbers']['bracketnum']
 
         # edit main equation variables
         dict['numbers']['equation'] = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
@@ -283,9 +286,7 @@ def negative():
 
 
         # find where display text is within the equation text
-        index = ('').join(dict['gui']['equation text']).find(('').join(dict['gui']['display text'])) 
-        # this breaks when brackets are involved, or when the number in the display text appears in the equation text more than once.
-        # maybe find the index manually by looping through the equation text backwards.
+        index = ('').join(dict['gui']['equation text']).rfind(('').join(dict['gui']['display text'])) 
 
 
 
