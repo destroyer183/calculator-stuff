@@ -1,24 +1,12 @@
 import tkinter as tk
 from tkinter import *
-import keyboard
 import os
-from scientific_parser import scientific_parser
-from shunting_parser import shunting_yard_evaluator
 import Scientific_gui
 
 
 ''' NOTES 
-likely bug: when deleting stuff, if an operator is deleted, while the last item in the equation will be a number, that number won't be in the display string, 
-which could cause errors with the decimal and exponent buttons.
-
 
 things to update:
-
-multiplying functions without pressing '*' doesn't work
-
-MAKE SURE THAT YOU CAN'T ADD MULTIPLE OPERATORS IN A ROW!!!
-
-LEARN CLASSES
 
 allow the exponent button to be toggled to allow for complex equations to be superscripted
 
@@ -51,30 +39,6 @@ TRIG_FUNCTION_TAN = 2
 
 L_BRACKET = True
 R_BRACKET = False
-
-
-
-# function to convert text to superscript.
-def get_super(x):
-
-    normal  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-=().'
-
-    super_s = 'ᴬᴮᶜᴰᴱᶠᴳᴴᴵᴶᴷᴸᴹᴺᴼᴾQᴿˢᵀᵁⱽᵂˣʸᶻᵃᵇᶜᵈᵉᶠᵍʰᶦʲᵏˡᵐⁿᵒᵖ۹ʳˢᵗᵘᵛʷˣʸᶻ⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾‧'
-
-    res     = x.maketrans(('').join(normal), ('').join(super_s))
-
-    return x.translate(res)
-
-
-class Scientific:
-
-    def __init__(self) -> None:
-
-        self.equation = ['']
-        self.bracket_num = 0
-        self.exponent = False
-        self.output = ''
-        self.memory = []
         
 
 
@@ -88,6 +52,7 @@ class Window:
         
         self.gui = gui
         
+    # scientific calculator display configuration
     def scientific(self):
 
         self.gui = Scientific_gui.Scientific(self.gui)
@@ -98,7 +63,6 @@ class Window:
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Quadratic', 'Factoring')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
         self.gui.parent.options.place(x = 10, y = 185)
-
 
 
 
