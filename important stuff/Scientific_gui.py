@@ -4,6 +4,13 @@ import keyboard
 from shunting_parser import shunting_yard_evaluator
 
 
+''' NOTES
+
+check how the roundchoice is being acessed in the calculate() funcion
+
+
+'''
+
 
 
 TRIG_FUNCTION_SIN = 0
@@ -85,10 +92,8 @@ class Scientific:
 
         
 
-
-
         # create button information
-        self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate(self.round_choice))
+        self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
 
         # column 1
         self.mem_clear      = tk.Button(self.parent, text='MC',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_clear())
@@ -480,7 +485,7 @@ class Scientific:
 
 
     # the function bound to the 'equals' button to output a result for an equation.
-    def calculate(self, roundchoice):
+    def calculate(self):
 
         # assemble equation list into a string
         equation_str = ('').join(self.logic.equation)
@@ -494,10 +499,10 @@ class Scientific:
             
             return
         
-        print(answer)
+        print(f"output: {answer}")
 
         # round the output to the specified number of decimal places
-        self.logic.output = str(round(float(answer), int(roundchoice.get())))
+        self.logic.output = str(round(float(answer), int(self.round_choice.get())))
 
 
 
