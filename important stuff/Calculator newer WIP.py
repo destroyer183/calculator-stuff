@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import *
 import os
-import Scientific_gui
+import Scientific
+import Factoring
+import Quadratic
+import Trigonometry
 
 
 ''' NOTES 
@@ -53,21 +56,39 @@ class Window:
         self.gui = gui
         
     # scientific calculator display configuration
-    def scientific(self):
+    def make_gui(self, type):
 
-        self.gui = Scientific_gui.Scientific(self.gui)
+        if   type == 'Scientific'  : self.gui = Scientific.Gui(self.gui)
+        elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui)
+        elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui)
+        elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui)
 
         self.gui.create_gui()
 
         # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Quadratic', 'Factoring')
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific','Factoring', 'Quadratic', 'Trigonometry')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
-        self.gui.parent.options.place(x = 10, y = 185)
+
+        if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Trigonometry': self.gui.parent.options.place(x = 10, y = 185)
+
+        
 
 
 
     # Factoring calculator display configuration
     def factoring(self):
+
+        self.gui = Factoring.Gui(self.gui)
+
+        self.gui.create_gui()
+
+        # options to switch between calculators
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry')
+        self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
+        self.gui.parent.options.place(x = 10, y = 185)
 
 
 
@@ -112,9 +133,7 @@ def options_callback(var, index, mode):
 
     print(f"current type: {Window.option_choices.get()}")
 
-    if Window.option_choices.get() == 'Scientific':
-
-        Window.root.scientific()
+    Window.root.make_gui(Window.option_choices.get())
 
 
 

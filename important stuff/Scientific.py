@@ -45,10 +45,7 @@ class Logic:
 
 
 # main class to handle all the gui stuff
-class Scientific:
-
-    root = None
-    option_choices = None
+class Gui:
 
     def __init__(self, parent) -> None:
         
