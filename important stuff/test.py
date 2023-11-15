@@ -331,7 +331,7 @@ def find_numbers(type, hist):
 
     if type:
 
-        return hist.pop(-1), None, hist
+        return hist.pop(-1), None, hist 
 
 
     

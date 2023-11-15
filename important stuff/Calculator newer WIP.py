@@ -76,8 +76,6 @@ class Window:
 
         
 
-
-
     # Factoring calculator display configuration
     def factoring(self):
 
@@ -103,7 +101,6 @@ class Window:
         
         # things needed to use buttons:
             # a way to enter in all letters as variables
-
 
 
 

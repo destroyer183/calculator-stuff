@@ -48,3 +48,22 @@ class Gui:
     def keybindings(self):
 
         pass
+
+
+    # type in equations or use buttons?
+
+    # things needed to type in equations:
+        # something to understand syntax that can change
+        # something to understand different variable names
+        # something to understand polynomials of very different lengths
+
+
+    
+    # things needed to use buttons:
+        # a way to enter in all letters as variables
+
+
+
+    # have an input where a polynomial of any size can be factored
+    # have an output that says what type of polynomial was inputted
+    # have an output that says what the factored form of the polynomial is
