@@ -6,7 +6,7 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-make the exponent button toggleable
+:D
 
 '''
 
@@ -651,15 +651,13 @@ class Gui:
 
         else:
 
-            self.logic.exponent = not self.logic.exponent
+            self.logic.exponent = True
 
-            if self.logic.exponent:
+            # put exponent sign in equation
+            self.update_text(string=[' ^ ()', get_super('()'), ''], update=1)
 
-                # put exponent sign in equation
-                self.update_text(string=[' ^ ()', get_super('()'), ''], update=1)
-
-                # increase bracket number counter
-                self.logic.bracket_num += 1
+            # increase bracket number counter
+            self.logic.bracket_num += 1
 
 
 
