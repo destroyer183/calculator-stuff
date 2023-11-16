@@ -6,8 +6,7 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-check how the roundchoice is being acessed in the calculate() funcion
-
+make the exponent button toggleable
 
 '''
 
@@ -314,11 +313,11 @@ class Gui:
 
             try:
 
-                if e: self.equation_text = get_super(list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)])))
+                if e: self.equation_text = list(('').join(b[0:index[1] - d]) + get_super(string[1]) + ('').join(b[index[1] - d:len(b)]))
 
                 else: self.equation_text = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
 
-            except:pass
+            except:print('well fuck')
 
             self.display_text = list(string[2])
 
@@ -333,11 +332,11 @@ class Gui:
 
             try:
 
-                if e: self.equation_text = get_super(list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)])))
+                if e: self.equation_text = list(('').join(b[0:index[1] - d]) + get_super(string[1]) + ('').join(b[index[1] - d:len(b)]))
 
                 else: self.equation_text = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
 
-            except:pass
+            except:print("well fuck")
 
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
@@ -385,6 +384,8 @@ class Gui:
 
             self.logic.bracket_num = 0
 
+            self.logic.exponent = False
+
 
 
             # update display
@@ -397,7 +398,7 @@ class Gui:
         else:
 
             # check if there is anything in the display text variable
-            if self.equation_text[-1] in '1234567890.-':
+            if self.equation_text[-1] in list('1234567890.-' + get_super('1234567890.-')):
 
                 # delete last digit in each variable
                 self.logic.equation.pop()
@@ -484,6 +485,8 @@ class Gui:
     # the function bound to the 'equals' button to output a result for an equation.
     def calculate(self):
 
+        print(f"equation: {('').join(self.logic.equation)}")
+
         # assemble equation list into a string
         equation_str = ('').join(self.logic.equation)
 
@@ -528,7 +531,7 @@ class Gui:
 
         try:
 
-            if self.equation_text[-2 - self.logic.bracket_num] not in 'sctSCTlf^#/*%+_':
+            if self.equation_text[-2 - self.logic.bracket_num] not in list('sctSCTlf^#/*%+_' + get_super('sctSCTlf^#/*%+_')):
 
                 if operation == ' _ ': 
                     
@@ -625,6 +628,11 @@ class Gui:
     # function to input numbers.
     def put_number(self, x):
 
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+
         # put the number in the equation and display strings
         self.update_text(type=1, string=[str(x), str(x), str(x)])
 
@@ -639,25 +647,19 @@ class Gui:
             # put the exponent sign and exponent number in the equation and display strings
             self.update_text(string=[' ^ ' + str(ctrlexp), get_super('(' + str(ctrlexp) + ')'), ''], update=1)
 
-            # increase bracket number counter
-            self.logic.bracket_num += 1
-
         
 
         else:
 
             self.logic.exponent = not self.logic.exponent
 
-            # update display
-            self.update_text(string=['0', ('').join(self.equation_text) + get_super('(y)')], update=2)
+            if self.logic.exponent:
 
+                # put exponent sign in equation
+                self.update_text(string=[' ^ ()', get_super('()'), ''], update=1)
 
-
-            # put exponent sign in equation
-            self.update_text(string=[' ^ ()', get_super('()'), ''], update=3)
-
-            # increase bracket number counter
-            self.logic.bracket_num += 1
+                # increase bracket number counter
+                self.logic.bracket_num += 1
 
 
 
@@ -712,16 +714,12 @@ class Gui:
         if type:
 
             # allow for bracket multiplication without pressing the multiplication button
-            if self.logic.equation[-1] in '1234567890)':
+            if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
 
                 for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
-
-
             # add an open bracket to the equation and display strings
             self.update_text(string=['()', '()', ''], update=1)
-
-
 
             # keep track of brackets
             self.logic.bracket_num += 1
@@ -730,12 +728,16 @@ class Gui:
 
         else:
 
-            if self.equation_text[-1 - self.logic.bracket_num] in '1234567890.-)':
+            if self.equation_text[-1 - self.logic.bracket_num + 1] in list('1234567890)' + get_super('1234567890)')):
 
                 # start typing outside one more layer of brackets
                 if self.logic.bracket_num > 0:
 
                     self.logic.bracket_num -= 1
+
+                    if self.logic.exponent and not self.logic.bracket_num:
+
+                        self.logic.exponent = not self.logic.exponent
 
                     # display numbers within brackets
                     self.update_text(type=2, update=1)
@@ -746,7 +748,7 @@ class Gui:
     def trigonometry(self, trig_function = 0):
 
         # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1] in '1234567890)':
+        if self.logic.equation[-1] in list('1234567890)' + get_super('1234567890)')):
 
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
@@ -820,7 +822,7 @@ class Gui:
     def logarithm(self):
 
         # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1] in '1234567890)':
+        if self.logic.equation[-1] in list('1234567890)' + get_super('1234567890)')):
 
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
