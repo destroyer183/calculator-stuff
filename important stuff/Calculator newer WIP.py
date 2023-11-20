@@ -48,12 +48,12 @@ R_BRACKET = False
 # main class to handle all the gui stuff
 class Window:
 
-    root = None
+    instance: "Window" = None
     option_choices = None
 
     def __init__(self, gui) -> None:
         
-        self.gui = gui
+        self.gui: tk.Tk = gui
         
     # scientific calculator display configuration
     def make_gui(self, type):
@@ -78,17 +78,6 @@ class Window:
 
     # Factoring calculator display configuration
     def factoring(self):
-
-        self.gui = Factoring.Gui(self.gui)
-
-        self.gui.create_gui()
-
-        # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry')
-        self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
-        self.gui.parent.options.place(x = 10, y = 185)
-
-
 
         # type in equations or use buttons?
 
@@ -130,13 +119,13 @@ def options_callback(var, index, mode):
 
     print(f"current type: {Window.option_choices.get()}")
 
-    Window.root.make_gui(Window.option_choices.get())
+    Window.instance.make_gui(Window.option_choices.get())
 
 
 
 def main():
 
-    Window.root = Window(tk.Tk())
+    Window.instance = Window(tk.Tk())
 
     # override windows scaling
     if os.name == 'nt':
@@ -149,12 +138,12 @@ def main():
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
 
-    Window.option_choices = StringVar(Window.root.gui)
+    Window.option_choices = StringVar(Window.instance.gui)
     Window.option_choices.trace('w', options_callback)
     Window.option_choices.set('Scientific')
 
     # run the gui
-    Window.root.gui.parent.mainloop()
+    Window.instance.gui.parent.mainloop()
 
     
 

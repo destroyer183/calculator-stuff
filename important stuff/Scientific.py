@@ -6,7 +6,9 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-:D
+bracket multiplication is broken again. try doing (3.53 / 2)1.123
+
+tons of multiplication stuff is broken
 
 '''
 
@@ -629,7 +631,7 @@ class Gui:
     def put_number(self, x):
 
         # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+        if self.logic.equation[-1 - self.logic.bracket_num] in list(')' + get_super(')')):
 
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
@@ -738,7 +740,7 @@ class Gui:
                         self.logic.exponent = not self.logic.exponent
 
                     # display numbers within brackets
-                    self.update_text(type=2, update=1)
+                    self.update_text(type=0, update=1)
 
 
 
