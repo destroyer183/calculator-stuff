@@ -774,6 +774,9 @@ class Gui:
                 # add the inverse tangent indicator to the equation and display strings
                 self.update_text(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
 
+            # allow for more brackets
+            self.logic.bracket_num += 1
+
             return
 
 
