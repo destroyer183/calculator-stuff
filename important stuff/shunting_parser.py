@@ -211,7 +211,7 @@ def find_numbers(type, hist):
 
 if __name__ == '__main__':
 
-    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
+    equation = '44 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
 
     equation = '#(4)'
 
