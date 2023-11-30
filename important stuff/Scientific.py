@@ -496,7 +496,7 @@ class Gui:
         if equation_str == "9 + 10": answer = "21"
 
         # give the equation parser the equation string and set the output to a variable
-        else:answer = shunting_yard_evaluator(equation_str)
+        else: answer = shunting_yard_evaluator(equation_str)
 
         if not answer:
 
