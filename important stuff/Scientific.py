@@ -6,6 +6,10 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
+swap out eulers number for a radian/degree button, and swap location with pi
+
+try entering -106 + 113 + -31, and use the negative sign before entering the following number
+
 bracket multiplication is broken again. try doing (3.53 / 2)1.123
 
 tons of multiplication stuff is broken
@@ -301,7 +305,6 @@ class Gui:
         
         else: d = 0
 
-
         # simplify variables
         a = self.logic.equation
         b = self.equation_text
@@ -342,6 +345,8 @@ class Gui:
 
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
+
+        print(f"equation text: {self.equation_text}")
 
 
         if update == 0:
@@ -585,7 +590,7 @@ class Gui:
 
     # function bound to the integer button to allow the user to toggle a number between positive and negative.
     def negative(self):
-        
+
         try:
 
             # check to see if there is anything in the display text
@@ -593,6 +598,8 @@ class Gui:
 
                 # add the integer sign to the number if there is nothing else in the equation
                 self.update_text(string=['-', '-', '-'])
+
+                return
 
             
 
