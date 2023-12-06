@@ -6,13 +6,7 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-swap out eulers number for a radian/degree button, and swap location with pi
-
-try entering -106 + 113 + -31, and use the negative sign before entering the following number
-
-bracket multiplication is broken again. try doing (3.53 / 2)1.123
-
-tons of multiplication stuff is broken
+swap out the Ans button for a Rad/Deg button
 
 '''
 
@@ -55,7 +49,8 @@ class Gui:
     def __init__(self, parent) -> None:
         
         self.parent = parent
-        self.shift_toggle = False
+        self.trig_toggle = False
+        self.is_radians = False
         self.equation_text = ['']
         self.display_text  = ['', '']
         
@@ -102,11 +97,11 @@ class Gui:
         self.pie            = tk.Button(self.parent, text='pi',                 anchor='center', bg='gainsboro',      command=lambda:self.put_pi())
         self.ee             = tk.Button(self.parent, text='e',                  anchor='center', bg='gainsboro',      command=lambda:self.put_e())
         self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.logarithm())
-        self.ans            = tk.Button(self.parent, text='Ans',                anchor='center', bg='gainsboro',      command=lambda:self.answer())
+        self.deg_rad        = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
 
         # column 2
         self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memorystore())
-        self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.shifte())
+        self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.trig_type())
         self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_SIN))
         self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_COS))
         self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_TAN))
@@ -156,7 +151,7 @@ class Gui:
         self.pie.           configure(font=('Arial', 25, 'bold'))
         self.ee.            configure(font=('Arial', 25, 'bold'))
         self.log.           configure(font=('Arial', 25, 'bold'))
-        self.ans.           configure(font=('Arial', 25, 'bold'))
+        self.deg_rad.       configure(font=('Arial', 25, 'bold'))
         
         # column 2
         self.mem_add.       configure(font=('Arial', 25, 'bold'))
@@ -210,7 +205,7 @@ class Gui:
         self.pie.           place(x = 0,   y = 300, width = 100, height = 75)
         self.ee.            place(x = 0,   y = 375, width = 100, height = 75)
         self.log.           place(x = 0,   y = 450, width = 100, height = 75)
-        self.ans.           place(x = 0,   y = 525, width = 100, height = 75)
+        self.deg_rad.       place(x = 0,   y = 525, width = 100, height = 75)
         
         # column 2
         self.mem_add.       place(x = 100, y = 225, width = 100, height = 75)
@@ -260,13 +255,13 @@ class Gui:
 
     
     # function bound to the invert button to allow inverse functions to be used.
-    def shifte(self):
+    def trig_type(self):
 
         # flip the variable whenever the button is pressed
-        self.shift_toggle = not self.shift_toggle
+        self.trig_toggle = not self.trig_toggle
 
         # change the button text to inverted functions
-        if self.shift_toggle:
+        if self.trig_toggle:
 
             self.sine.   configure(text='sin' + get_super('-1'))
             self.cosine. configure(text='cos' + get_super('-1'))
@@ -289,6 +284,26 @@ class Gui:
             self.cosine. place(x = 100, y = 450, width = 100, height = 75)
             self.tangent.place(x = 100, y = 525, width = 100, height = 75)
 
+    
+
+    def unit_type(self):
+        
+        self.is_radians = not self.is_radians
+
+        if self.is_radians:
+            
+            self.deg_rad.configure(text='Rad')
+
+            self.deg_rad.place(x = 0,   y = 525, width = 100, height = 75)
+            
+            pass
+        
+        else:
+            
+            self.deg_rad.configure(text='Deg')
+
+            self.deg_rad.place(x = 0,   y = 525, width = 100, height = 75)
+            
 
 
     def update_text(self, type = 0, string = None, index = None, update = 0):
@@ -345,8 +360,6 @@ class Gui:
 
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
-
-        print(f"equation text: {self.equation_text}")
 
 
         if update == 0:
@@ -464,6 +477,7 @@ class Gui:
         keyboard.add_hotkey('ctrl+c',    lambda:self.trigonometry(TRIG_FUNCTION_COS))
         keyboard.add_hotkey('ctrl+t',    lambda:self.trigonometry(TRIG_FUNCTION_TAN))
         keyboard.add_hotkey('ctrl+a',    lambda:self.answer())
+        keyboard.add_hotkey('ctrl+u',    lambda:self.unit_type())
         keyboard.add_hotkey('ctrl+e',    lambda:self.put_e())
         keyboard.add_hotkey('ctrl+l',    lambda:self.logarithm())
         keyboard.add_hotkey('ctrl+p',    lambda:self.put_pi())
@@ -501,7 +515,7 @@ class Gui:
         if equation_str == "9 + 10": answer = "21"
 
         # give the equation parser the equation string and set the output to a variable
-        else: answer = shunting_yard_evaluator(equation_str)
+        else: answer = shunting_yard_evaluator(equation_str, self.is_radians)
 
         if not answer:
 
@@ -763,7 +777,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add an alternate function for inverse trigonometry functions
-        if self.shift_toggle:
+        if self.trig_toggle:
 
             if trig_function == TRIG_FUNCTION_SIN:
 

@@ -36,13 +36,6 @@ create logic for parser
 link parser & display
 '''
 
-TRIG_FUNCTION_SIN = 0
-TRIG_FUNCTION_COS = 1
-TRIG_FUNCTION_TAN = 2
-
-L_BRACKET = True
-R_BRACKET = False
-        
 
 
 # main class to handle all the gui stuff

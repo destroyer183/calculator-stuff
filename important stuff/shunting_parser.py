@@ -2,6 +2,13 @@ import math
 
 
 
+''' NOTES
+
+maybe instead of using lambda for the 'apply' attribute, use a function like the c++ version of this.
+
+'''
+
+
 LEFT = True
 RIGHT = False
 
@@ -24,6 +31,37 @@ class Token:
         self.associativity = associativity
         self.value = value
         self.apply = apply
+
+    def math(self, is_radians, x, y = 0):
+
+        if is_radians:
+            if self.value == 's':  return math.sin(float(x))
+            if self.value == 'c':  return math.cos(float(x))
+            if self.value == 't':  return math.tan(float(x))
+            if self.value == 'S': return math.asin(float(x))
+            if self.value == 'C': return math.acos(float(x))
+            if self.value == 'T': return math.atan(float(x))
+
+        else: 
+            if self.value == 's':  return math.sin(math.radians(float(x)))
+            if self.value == 'c':  return math.cos(math.radians(float(x)))
+            if self.value == 't':  return math.tan(math.radians(float(x)))
+            if self.value == 'S': return math.degrees(math.asin(float(x)))
+            if self.value == 'C': return math.degrees(math.acos(float(x)))
+            if self.value == 'T': return math.degrees(math.atan(float(x)))
+
+        if self.value == 'l': return math.log(float(x))
+        if self.value == 'f': return math.factorial(int(x))
+        if self.value == '#': return float(x) ** 0.5
+
+        if self.value == '^': return float(x) ** float(y)
+        if self.value == '%': return float(x) % float(y)
+        if self.value == '/': return float(x) / float(y)
+        if self.value == '*': return float(x) * float(y)
+        if self.value == '+': return float(x) + float(y)
+        if self.value == '_': return float(x) - float(y)
+
+        
 
 
 
@@ -171,7 +209,7 @@ def shunting_yard_converter(equation):
 
 
 
-def shunting_yard_evaluator(equation):
+def shunting_yard_evaluator(equation, is_radians):
 
     stack = shunting_yard_converter(equation)
 
@@ -189,9 +227,7 @@ def shunting_yard_evaluator(equation):
 
             a, b, hist = find_numbers(i.type, hist)
 
-            if i.type: hist.append(str(i.apply(a)))
-
-            else: hist.append(str(i.apply(a, b)))
+            hist.append(str(i.math(is_radians, a, b)))
 
     x = ('').join(hist)
 
@@ -213,8 +249,10 @@ if __name__ == '__main__':
 
     equation = '44 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
 
-    equation = '#(4)'
+    equation = 's(60)'
 
-    output = shunting_yard_evaluator(equation)
+    is_radians = False
 
-    print(f"output: {('').join(output)}")
+    output = shunting_yard_evaluator(equation, is_radians)
+
+    print(f"output: {('').join(output)}") 
