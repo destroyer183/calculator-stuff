@@ -71,18 +71,25 @@ class Gui:
         # graphical setup
         self.equation = tk.Label(self.parent, text = '')
         self.equation.configure(font=('Arial', 40, ''))
-        self.equation.place(x = 0, y = 10)
+        self.equation.grid(column = 0, row = 0, sticky = W, columnspan = 27, rowspan = 3, pady = 10)
 
         self.display = tk.Label(self.parent, text = '0')
         self.display.configure(font=('Arial', 75, 'bold'))
-        self.display.place(x = 0, y = 80)
+        self.display.grid(column = 0, row = 3, sticky = W, columnspan = 27, rowspan = 4, pady = 5)
 
         # variable to help attach the round option to the text
         round_x = 370
 
-        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
-        self.round_label.configure(font=('Arial', 15, 'bold'))
-        self.round_label.place(x = round_x, y = 190)
+        self.spacer1 = tk.Label(self.parent, text = '')
+        self.spacer1.grid(column = 7, row = 6, columnspan = 6, rowspan = 2)
+
+        self.round_label_1 = tk.Label(self.parent, text = 'Round to')
+        self.round_label_1.configure(font=('Arial', 15, 'bold'))
+        self.round_label_1.grid(column = 14, row = 6, sticky = W, columnspan = 4, rowspan = 2)
+
+        self.round_label_2 = tk.Label(self.parent, text = 'decimal points')
+        self.round_label_2.configure(font=('Arial', 15, 'bold'))
+        self.round_label_2.grid(column = 22, row = 6, sticky = W, columnspan = 6, rowspan = 2)
 
         # decimal changer
         self.round_choice = StringVar(self.parent)
@@ -90,7 +97,7 @@ class Gui:
 
         self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         self.round_numbers.configure(font=('Arial', 15, 'bold'))
-        self.round_numbers.place(x = round_x + 100, y = 185)
+        self.round_numbers.grid(column = 18, row = 6, sticky = W, columnspan = 3, rowspan = 2)
 
         
 
@@ -200,10 +207,14 @@ class Gui:
         self.minus.         configure(font=('Arial', 25, 'bold'))
         self.plus.          configure(font=('Arial', 25, 'bold'))
 
+        # 26 rows, 27 columns, counting starts at 0
 
+        # buttons start on row 9
 
-        # place buttons
-        self.equal.         place(x = 0,   y = 600, width = 700, height = 75)
+        # buttons are 3 rows high, 4 columns wide
+
+        #  place buttons
+        # self.equal.         grid(column = 0, row = 26, sticky = W, columnspan = 27, rowspan = 3)
         
         # column 1
         self.mem_clear.     place(x = 0,   y = 225, width = 100, height = 75)
