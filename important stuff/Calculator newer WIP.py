@@ -132,7 +132,7 @@ def main():
         except:pass 
 
     Window.option_choices = StringVar(Window.instance.gui)
-    Window.option_choices.trace('w', options_callback)
+    Window.option_choices.trace_add('w', options_callback)
     Window.option_choices.set('Scientific')
 
     # run the gui

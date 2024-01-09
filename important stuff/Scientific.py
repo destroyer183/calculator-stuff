@@ -6,7 +6,9 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-swap out the Ans button for a Rad/Deg button
+show when the memory is being used
+
+add a history function
 
 '''
 
@@ -326,38 +328,27 @@ class Gui:
         c = self.display_text
         e = self.logic.exponent
 
-        if type == 0:
 
-            # edit main equation variables
-            self.logic.equation = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
+        # edit main equation variables
+        self.logic.equation = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
 
-            try:
+        try:
 
-                if e: self.equation_text = list(('').join(b[0:index[1] - d]) + get_super(string[1]) + ('').join(b[index[1] - d:len(b)]))
+            if e: self.equation_text = list(('').join(b[0:index[1] - d]) + get_super(string[1]) + ('').join(b[index[1] - d:len(b)]))
 
-                else: self.equation_text = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
+            else: self.equation_text = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
 
-            except:print('well fuck')
+        except:print('well fuck')
+
+
+        if not type:
 
             self.display_text = list(string[2])
 
             self.display_text.append('')
 
-
-        
-        elif type == 1:
-
-            # edit main equation variables
-            self.logic.equation = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
-
-            try:
-
-                if e: self.equation_text = list(('').join(b[0:index[1] - d]) + get_super(string[1]) + ('').join(b[index[1] - d:len(b)]))
-
-                else: self.equation_text = list(('').join(b[0:index[1] - d]) + string[1] + ('').join(b[index[1] - d:len(b)]))
-
-            except:print("well fuck")
-
+        else: 
+            
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
 
@@ -565,7 +556,7 @@ class Gui:
 
                 else:
 
-                    # add addition sign to equation and display strings
+                    # add operator to equation and display strings
                     self.update_text(string=[operation, operation, ''], update=1)
 
         except: # ask ryan which format looks better
@@ -578,7 +569,7 @@ class Gui:
 
             else:
 
-                # add addition sign to equation and display strings
+                # add operator to equation and display strings
                 self.update_text(string=[operation, operation, ''], update=1)
 
 
@@ -597,8 +588,6 @@ class Gui:
 
             # put the decimal in the equation and display strings
             self.update_text(type=1, string=['.', '.', '.'])
-
-
 
 
 
@@ -640,6 +629,9 @@ class Gui:
 
                 self.display_text.pop(0)
 
+
+
+                # update display
                 self.update_text(type=2)
 
 
@@ -772,7 +764,7 @@ class Gui:
     def trigonometry(self, trig_function = 0):
 
         # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1] in list('1234567890)' + get_super('1234567890)')):
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
 
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 

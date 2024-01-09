@@ -208,8 +208,8 @@ def shunting_yard_converter(equation):
 
                 # loop through output stack to ensure order of operations is followed
                 while op_stack and op_stack[-1].value != '(' and (
-                        op_stack[-1].precedence > token.precedence or 
-                        (op_stack[-1].precedence == token.precedence and 
+                        op_stack[-1].precedence > token.precedence or (
+                        op_stack[-1].precedence == token.precedence and 
                         token.associativity)):
 
                     # pop last operator of op stack on to the out stack

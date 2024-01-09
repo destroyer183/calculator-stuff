@@ -173,8 +173,8 @@ def shunting_yard_converter(equation):
             elif token.type == OPERATOR:
 
                 while op_stack and op_stack[-1].value != '(' and (
-                        op_stack[-1].precedence > token.precedence or 
-                        (op_stack[-1].precedence == token.precedence and 
+                        op_stack[-1].precedence > token.precedence or (
+                        op_stack[-1].precedence == token.precedence and 
                         token.associativity)):
 
                     out_stack.append(op_stack.pop())
@@ -204,6 +204,9 @@ def shunting_yard_converter(equation):
     while op_stack:
 
         out_stack.append(op_stack.pop())
+
+    for index in out_stack:
+        print(index)
 
     return out_stack
 
@@ -247,9 +250,9 @@ def find_numbers(type, hist):
 
 if __name__ == '__main__':
 
-    equation = '44 + (3! * (52 + 73 * #(64) / 2 _ 220) _  2 ^ (5 _ 2)) / 15'
+    equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = 's(60)'
+    # equation = 's(s(60))'
 
     is_radians = False
 
