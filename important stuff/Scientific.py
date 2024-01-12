@@ -55,10 +55,19 @@ class Gui:
         self.is_radians = False
         self.equation_text = ['']
         self.display_text  = ['', '']
+
+
+
+    def clear_gui(self):
+
+        for widget in self.parent.winfo_children():
+            widget.destroy()
         
 
 
     def create_gui(self):
+
+        self.clear_gui()
 
         self.parent.title('Calculator')
 

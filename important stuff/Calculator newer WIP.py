@@ -20,6 +20,15 @@ MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
 
 
 
+
+
+MAKE SOMETHING TO SOLVE FOR A VARIABLE
+
+
+
+
+
+
 things this needs to do to integrate the complex parser:
 
 have separate display options for scientific calculator, factoring calculator, quadratic calculator, and trig calculator
@@ -47,15 +56,15 @@ class Window:
 
     def __init__(self, gui) -> None:
         
-        self.gui: tk.Tk = gui
+        self.gui = Scientific.Gui(gui)
         
     # scientific calculator display configuration
     def make_gui(self, type):
 
-        if   type == 'Scientific'  : self.gui = Scientific_grid.Gui(self.gui)
-        elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui)
-        elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui)
-        elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui)
+        if   type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
+        elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
+        elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
+        elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
 
         self.gui.create_gui()
 
@@ -63,10 +72,10 @@ class Window:
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific','Factoring', 'Quadratic', 'Trigonometry')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   type == 'Scientific'  : self.gui.parent.options.grid(row = 6, column = 0, sticky = W, columnspan = 6, rowspan = 2, padx = 10)
+        if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Trigonometry': self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 655)
 
         
 
@@ -132,9 +141,9 @@ def main():
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
 
-    Window.option_choices = StringVar(Window.instance.gui)
+    Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', options_callback)
-    Window.option_choices.set('Scientific')
+    Window.option_choices.set('Trigonometry')
 
     # run the gui
     Window.instance.gui.parent.mainloop()

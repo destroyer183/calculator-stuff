@@ -24,13 +24,12 @@ RIGHT_BRACKET = 3
 
 class Token:
 
-    def __init__(self, type: int, precedence: int, associativity: bool, value, apply=None) -> None:
+    def __init__(self, type: int, precedence: int, associativity: bool, value) -> None:
         
         self.type  = type
         self.precedence = precedence
         self.associativity = associativity
         self.value = value
-        self.apply = apply
 
     def math(self, is_radians, x, y = 0):
 
@@ -67,22 +66,22 @@ class Token:
 
 TOKENS = [
 
-    Token(FUNCTION, 5, LEFT,  value='s', apply=lambda x: math.sin(math.radians(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='c', apply=lambda x: math.cos(math.radians(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='t', apply=lambda x: math.tan(math.radians(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='S', apply=lambda x: math.degrees(math.asin(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='C', apply=lambda x: math.degrees(math.acos(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='T', apply=lambda x: math.degrees(math.atan(float(x)))),
-    Token(FUNCTION, 5, LEFT,  value='l', apply=lambda x: math.log((float(x)))),
-    Token(FUNCTION, 4, LEFT,  value='f', apply=lambda x: math.factorial((int(x)))),
-    Token(FUNCTION, 2, LEFT,  value='#', apply=lambda x: float(x) ** 0.5),
+    Token(FUNCTION, 5, LEFT,  value='s'),
+    Token(FUNCTION, 5, LEFT,  value='c'),
+    Token(FUNCTION, 5, LEFT,  value='t'),
+    Token(FUNCTION, 5, LEFT,  value='S'),
+    Token(FUNCTION, 5, LEFT,  value='C'),
+    Token(FUNCTION, 5, LEFT,  value='T'),
+    Token(FUNCTION, 5, LEFT,  value='l'),
+    Token(FUNCTION, 4, LEFT,  value='f'),
+    Token(FUNCTION, 2, LEFT,  value='#'),
     
-    Token(OPERATOR, 3, RIGHT, value='^', apply=lambda a,b: float(a) ** float(b)),
-    Token(OPERATOR, 1, LEFT,  value='%', apply=lambda a,b: float(a) % float(b)),
-    Token(OPERATOR, 1, LEFT,  value='/', apply=lambda a,b: float(a) / float(b)),
-    Token(OPERATOR, 1, LEFT,  value='*', apply=lambda a,b: float(a) * float(b)),
-    Token(OPERATOR, 0, LEFT,  value='+', apply=lambda a,b: float(a) + float(b)),
-    Token(OPERATOR, 0, LEFT,  value='_', apply=lambda a,b: float(a) - float(b)),
+    Token(OPERATOR, 3, RIGHT, value='^'),
+    Token(OPERATOR, 1, LEFT,  value='%'),
+    Token(OPERATOR, 1, LEFT,  value='/'),
+    Token(OPERATOR, 1, LEFT,  value='*'),
+    Token(OPERATOR, 0, LEFT,  value='+'),
+    Token(OPERATOR, 0, LEFT,  value='_'),
 
     Token(LEFT_BRACKET, 0, RIGHT, value='('),
     Token(RIGHT_BRACKET, 0, LEFT, value=')')

@@ -30,10 +30,18 @@ class Gui:
 
         self.parent = parent
 
-        pass
+
+
+    def clear_gui(self):
+
+        for widget in self.parent.winfo_children():
+            widget.destroy()
+    
 
 
     def create_gui(self):
+
+        self.clear_gui()
 
         self.parent.title('Factoring Calculator')
 
