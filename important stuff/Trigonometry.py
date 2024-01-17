@@ -638,8 +638,6 @@ class Gui:
 
 
 
-
-
 def main():
     pass
 

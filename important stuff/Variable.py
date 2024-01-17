@@ -50,6 +50,10 @@ class Gui:
         self.logic = Logic()
 
         self.keybindings()
+
+        self.label = tk.Label(self.parent, text='WIP')
+        self.label.configure(font=('Arial', 50, 'bold'))
+        self.label.place(x = 275, y = 290)
         
 
 
