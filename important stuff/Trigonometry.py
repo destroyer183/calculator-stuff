@@ -46,13 +46,22 @@ def rfind(container, value):
 
 
 
+class Object:
+
+    def __init__(self, data, name) -> None:
+        
+        self.data = data
+        self.name = name
+
+
+
 class Logic:
 
     def __init__(self) -> None:
 
         self.angles  = []
         self.lengths = []
-        self.coordinates   = {"A": [0, 0], "B": [0, 0], "C": [0, 0]}
+        self.coordinates   = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
         self.angle_labels  = {"A": [0, 0], "B": [0, 0], "C": [0, 0]}
         self.length_labels = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
 
@@ -107,14 +116,14 @@ class Logic:
             if index == 2: array, i = self.lengths, 0
 
         elif info == 'adjacent angle left':
-            if index == 0: array, i = self.angles, 1
-            if index == 1: array, i = self.angles, 2
-            if index == 2: array, i = self.angles, 0
-
-        elif info == 'adjacent angle right':
             if index == 0: array, i = self.angles, 2
             if index == 1: array, i = self.angles, 0
             if index == 2: array, i = self.angles, 1
+
+        elif info == 'adjacent angle right':
+            if index == 0: array, i = self.angles, 1
+            if index == 1: array, i = self.angles, 2
+            if index == 2: array, i = self.angles, 0
 
         elif info == 'left side':
             if index == 0: array, i = self.lengths, 1
@@ -149,10 +158,16 @@ class Logic:
         # calculate if triangle is solvable
         count = 0
         for index in range(len(self.angles)):
+            if self.angles[index] != 0: count += 1
 
-            if self.angles[index] != 0 or self.lengths[index] != 0: count += 1
+        for index in range(len(self.lengths)):
+            if self.lengths[index] != 0: count += 1
 
-        if count < 3: return 0, 0
+        print(f"count: {count}")
+
+        if not count: return 'clear data', 0
+
+        if count < 3: return 'unsolvable', 0
 
         if max(self.lengths) == 0 and count <= 3: 
             self.lengths = [1, 1, 1]
@@ -171,7 +186,7 @@ class Logic:
 
         # check if triangle can exist
         if min(self.lengths):
-            if max(self.lengths) >= 2 * (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return 1, 0
+            if max(self.lengths) >= 2 * (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return 'impossible', 0
 
 
         return 'yes', ambiguous
@@ -198,8 +213,6 @@ class Logic:
 
         # calculate 3rd angle if there are already 2 angles
         if find(self.angles, 0) == rfind(self.angles, 0) or min(self.angles):
-
-            print('fuck')
 
             index = self.angles.index(min(self.angles))
 
@@ -249,12 +262,12 @@ class Logic:
 
         # scale side lengths
         scale_ratio = max_side_length / max(self.lengths)
-        self.lengths = [x * scale_ratio for x in self.lengths]
+        self.temp = [x * scale_ratio for x in self.lengths]
 
         # calculate coordinates for the triangle points
-        self.coordinates["A"] = [0.0, self.lengths[2] * math.sin(math.radians(self.angles[0]))]
-        self.coordinates["B"] = [self.lengths[2] * math.cos(math.radians(self.angles[0])), 0.0]
-        self.coordinates["C"] = [self.lengths[1], self.lengths[2] * math.sin(math.radians(self.angles[0]))]
+        self.coordinates["a"] = [0.0, self.temp[2] * math.sin(math.radians(self.angles[0]))]
+        self.coordinates["b"] = [self.temp[2] * math.cos(math.radians(self.angles[0])), 0.0]
+        self.coordinates["c"] = [self.temp[1], self.temp[2] * math.sin(math.radians(self.angles[0]))]
 
         # calculate the necessary coordinate offsets
         x_offset = 325 - (max([x[0] for x in self.coordinates.values()]) + min([x[0] for x in self.coordinates.values()])) / 2
@@ -270,6 +283,8 @@ class Logic:
 
     
     def calculate_triangle(self):
+
+        print('yes')
 
         # check if triangle is solvable
         output, self.ambiguous = self.check_triangle()
@@ -288,16 +303,50 @@ class Logic:
 
     def calculate_labels(self):
 
-        # don't use the center of the triangle to calculate these values
+        offset = 35
 
-        return # self.angle_labels, self.length_labels
+        # calculate angle labels
+        for index, key in enumerate(self.angle_labels.keys()):
+
+            print(f"coords: {self.coordinates}")
+
+            angle_coord = [x for x in self.coordinates.values()][index]
+
+            point1 = [x for x in self.coordinates.values()][self.info('adjacent angle left', index, 1)]
+            point2 = [x for x in self.coordinates.values()][self.info('adjacent angle right', index, 1)]
+
+            midpoint = [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2]
+
+            print(f"points: {point1}, {point2}")
+            print(f"midpoint: {midpoint}\n")
+
+            try: angle = math.degrees(math.atan((max(angle_coord[1], midpoint[1]) - min(angle_coord[1], midpoint[1])) / (max(angle_coord[0], midpoint[0]) - min(angle_coord[0], midpoint[0]))))
+            except: angle = 0
+
+            x_offset = offset * math.cos(math.radians(angle))
+            y_offset = offset * math.sin(math.radians(angle))
+
+            if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
+            if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
+
+            self.angle_labels[key] = [angle_coord[0] + x_offset, angle_coord[1] + y_offset]
 
 
+            
+            try:angle = math.degrees(math.atan((max(point1[1], point2[1]) - min(point1[1], point2[1])) / (max(point1[0], point2[0]) - min(point1[0], point2[0])))) + 90
+            except: angle = 0
+
+            x_offset = offset * math.cos(math.radians(angle))
+            y_offset = offset * math.sin(math.radians(angle))
+
+            if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
+            if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
+
+            self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] - y_offset]
+            
 
 
 class Gui:
-
-    detect_update = None
 
     def __init__(self, parent) -> None:
 
@@ -310,10 +359,23 @@ class Gui:
 
         for box in self.angle_boxes + self.length_boxes:
 
-            if box.edit_modified():
+            if box.data.edit_modified():
 
-                self.logic.angles = [x.get(1.0, tk.END) for x in self.angle_boxes]
-                self.logic.lengths = [x.get(1.0, tk.END) for x in self.length_boxes]
+                try: 
+                    if box != self.last_modified:
+
+                        # loop through all boxes, and reset the previous last modified box
+                        for item in self.angle_boxes + self.length_boxes:
+                            item.data.edit_modified(False)
+
+                        self.last_modified = box
+
+                except: self.last_modified = box
+
+                box.data.edit_modified(False)
+
+                self.logic.angles = [x.data.get(1.0, tk.END) for x in self.angle_boxes]
+                self.logic.lengths = [x.data.get(1.0, tk.END) for x in self.length_boxes]
 
                 for index in range(len(self.logic.angles)):
                     try: self.logic.angles[index] = float(self.logic.angles[index])
@@ -323,9 +385,13 @@ class Gui:
                     try: self.logic.lengths[index] = float(self.logic.lengths[index])
                     except: self.logic.lengths[index] = 0
 
+                # print(f"calculate triangle: {self.logic.calculate_triangle()}")
+
+                # self.logic.calculate_labels()
+
                 self.place_triangle(self.logic.calculate_triangle())
 
-                box.edit_modified(False)
+                # self.place_labels()
 
 
 
@@ -348,13 +414,9 @@ class Gui:
 
         keyboard.hook(self.text_boxes_callback)
 
-        self.keybindings()
-
-        self.reset_button = tk.Button(self.parent, text='Reset', anchor='center', bg='white', command=lambda:self.default_values())
+        self.reset_button = tk.Button(self.parent, text='Clear', anchor='center', bg='white', command=lambda:self.clear_data())
         self.reset_button.configure(font=('Arial', 15, 'bold'))
         self.reset_button.place(x = 5, y = 655)
-
-
 
         # add button to rotate triangle
 
@@ -368,12 +430,13 @@ class Gui:
 
         self.make_length_text()
 
-        self.default_values()
+        self.place_labels('create')
+        
+        self.triangle_error('create')
 
-        self.text_boxes_callback(-2147483648)        
+        self.clear_data()
 
-
-
+              
 
         # change the shape of the triangle to match the inputted values
 
@@ -387,26 +450,6 @@ class Gui:
 
 
 
-    def initialize_triangle(self):
-
-        points = [100, 519.86, 325, 130.14, 550, 519.86]
-
-        self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=5)
-
-        # median of angle A: (100, -519.86) (437.5, -325)
-        # slope: 0.577
-        # y-int: -577.4375
-        # equation: y = 0.577x - 577.4375
-
-        # median of angle C: (212.5, -325) (550, -519.86)
-        # slope: -0.577
-        # y-int: -202.51
-        # equation: y = -0.577x -202.51
-
-        # midpoint: (325, -389.974)
-
-
-
     def make_angle_text(self):
         
         self.angle_text = tk.Label(self.parent, text = 'A = \nB = \nC = ')
@@ -415,22 +458,21 @@ class Gui:
 
         self.angle_boxes = [0, 0, 0]
 
-        self.angle_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[0].configure(font=('Arial', 20))
-        self.angle_boxes[0].place(x = 170, y = 699)
+        self.angle_boxes[0] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'A')
+        self.angle_boxes[0].data.configure(font=('Arial', 20))
+        self.angle_boxes[0].data.place(x = 170, y = 699)
 
-        self.angle_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[1].configure(font=('Arial', 20))
-        self.angle_boxes[1].place(x = 170, y = 741)
+        self.angle_boxes[1] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'B')
+        self.angle_boxes[1].data.configure(font=('Arial', 20))
+        self.angle_boxes[1].data.place(x = 170, y = 741)
 
-        self.angle_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[2].configure(font=('Arial', 20))
-        self.angle_boxes[2].place(x = 170, y = 782)
+        self.angle_boxes[2] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'C')
+        self.angle_boxes[2].data.configure(font=('Arial', 20))
+        self.angle_boxes[2].data.place(x = 170, y = 782)
 
         for box in self.angle_boxes:
 
-            box.edit_modified(False)
-
+            box.data.edit_modified(False)
 
 
 
@@ -442,125 +484,164 @@ class Gui:
 
         self.length_boxes = [0, 0, 0]
 
-        self.length_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[0].configure(font=('Arial', 20))
-        self.length_boxes[0].place(x = 420, y = 699)
+        self.length_boxes[0] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'a')
+        self.length_boxes[0].data.configure(font=('Arial', 20))
+        self.length_boxes[0].data.place(x = 420, y = 699)
 
-        self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[1].configure(font=('Arial', 20))
-        self.length_boxes[1].place(x = 420, y = 741)
+        self.length_boxes[1] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'b')
+        self.length_boxes[1].data.configure(font=('Arial', 20))
+        self.length_boxes[1].data.place(x = 420, y = 741)
 
-        self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[2].configure(font=('Arial', 20))
-        self.length_boxes[2].place(x = 420, y = 782)
+        self.length_boxes[2] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'c')
+        self.length_boxes[2].data.configure(font=('Arial', 20))
+        self.length_boxes[2].data.place(x = 420, y = 782)
 
         for box in self.length_boxes:
 
-            box.edit_modified(False)
+            box.data.edit_modified(False)
 
 
 
-    def default_values(self):
+    def clear_data(self):
 
-        self.angle_boxes[0].delete(1.0, tk.END)
-        self.angle_boxes[1].delete(1.0, tk.END)
-        self.angle_boxes[2].delete(1.0, tk.END)
-        self.length_boxes[0].delete(1.0, tk.END)
-        self.length_boxes[1].delete(1.0, tk.END)
-        self.length_boxes[2].delete(1.0, tk.END)
+        for box in self.angle_boxes + self.length_boxes:
+            box.data.delete(1.0, tk.END)
+            box.data.edit_modified(False)
 
-        self.angle_boxes[0].insert(tk.END, 60)
-        self.angle_boxes[1].insert(tk.END, 60)
-        self.angle_boxes[2].insert(tk.END, 60)
-        self.length_boxes[0].insert(tk.END, 1)
-        self.length_boxes[1].insert(tk.END, 1)
-        self.length_boxes[2].insert(tk.END, 1)
-
-
-
-    def impossible_triangle(self):
-
-        try: self.canvas.delete(self.triangle)
+        try:self.canvas.delete(self.triangle)
         except:pass
 
-        self.error_text = tk.Label(self.parent, text='Triangle does not exist.')
-        self.error_text.configure(font=['Arial', 25, 'bold'])
-        self.error_text.place(x = 125, y = 325)
+        self.logic.coordinates = {'a': [100.0, 519.8557158514986], 'b': [325.00000000000006, 130.14428414850133], 'c': [550.0, 519.8557158514986]}
 
-        # hide labels
+        self.place_triangle(self.logic.coordinates, no=True)
 
-
-    
-    def unsolvable_triangle(self):
-
-        try: self.canvas.delete(self.triangle)
-        except:pass
-
-        self.error_text = tk.Label(self.parent, text='not enough information.')
-        self.error_text.configure(font=['Arial', 25, 'bold'])
-        self.error_text.place(x = 125, y = 325)
+        self.text_boxes_callback(-2147483648)
+        
 
 
+    def triangle_error(self, type = ''):
 
-    
+        if type == 'delete':
 
-
-
-    def place_triangle(self, coordinates):
-
-        if coordinates == 0:
-            self.unsolvable_triangle()
-            return
-
-        if coordinates == 1:
-            self.impossible_triangle()
-            return
-
-        points = [coordinates["A"][0], coordinates["A"][1], coordinates["B"][0], coordinates["B"][1], coordinates["C"][0], coordinates["C"][1]]
-
-        try: self.canvas.delete(self.triangle)
-        except:pass
-        try: 
             self.error_text.place_forget()
-            print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
+            return
+
+        elif type == 'unsolvable':
+
+            self.error_text.configure(text='not enough information')
+
+        elif type == 'impossible':
+
+            self.error_text.configure(text='triangle does not exist')
+
+        elif type == 'create':
+
+            self.error_text = tk.Label(self.parent, text='')
+            self.error_text.configure(font=('Arial', 25, 'bold'))
+            return
+        
+        elif type == 'clear data':
+
+            self.clear_data()
+            return
+        
+        else:return
+
+        try:self.canvas.delete(self.triangle)
+        except:pass
+
+        self.error_text.place(x = 125, y = 325)
+        self.place_labels('delete')
+        return 1
+
+        
+
+    def update_text_boxes(self):
+
+        for index in range(len(self.angle_boxes)):
+
+            if self.angle_boxes[index] != self.last_modified:
+
+                self.angle_boxes[index].data.delete(1.0, tk.END)
+                self.angle_boxes[index].data.insert(tk.END, self.logic.angles[index])
+
+                self.angle_boxes[index].data.edit_modified(False)
+
+        for index in range(len(self.length_boxes)):
+
+            if self.length_boxes[index] != self.last_modified:
+
+                self.length_boxes[index].data.delete(1.0, tk.END)
+                self.length_boxes[index].data.insert(tk.END, self.logic.lengths[index])
+
+                self.length_boxes[index].data.edit_modified(False)
+    
+
+
+    def place_triangle(self, coordinates, no = False):
+
+        if self.triangle_error(coordinates): return
+
+        self.place_labels()
+        
+        # something gotta be here for ambiguous case
+
+        points = [coordinates["a"][0], coordinates["a"][1], coordinates["b"][0], coordinates["b"][1], coordinates["c"][0], coordinates["c"][1]]
+
+        try: self.canvas.delete(self.triangle)
+        except:pass
+        try: self.triangle_error('delete')
         except:pass
 
         self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=3)
 
-        self.place_labels()
+        if no: return
+        self.update_text_boxes()
 
 
 
-    def place_labels(self):
+    def place_labels(self, type = ''):
 
-        pass
+        if type == 'create':
 
+            self.labels = {}
 
+            for key in self.logic.angle_labels.keys():
 
+                self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
+                self.labels[key].configure(font=('Arial', 25, 'bold'))
 
-    
+            for key in self.logic.length_labels.keys():
 
+                self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
+                self.labels[key].configure(font=('Arial', 25, 'bold'))
 
+        elif type == 'delete':
 
+            for key in self.labels.keys():
 
-        
+                self.labels[key].place_forget()
 
+        else: 
 
-    def keybindings(self):
+            self.logic.calculate_labels()
 
-        pass
+            print(f"angle labels: {self.logic.angle_labels}")
+            print(f"length labels: {self.logic.length_labels}")
+            print(f"all labels: {self.logic.angle_labels | self.logic.length_labels}")
+
+            for key in self.labels.keys():
+
+                print(f"label data: {self.labels[key]}")
+
+                self.labels[key].place(x = (self.logic.angle_labels | self.logic.length_labels)[key][0] - 12.5, y = (self.logic.angle_labels | self.logic.length_labels)[key][1] - 12.5)
+
 
 
 
 
 def main():
-
-    #  find() = [0, 1, 2, 3, 4, 0, 1, 2]
-    x         = [1, 2, 3, 4, 5, 1, 2, 3]
-    # rfind() = [5, 6, 7, 3, 4, 5, 6, 7]
-    x = [0, 1, 0]
-    
-    print(f"rfind 2: {rfind(x, 0)}")
+    pass
 
 if __name__ == '__main__':
     main()

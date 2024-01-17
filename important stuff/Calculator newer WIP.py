@@ -5,6 +5,7 @@ import Scientific
 import Factoring
 import Quadratic
 import Trigonometry
+import Variable
 import Scientific_grid
 
 
@@ -65,17 +66,19 @@ class Window:
         elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
         elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
         elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
+        elif type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
 
         self.gui.create_gui()
 
         # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific','Factoring', 'Quadratic', 'Trigonometry')
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific','Factoring', 'Quadratic', 'Trigonometry', 'Variable')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
         if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 655)
+        elif type == 'Variable'    : self.gui.parent.options.place(x = 10, y = 185)
 
         
 
