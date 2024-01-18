@@ -31,11 +31,7 @@ def find(container, value):
 
 def rfind(container, value):
 
-    print('finding...')
-
     for index in range(len(container) - 1, -1, -1):
-
-        print(f"index: {index}")
 
         if container[index] == value: return index
 
