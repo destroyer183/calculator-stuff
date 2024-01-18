@@ -5,9 +5,14 @@ import math
 
 
 
+''' NOTES
+
+add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
+
+'''
+
+
 max_side_length = 450
-
-
 
 # function to convert text to superscript.
 def get_super(x):
@@ -38,11 +43,6 @@ def rfind(container, value):
         print(f"index: {index}")
 
         if container[index] == value: return index
-
-    #  find() = [0, 1, 2, 3, 4, 0, 1, 2]
-    x         = [1, 2, 3, 4, 5, 1, 2, 3]
-    # rfind() = [5, 6, 7, 3, 4, 5, 6, 7]
-
 
 
 
@@ -397,6 +397,8 @@ class Gui:
 
     def clear_gui(self):
 
+        keyboard.unhook_all_hotkeys()
+
         for widget in self.parent.winfo_children():
             widget.destroy()
 
@@ -435,6 +437,10 @@ class Gui:
         self.triangle_error('create')
 
         self.clear_data()
+
+
+
+
 
               
 

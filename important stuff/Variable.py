@@ -34,6 +34,8 @@ class Gui:
 
     def clear_gui(self):
 
+        keyboard.unhook_all_hotkeys()
+
         for widget in self.parent.winfo_children():
             widget.destroy()
     

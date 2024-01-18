@@ -60,6 +60,8 @@ class Gui:
 
     def clear_gui(self):
 
+        keyboard.unhook_all_hotkeys()
+
         for widget in self.parent.winfo_children():
             widget.destroy()
         
@@ -504,6 +506,7 @@ class Gui:
         keyboard.add_hotkey('8',         lambda:self.put_number(8))
         keyboard.add_hotkey('9',         lambda:self.put_number(9))
         keyboard.add_hotkey('backspace', lambda:self.clear())
+
 
 
     # the function bound to the 'equals' button to output a result for an equation.
