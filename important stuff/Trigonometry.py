@@ -39,11 +39,6 @@ def rfind(container, value):
 
         if container[index] == value: return index
 
-    #  find() = [0, 1, 2, 3, 4, 0, 1, 2]
-    x         = [1, 2, 3, 4, 5, 1, 2, 3]
-    # rfind() = [5, 6, 7, 3, 4, 5, 6, 7]
-
-
 
 
 class Object:
@@ -206,21 +201,12 @@ class Logic:
         if self.ambiguous:
             pass
 
-        print(f"angles find 0: {find(self.angles, 0)}")
-        print(f"angles rfind 0: {rfind(self.angles, 0)}")
-
-        print(f"angles: {self.angles}")
-
         # calculate 3rd angle if there are already 2 angles
         if find(self.angles, 0) == rfind(self.angles, 0) or min(self.angles):
 
             index = self.angles.index(min(self.angles))
 
             self.angles[index] = 180 - self.info('left angle', index) - self.info('right angle', index)
-
-            print(f"lengths: {self.lengths}")
-            print(f"lengths find 0: {find(self.lengths, 0)}")
-            print(f"lengths rfind 0: {rfind(self.lengths, 0)}")
 
             # side angle angle angle
             if find(self.lengths, 0) != rfind(self.lengths, 0):
@@ -246,10 +232,6 @@ class Logic:
 
         # side side angle
         last_side = self.lengths.index(0)
-
-        print(f"angles: {self.angles}")
-        print(f"lengths: {self.lengths}")
-        print(f"lengths rfind 0: {rfind(self.lengths, 0)}")
 
         self.lengths[last_side] = self.sin_law('side', last_side, self.angles.index(max(self.angles)))
 
@@ -284,8 +266,6 @@ class Logic:
     
     def calculate_triangle(self):
 
-        print('yes')
-
         # check if triangle is solvable
         output, self.ambiguous = self.check_triangle()
 
@@ -308,17 +288,12 @@ class Logic:
         # calculate angle labels
         for index, key in enumerate(self.angle_labels.keys()):
 
-            print(f"coords: {self.coordinates}")
-
             angle_coord = [x for x in self.coordinates.values()][index]
 
             point1 = [x for x in self.coordinates.values()][self.info('adjacent angle left', index, 1)]
             point2 = [x for x in self.coordinates.values()][self.info('adjacent angle right', index, 1)]
 
             midpoint = [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2]
-
-            print(f"points: {point1}, {point2}")
-            print(f"midpoint: {midpoint}\n")
 
             try: angle = math.degrees(math.atan((max(angle_coord[1], midpoint[1]) - min(angle_coord[1], midpoint[1])) / (max(angle_coord[0], midpoint[0]) - min(angle_coord[0], midpoint[0]))))
             except: angle = 0
@@ -385,17 +360,13 @@ class Gui:
                     try: self.logic.lengths[index] = float(self.logic.lengths[index])
                     except: self.logic.lengths[index] = 0
 
-                # print(f"calculate triangle: {self.logic.calculate_triangle()}")
-
-                # self.logic.calculate_labels()
-
                 self.place_triangle(self.logic.calculate_triangle())
-
-                # self.place_labels()
 
 
 
     def clear_gui(self):
+
+        keyboard.unhook_all_hotkeys()
 
         for widget in self.parent.winfo_children():
             widget.destroy()
@@ -435,16 +406,6 @@ class Gui:
         self.triangle_error('create')
 
         self.clear_data()
-
-              
-
-        # change the shape of the triangle to match the inputted values
-
-        # limit the size of the triangle
-
-        # have a reset button
-
-        # have text boxes at the bottom for each side length and angle value
 
         self.parent.resizable(False, False)
 
@@ -626,13 +587,7 @@ class Gui:
 
             self.logic.calculate_labels()
 
-            print(f"angle labels: {self.logic.angle_labels}")
-            print(f"length labels: {self.logic.length_labels}")
-            print(f"all labels: {self.logic.angle_labels | self.logic.length_labels}")
-
             for key in self.labels.keys():
-
-                print(f"label data: {self.labels[key]}")
 
                 self.labels[key].place(x = (self.logic.angle_labels | self.logic.length_labels)[key][0] - 12.5, y = (self.logic.angle_labels | self.logic.length_labels)[key][1] - 12.5)
 
