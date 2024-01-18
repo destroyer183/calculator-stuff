@@ -42,15 +42,6 @@ def rfind(container, value):
 
 
 
-class Object:
-
-    def __init__(self, data, name) -> None:
-        
-        self.data = data
-        self.name = name
-
-
-
 class Logic:
 
     def __init__(self) -> None:
@@ -460,17 +451,17 @@ class Gui:
 
         self.angle_boxes = [0, 0, 0]
 
-        self.angle_boxes[0] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'A')
-        self.angle_boxes[0].data.configure(font=('Arial', 20))
-        self.angle_boxes[0].data.place(x = 170, y = 699)
+        self.angle_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[0].configure(font=('Arial', 20))
+        self.angle_boxes[0].place(x = 170, y = 699)
 
-        self.angle_boxes[1] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'B')
-        self.angle_boxes[1].data.configure(font=('Arial', 20))
-        self.angle_boxes[1].data.place(x = 170, y = 741)
+        self.angle_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[1].configure(font=('Arial', 20))
+        self.angle_boxes[1].place(x = 170, y = 741)
 
-        self.angle_boxes[2] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'C')
-        self.angle_boxes[2].data.configure(font=('Arial', 20))
-        self.angle_boxes[2].data.place(x = 170, y = 782)
+        self.angle_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[2].configure(font=('Arial', 20))
+        self.angle_boxes[2].place(x = 170, y = 782)
 
         for box in self.angle_boxes:
 
@@ -486,17 +477,17 @@ class Gui:
 
         self.length_boxes = [0, 0, 0]
 
-        self.length_boxes[0] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'a')
-        self.length_boxes[0].data.configure(font=('Arial', 20))
-        self.length_boxes[0].data.place(x = 420, y = 699)
+        self.length_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[0].configure(font=('Arial', 20))
+        self.length_boxes[0].place(x = 420, y = 699)
 
-        self.length_boxes[1] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'b')
-        self.length_boxes[1].data.configure(font=('Arial', 20))
-        self.length_boxes[1].data.place(x = 420, y = 741)
+        self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[1].configure(font=('Arial', 20))
+        self.length_boxes[1].place(x = 420, y = 741)
 
-        self.length_boxes[2] = Object(tk.Text(self.parent, height = 1, width = 8, bg = 'white'), 'c')
-        self.length_boxes[2].data.configure(font=('Arial', 20))
-        self.length_boxes[2].data.place(x = 420, y = 782)
+        self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[2].configure(font=('Arial', 20))
+        self.length_boxes[2].place(x = 420, y = 782)
 
         for box in self.length_boxes:
 
