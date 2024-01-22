@@ -679,18 +679,20 @@ class Gui:
             for key in data.angle_labels.keys():
 
                 self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 25, 'bold'))
+                self.labels[key].configure(font=('Arial', 24, 'bold'))
 
             for key in data.length_labels.keys():
 
                 self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 25, 'bold'))
+                self.labels[key].configure(font=('Arial', 24, 'bold'))
 
         elif type == 'delete':
 
             for key in self.labels.keys():
 
                 self.labels[key].place_forget()
+
+
 
         else: 
 
@@ -704,7 +706,7 @@ class Gui:
 
                 print(f"label data: {self.labels[key]}")
 
-                self.labels[key].place(x = (data.angle_labels | data.length_labels)[key][0] - 12.5, y = (data.angle_labels | data.length_labels)[key][1] - 15)
+                self.labels[key].place(x = (data.angle_labels | data.length_labels)[key][0] - 12, y = (data.angle_labels | data.length_labels)[key][1] - 21)
 
 
 
