@@ -45,9 +45,11 @@ def rfind(container, value):
 
 class Logic:
 
-    def __init__(self, ambiguous = False) -> None:
+    def __init__(self, is_ambiguous = False, name = '') -> None:
 
-        self.ambiguous = ambiguous
+        self.is_ambiguous = is_ambiguous
+
+        self.name = name
 
         self.angles  = [60, 60, 60]
         self.lengths = [1, 1, 1]
@@ -197,8 +199,13 @@ class Logic:
 
                 if self.lengths[index] and not self.info('opposite angle', index):
 
-                    if self.ambiguous:
+
+                    print(f"name: {self.name}")
+                    print(f"self.is_ambiguous: {self.is_ambiguous}")
+
+                    if self.is_ambiguous:
                         self.angles[index] = 180 - self.sin_law('angle', index, find(self.angles, max(self.angles)))
+                        print(f"angle: {self.angles[index]}")
 
                     else:
                         self.angles[index] = self.sin_law('angle', index, find(self.angles, max(self.angles)))
@@ -336,6 +343,10 @@ class Logic:
 
 
 
+            # the length label calculations are still broken ffs
+
+
+
             midpoint = [(left_coord[0] + right_coord[0]) / 2, (left_coord[1] + right_coord[1]) / 2]
             
             try: angle = math.degrees(math.atan((max(left_coord[1], right_coord[1]) - min(left_coord[1], right_coord[1])) / (max(left_coord[0], right_coord[0]) - min(left_coord[0], right_coord[0])))) + 90
@@ -404,15 +415,22 @@ class Gui:
                 if ambiguous:
 
 
-                    self.ambiguous.angles = self.logic.angles
-                    self.ambiguous.lengths = self.logic.lengths
+                    self.ambiguous.angles = 1 * self.logic.angles
+                    self.ambiguous.lengths = 1 * self.logic.lengths
 
-                    self.ambiguous.calculate_triangle(ambiguous)
+                    self.ambiguous.calculate_triangle(ambiguous) # somehow this is filling out all the values for the non ambiguous triangle
+
+                    print(f"logic coordinates: {self.logic.coordinates}")
 
                     self.ambiguous_toggle('create')
 
                 else: self.ambiguous_toggle('delete')
 
+                print('yes yes yes')
+
+                self.logic.calculate_triangle(ambiguous)
+
+                print('hmmmmm')
 
                 self.place_triangle(self.logic.calculate_triangle(ambiguous))
 
@@ -437,8 +455,8 @@ class Gui:
 
         self.parent.geometry('650x850')
 
-        self.logic = Logic()
-        self.ambiguous = Logic(True)
+        self.logic = Logic(False, 'Logic')
+        self.ambiguous = Logic(True, 'ambiguous')
 
         keyboard.hook(self.text_boxes_callback)
 
@@ -543,6 +561,9 @@ class Gui:
         try:self.canvas.delete(self.triangle)
         except:pass
 
+        self.logic.angles = [60, 60, 60]
+        self.logic.lengths = [1, 1, 1]
+
         self.place_triangle(self.logic.calculate_triangle(False), no=True)
 
         self.text_boxes_callback(-2147483648)
@@ -586,14 +607,14 @@ class Gui:
 
         
 
-    def update_text_boxes(self):
+    def update_text_boxes(self, data):
 
         for index in range(len(self.angle_boxes)):
 
             if self.angle_boxes[index] != self.last_modified:
 
                 self.angle_boxes[index].delete(1.0, tk.END)
-                self.angle_boxes[index].insert(tk.END, self.logic.angles[index])
+                self.angle_boxes[index].insert(tk.END, data.angles[index])
 
                 self.angle_boxes[index].edit_modified(False)
 
@@ -602,7 +623,7 @@ class Gui:
             if self.length_boxes[index] != self.last_modified:
 
                 self.length_boxes[index].delete(1.0, tk.END)
-                self.length_boxes[index].insert(tk.END, self.logic.lengths[index])
+                self.length_boxes[index].insert(tk.END, data.lengths[index])
 
                 self.length_boxes[index].edit_modified(False)
     
@@ -614,15 +635,6 @@ class Gui:
 
         self.place_labels(data)
 
-
-
-        
-        # something gotta be here for ambiguous case
-        # add a button that switches between displaying the acute triangle and the obtuse triangle like the Deg -> Rad button
-
-
-
-
         points = [data.coordinates["a"][0], data.coordinates["a"][1], data.coordinates["b"][0], data.coordinates["b"][1], data.coordinates["c"][0], data.coordinates["c"][1]]
 
         try: self.canvas.delete(self.triangle)
@@ -633,11 +645,12 @@ class Gui:
         self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=3)
 
         if no: return
-        self.update_text_boxes()
+        self.update_text_boxes(data)
 
 
 
     def ambiguous_toggle(self, mode = ''):
+
 
         if mode == 'create':
             self.ambiguous_button = tk.Button(self.parent, text='case 1', anchor='center', bg='white', command=lambda:self.ambiguous_toggle())
@@ -670,7 +683,7 @@ class Gui:
 
     def place_labels(self, data = True, type = ''):
 
-        if data: data = self.logic
+        if data == True: data = self.logic
 
         if type == 'create':
 
@@ -703,8 +716,6 @@ class Gui:
             print(f"all labels: {data.angle_labels | data.length_labels}")
 
             for key in self.labels.keys():
-
-                print(f"label data: {self.labels[key]}")
 
                 self.labels[key].place(x = (data.angle_labels | data.length_labels)[key][0] - 12, y = (data.angle_labels | data.length_labels)[key][1] - 21)
 
