@@ -336,8 +336,6 @@ class Logic:
 
 
 
-
-
             midpoint = [(left_coord[0] + right_coord[0]) / 2, (left_coord[1] + right_coord[1]) / 2]
             
             try: angle = math.degrees(math.atan((max(left_coord[1], right_coord[1]) - min(left_coord[1], right_coord[1])) / (max(left_coord[0], right_coord[0]) - min(left_coord[0], right_coord[0])))) + 90
@@ -346,10 +344,17 @@ class Logic:
             x_offset = offset * math.cos(math.radians(angle))
             y_offset = offset * math.sin(math.radians(angle))
 
-            if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
-            if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
+            if total_angle <= 90: 
+                if x_offset < 0: x_offset *= -1
+                if y_offset > 0: y_offset *= -1
+            elif total_angle <= 180: 
+                if x_offset > 0: x_offset *= -1
+                if y_offset > 0: y_offset *= -1
+            elif total_angle <= 270: 
+                if x_offset > 0: x_offset *= -1
+                if y_offset < 0: y_offset *= -1
 
-            self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] - y_offset]
+            self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
             
 
 
