@@ -153,8 +153,6 @@ class Logic:
         for index in range(len(self.lengths)):
             if self.lengths[index] != 0: count += 1
 
-        print(f"count: {count}")
-
         if not count: return 'clear data', 0
 
         if count < 3: return 'unsolvable', 0
@@ -199,23 +197,13 @@ class Logic:
 
                 if self.lengths[index] and not self.info('opposite angle', index):
 
-
-                    print(f"name: {self.name}")
-                    print(f"self.is_ambiguous: {self.is_ambiguous}")
-
                     if self.is_ambiguous:
                         self.angles[index] = 180 - self.sin_law('angle', index, find(self.angles, max(self.angles)))
-                        print(f"angle: {self.angles[index]}")
 
                     else:
                         self.angles[index] = self.sin_law('angle', index, find(self.angles, max(self.angles)))
 
 
-
-        print(f"angles find 0: {find(self.angles, 0)}")
-        print(f"angles rfind 0: {rfind(self.angles, 0)}")
-
-        print(f"angles: {self.angles}")
 
         # calculate 3rd angle if there are already 2 angles
         if find(self.angles, 0) == rfind(self.angles, 0) or min(self.angles):
@@ -223,10 +211,6 @@ class Logic:
             index = self.angles.index(min(self.angles))
 
             self.angles[index] = 180 - self.info('left angle', index) - self.info('right angle', index)
-
-            print(f"lengths: {self.lengths}")
-            print(f"lengths find 0: {find(self.lengths, 0)}")
-            print(f"lengths rfind 0: {rfind(self.lengths, 0)}")
 
             # side angle angle angle
             if find(self.lengths, 0) != rfind(self.lengths, 0):
@@ -252,10 +236,6 @@ class Logic:
 
         # side side angle
         last_side = self.lengths.index(0)
-
-        print(f"angles: {self.angles}")
-        print(f"lengths: {self.lengths}")
-        print(f"lengths rfind 0: {rfind(self.lengths, 0)}")
 
         self.lengths[last_side] = self.sin_law('side', last_side, self.angles.index(max(self.angles)))
 
@@ -290,8 +270,6 @@ class Logic:
     
     def calculate_triangle(self, ambiguous = False):
 
-        print('yes')
-
         # check if triangle is solvable
         output, temp = self.check_triangle()
 
@@ -313,8 +291,6 @@ class Logic:
 
         # calculate angle labels
         for index, key in enumerate(self.angle_labels.keys()):
-
-            print(f"coords: {self.coordinates}")
 
             angle_coord = [x for x in self.coordinates.values()][index]
 
@@ -343,10 +319,6 @@ class Logic:
 
 
 
-            # the length label calculations are still broken ffs
-
-
-
             midpoint = [(left_coord[0] + right_coord[0]) / 2, (left_coord[1] + right_coord[1]) / 2]
             
             try: angle = math.degrees(math.atan((max(left_coord[1], right_coord[1]) - min(left_coord[1], right_coord[1])) / (max(left_coord[0], right_coord[0]) - min(left_coord[0], right_coord[0])))) + 90
@@ -355,15 +327,23 @@ class Logic:
             x_offset = offset * math.cos(math.radians(angle))
             y_offset = offset * math.sin(math.radians(angle))
 
-            if total_angle <= 90: 
+            if left_coord[0] < right_coord[0] and left_coord[1] < right_coord[1]:
                 if x_offset < 0: x_offset *= -1
                 if y_offset > 0: y_offset *= -1
-            elif total_angle <= 180: 
+
+            elif left_coord[0] > right_coord[0] and left_coord[1] < right_coord[1]:
+                if x_offset < 0: x_offset *= -1
+                if y_offset < 0: y_offset *= -1
+
+            elif left_coord[0] < right_coord[0] and left_coord[1] > right_coord[1]:
                 if x_offset > 0: x_offset *= -1
                 if y_offset > 0: y_offset *= -1
-            elif total_angle <= 270: 
+
+            elif left_coord[0] > right_coord[0] and left_coord[1] > right_coord[1]:
                 if x_offset > 0: x_offset *= -1
                 if y_offset < 0: y_offset *= -1
+
+
 
             self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
             
@@ -420,17 +400,11 @@ class Gui:
 
                     self.ambiguous.calculate_triangle(ambiguous) # somehow this is filling out all the values for the non ambiguous triangle
 
-                    print(f"logic coordinates: {self.logic.coordinates}")
-
                     self.ambiguous_toggle('create')
 
                 else: self.ambiguous_toggle('delete')
 
-                print('yes yes yes')
-
                 self.logic.calculate_triangle(ambiguous)
-
-                print('hmmmmm')
 
                 self.place_triangle(self.logic.calculate_triangle(ambiguous))
 
@@ -710,10 +684,6 @@ class Gui:
         else: 
 
             data.calculate_labels()
-
-            print(f"angle labels: {data.angle_labels}")
-            print(f"length labels: {data.length_labels}")
-            print(f"all labels: {data.angle_labels | data.length_labels}")
 
             for key in self.labels.keys():
 
