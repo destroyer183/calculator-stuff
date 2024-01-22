@@ -314,19 +314,11 @@ class Logic:
             left_coord  = [x for x in self.coordinates.values()][self.info('left angle', index, 1)]
             right_coord = [x for x in self.coordinates.values()][self.info('right angle', index, 1)]
 
-
-            print(f"angle coord {key}: {angle_coord}")
-            print(f"right coord: {right_coord}")
-            print(f"left coord: {left_coord}")
-
             left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
             right_alpha = math.degrees(math.atan((max(angle_coord[1], right_coord[1]) - min(angle_coord[1], right_coord[1])) / (max(angle_coord[0], right_coord[0]) - min(angle_coord[0], right_coord[0]))))
 
-            print(f"left alpha: {left_alpha}")
-            print(f"right alpha: {right_alpha}")
-
             if not angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 360 - left_alpha
-            elif angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha; print(f"well fuck. somehow {angle_coord[0]} > {left_coord[0]}")
+            elif angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha
             elif angle_coord[0] > left_coord[0] and not angle_coord[1] < left_coord[1]: left_angle = 180 - left_alpha
             else: left_angle = left_alpha
 
@@ -335,117 +327,18 @@ class Logic:
             elif angle_coord[0] > right_coord[0] and not angle_coord[1] < right_coord[1]: right_angle = 180 - right_alpha
             else: right_angle = right_alpha
 
-            print(f"left angle: {left_angle}")
-            print(f"right angle: {right_angle}")
-
             total_angle = (left_angle + right_angle) / 2
 
-            x_offset = offset * math.cos(math.radians(total_angle))
+            x_offset = offset * math.cos(math.radians(total_angle)) * -1
             y_offset = offset * math.sin(math.radians(total_angle))
 
-            self.angle_labels[key] = [angle_coord[0] - x_offset, angle_coord[1] + y_offset]
+            self.angle_labels[key] = [angle_coord[0] + x_offset, angle_coord[1] + y_offset]
 
-
-
-            # angle is 330
-            # reference arm points southeast
-            # subtract x and y
-            # sin(330) = -0.5
-            # cos(330)
-
-
-            # the sign of cos(angle) should always be flipped
-
-
-            
-            # check if the angle coord is the left-most/right-most point: 
-            # check if the angle coord is the highest point (lowest y value): true, false
-                # false: check 
-            
-            
-            
-            # is highest point
-            # is left-most point
-            # is right-most point
-            # is highest point to the left
-            # is highest point to the right
-            is_highest_point = (angle_coord[1] < min(left_coord[1], right_coord[1]))
-            is_lowest_point = (angle_coord[1] >= max(left_coord[1], right_coord[1]))
-            is_leftmost_point = (angle_coord[0] <= min(left_coord[0], right_coord[0]))
-            is_rightmost_point = (angle_coord[0] >= max(left_coord[0], right_coord[0]))
-            is_highest_point_left = (not is_highest_point and ([x for x in self.coordinates.values()][find([x[1] for x in self.coordinates.values()], min([x[1] for x in self.coordinates.values()]))][0] <= angle_coord[0])) # find the index of the highest point and use it to figure out the x value of it
-            is_highest_point_right = (not is_highest_point and ([x for x in self.coordinates.values()][find([x[1] for x in self.coordinates.values()], min([x[1] for x in self.coordinates.values()]))][0] >= angle_coord[0])) 
-
-            # if max(left_angle, right_angle) - min(left_angle, right_angle) != self.angles[index]:
-
-                # if 180 - left_angle == self.angles[index]: left_angle = 180 - left_angle
-                # else: right_angle = 180 - right_angle
-
-
-
-            # determine each angle as an absolute value, rather than a relative value
-                # i.e. the angle can be from 0-360 rather than 0-180
-
- 
-            
-
-
-
-
-
-
-            
-            # all that is needed to calculate direction
-            # is average x left or right of angle coord x
-            # is average y below or above angle coord y
-
-            total_angle = max(left_alpha, right_alpha) / 2 + min(left_alpha, right_alpha)
-            
-            x_offset = offset * math.cos(math.radians(total_angle))
-            y_offset = offset * math.sin(math.radians(total_angle))
-
-            if min(left_coord[0], right_coord[0]) > angle_coord[0]: x_offset *= -1
-            if min(left_coord[1], right_coord[1]) > angle_coord[1]: y_offset *= -1
-
-
-
-
-            # determine the angle of just one side
-            # divide the angle at the coordinate by 2, and add it to the angle of one side
-
-
-
-
-            # calculate the slopes (angles) of both adjacent sides
-                # calculate the absoulte angle
-                # determine if there whether or not there is a point to the left/right
-                # use that, along with the absolute angle, to determine if the angle should be obtuse or not
-            
-            # calculate the angle of the other side
-            # average the angles
-            # determine the direction with the sides, think of them as an arrow pointing in the correct direction
-                # use the coordinates of all the points
 
 
 
 
             midpoint = [(left_coord[0] + right_coord[0]) / 2, (left_coord[1] + right_coord[1]) / 2]
-
-            # print(f"points: {left_coord}, {right_coord}")
-            # print(f"midpoint: {midpoint}\n")
-
-            # try: angle = math.degrees(math.atan((max(angle_coord[1], midpoint[1]) - min(angle_coord[1], midpoint[1])) / (max(angle_coord[0], midpoint[0]) - min(angle_coord[0], midpoint[0]))))
-            # except: angle = 0
-
-            # x_offset = offset * math.cos(math.radians(angle))
-            # y_offset = offset * math.sin(math.radians(angle))
-
-            # if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
-            # if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
-
-            
-
-
             
             try: angle = math.degrees(math.atan((max(left_coord[1], right_coord[1]) - min(left_coord[1], right_coord[1])) / (max(left_coord[0], right_coord[0]) - min(left_coord[0], right_coord[0])))) + 90
             except: angle = 0
