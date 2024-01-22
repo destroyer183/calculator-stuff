@@ -2,12 +2,18 @@ import tkinter as tk
 from tkinter import *
 import keyboard
 import math
+import time
 
+
+
+''' NOTES
+
+add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
+
+'''
 
 
 max_side_length = 450
-
-
 
 # function to convert text to superscript.
 def get_super(x):
@@ -39,10 +45,14 @@ def rfind(container, value):
 
 class Logic:
 
-    def __init__(self) -> None:
+    def __init__(self, is_ambiguous = False, name = '') -> None:
 
-        self.angles  = []
-        self.lengths = []
+        self.is_ambiguous = is_ambiguous
+
+        self.name = name
+
+        self.angles  = [60, 60, 60]
+        self.lengths = [1, 1, 1]
         self.coordinates   = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
         self.angle_labels  = {"A": [0, 0], "B": [0, 0], "C": [0, 0]}
         self.length_labels = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
@@ -135,8 +145,6 @@ class Logic:
 
     def check_triangle(self):
 
-        ambiguous = False
-
         # calculate if triangle is solvable
         count = 0
         for index in range(len(self.angles)):
@@ -144,8 +152,6 @@ class Logic:
 
         for index in range(len(self.lengths)):
             if self.lengths[index] != 0: count += 1
-
-        print(f"count: {count}")
 
         if not count: return 'clear data', 0
 
@@ -158,24 +164,23 @@ class Logic:
 
         # DON'T FORGET ABOUT THE AMBIGUOUS CASE!!!
         for index in range(len(self.angles)):
-            
+
             if self.angles[index] < 90 and (
-                    self.info('adjacent side left', index) > self.info('opposite side', index) or
-                    self.info('adjacent side right', index) > self.info('opposite side', index)):
+                    (self.info('adjacent side left', index)  > self.info('opposite side', index) and self.info('opposite side', index)) or
+                    (self.info('adjacent side right', index) > self.info('opposite side', index) and self.info('opposite side', index))):
                 
                 # do something for ambiguous case
-                ambiguous = True
-
+                return 'yes', True
+            
         # check if triangle can exist
         if min(self.lengths):
             if max(self.lengths) >= 2 * (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return 'impossible', 0
 
-
-        return 'yes', ambiguous
-    
+        return 'yes', False
 
 
-    def solve_triangle(self):
+
+    def solve_triangle(self, ambiguous):
         
         # all sides
         if min(self.lengths):
@@ -185,8 +190,20 @@ class Logic:
             return
         
         # two sides one angle
-        if self.ambiguous:
-            pass
+        if ambiguous:
+
+            # find variable angle
+            for index in range(len(self.lengths)):
+
+                if self.lengths[index] and not self.info('opposite angle', index):
+
+                    if self.is_ambiguous:
+                        self.angles[index] = 180 - self.sin_law('angle', index, find(self.angles, max(self.angles)))
+
+                    else:
+                        self.angles[index] = self.sin_law('angle', index, find(self.angles, max(self.angles)))
+
+
 
         # calculate 3rd angle if there are already 2 angles
         if find(self.angles, 0) == rfind(self.angles, 0) or min(self.angles):
@@ -213,7 +230,7 @@ class Logic:
             if self.angles[index] and (self.info('adjacent side left', index) and self.info('adjacent side right', index)):
                 self.lengths[index] = self.cos_law('side angle side', index)
 
-                return self.solve_triangle()
+                return self.solve_triangle(ambiguous)
             
 
 
@@ -222,7 +239,7 @@ class Logic:
 
         self.lengths[last_side] = self.sin_law('side', last_side, self.angles.index(max(self.angles)))
 
-        return self.solve_triangle()
+        return self.solve_triangle(ambiguous)
     
 
 
@@ -231,12 +248,12 @@ class Logic:
 
         # scale side lengths
         scale_ratio = max_side_length / max(self.lengths)
-        self.temp = [x * scale_ratio for x in self.lengths]
+        temp = [x * scale_ratio for x in self.lengths]
 
         # calculate coordinates for the triangle points
-        self.coordinates["a"] = [0.0, self.temp[2] * math.sin(math.radians(self.angles[0]))]
-        self.coordinates["b"] = [self.temp[2] * math.cos(math.radians(self.angles[0])), 0.0]
-        self.coordinates["c"] = [self.temp[1], self.temp[2] * math.sin(math.radians(self.angles[0]))]
+        self.coordinates['a'] = [0.0, temp[2] * math.sin(math.radians(self.angles[0]))]
+        self.coordinates['b'] = [temp[2] * math.cos(math.radians(self.angles[0])), 0.0]
+        self.coordinates['c'] = [temp[1], temp[2] * math.sin(math.radians(self.angles[0]))]
 
         # calculate the necessary coordinate offsets
         x_offset = 325 - (max([x[0] for x in self.coordinates.values()]) + min([x[0] for x in self.coordinates.values()])) / 2
@@ -251,20 +268,20 @@ class Logic:
 
 
     
-    def calculate_triangle(self):
+    def calculate_triangle(self, ambiguous = False):
 
         # check if triangle is solvable
-        output, self.ambiguous = self.check_triangle()
+        output, temp = self.check_triangle()
 
         if output != 'yes': return output
 
         # solve triangle
-        self.solve_triangle()
+        self.solve_triangle(ambiguous)
             
         # calculate coordinates
         self.build_triangle()
 
-        return self.coordinates
+        return self
 
 
 
@@ -277,38 +294,64 @@ class Logic:
 
             angle_coord = [x for x in self.coordinates.values()][index]
 
-            point1 = [x for x in self.coordinates.values()][self.info('adjacent angle left', index, 1)]
-            point2 = [x for x in self.coordinates.values()][self.info('adjacent angle right', index, 1)]
+            left_coord  = [x for x in self.coordinates.values()][self.info('left angle', index, 1)]
+            right_coord = [x for x in self.coordinates.values()][self.info('right angle', index, 1)]
 
-            midpoint = [(point1[0] + point2[0]) / 2, (point1[1] + point2[1]) / 2]
+            left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
+            right_alpha = math.degrees(math.atan((max(angle_coord[1], right_coord[1]) - min(angle_coord[1], right_coord[1])) / (max(angle_coord[0], right_coord[0]) - min(angle_coord[0], right_coord[0]))))
 
-            try: angle = math.degrees(math.atan((max(angle_coord[1], midpoint[1]) - min(angle_coord[1], midpoint[1])) / (max(angle_coord[0], midpoint[0]) - min(angle_coord[0], midpoint[0]))))
-            except: angle = 0
+            if not angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 360 - left_alpha
+            elif angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha
+            elif angle_coord[0] > left_coord[0] and not angle_coord[1] < left_coord[1]: left_angle = 180 - left_alpha
+            else: left_angle = left_alpha
 
-            x_offset = offset * math.cos(math.radians(angle))
-            y_offset = offset * math.sin(math.radians(angle))
+            if not angle_coord[0] > right_coord[0] and angle_coord[1] < right_coord[1]: right_angle = 360 - right_alpha
+            elif angle_coord[0] > right_coord[0] and angle_coord[1] < right_coord[1]: right_angle = 180 + right_alpha
+            elif angle_coord[0] > right_coord[0] and not angle_coord[1] < right_coord[1]: right_angle = 180 - right_alpha
+            else: right_angle = right_alpha
 
-            if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
-            if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
+            total_angle = (left_angle + right_angle) / 2
+
+            x_offset = offset * math.cos(math.radians(total_angle)) * -1
+            y_offset = offset * math.sin(math.radians(total_angle))
 
             self.angle_labels[key] = [angle_coord[0] + x_offset, angle_coord[1] + y_offset]
 
 
+
+            midpoint = [(left_coord[0] + right_coord[0]) / 2, (left_coord[1] + right_coord[1]) / 2]
             
-            try:angle = math.degrees(math.atan((max(point1[1], point2[1]) - min(point1[1], point2[1])) / (max(point1[0], point2[0]) - min(point1[0], point2[0])))) + 90
+            try: angle = math.degrees(math.atan((max(left_coord[1], right_coord[1]) - min(left_coord[1], right_coord[1])) / (max(left_coord[0], right_coord[0]) - min(left_coord[0], right_coord[0])))) + 90
             except: angle = 0
 
             x_offset = offset * math.cos(math.radians(angle))
             y_offset = offset * math.sin(math.radians(angle))
 
-            if midpoint[0] - angle_coord[0] > 0: x_offset *= -1
-            if midpoint[1] - angle_coord[1] > 0: y_offset *= -1
+            if left_coord[0] < right_coord[0] and left_coord[1] < right_coord[1]:
+                if x_offset < 0: x_offset *= -1
+                if y_offset > 0: y_offset *= -1
 
-            self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] - y_offset]
+            elif left_coord[0] > right_coord[0] and left_coord[1] < right_coord[1]:
+                if x_offset < 0: x_offset *= -1
+                if y_offset < 0: y_offset *= -1
+
+            elif left_coord[0] < right_coord[0] and left_coord[1] > right_coord[1]:
+                if x_offset > 0: x_offset *= -1
+                if y_offset > 0: y_offset *= -1
+
+            elif left_coord[0] > right_coord[0] and left_coord[1] > right_coord[1]:
+                if x_offset > 0: x_offset *= -1
+                if y_offset < 0: y_offset *= -1
+
+
+
+            self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
             
 
 
 class Gui:
+
+    is_ambiguous = False
 
     def __init__(self, parent) -> None:
 
@@ -321,23 +364,23 @@ class Gui:
 
         for box in self.angle_boxes + self.length_boxes:
 
-            if box.data.edit_modified():
+            if box.edit_modified():
 
                 try: 
                     if box != self.last_modified:
 
                         # loop through all boxes, and reset the previous last modified box
                         for item in self.angle_boxes + self.length_boxes:
-                            item.data.edit_modified(False)
+                            item.edit_modified(False)
 
                         self.last_modified = box
 
                 except: self.last_modified = box
 
-                box.data.edit_modified(False)
+                box.edit_modified(False)
 
-                self.logic.angles = [x.data.get(1.0, tk.END) for x in self.angle_boxes]
-                self.logic.lengths = [x.data.get(1.0, tk.END) for x in self.length_boxes]
+                self.logic.angles = [x.get(1.0, tk.END) for x in self.angle_boxes]
+                self.logic.lengths = [x.get(1.0, tk.END) for x in self.length_boxes]
 
                 for index in range(len(self.logic.angles)):
                     try: self.logic.angles[index] = float(self.logic.angles[index])
@@ -347,11 +390,29 @@ class Gui:
                     try: self.logic.lengths[index] = float(self.logic.lengths[index])
                     except: self.logic.lengths[index] = 0
 
-                self.place_triangle(self.logic.calculate_triangle())
+                output, ambiguous = self.logic.check_triangle()
+
+                if ambiguous:
+
+
+                    self.ambiguous.angles = 1 * self.logic.angles
+                    self.ambiguous.lengths = 1 * self.logic.lengths
+
+                    self.ambiguous.calculate_triangle(ambiguous) # somehow this is filling out all the values for the non ambiguous triangle
+
+                    self.ambiguous_toggle('create')
+
+                else: self.ambiguous_toggle('delete')
+
+                self.logic.calculate_triangle(ambiguous)
+
+                self.place_triangle(self.logic.calculate_triangle(ambiguous))
 
 
 
     def clear_gui(self):
+
+        keyboard.add_hotkey('e', print('hi'))
 
         keyboard.unhook_all_hotkeys()
 
@@ -368,7 +429,8 @@ class Gui:
 
         self.parent.geometry('650x850')
 
-        self.logic = Logic()
+        self.logic = Logic(False, 'Logic')
+        self.ambiguous = Logic(True, 'ambiguous')
 
         keyboard.hook(self.text_boxes_callback)
 
@@ -388,11 +450,25 @@ class Gui:
 
         self.make_length_text()
 
-        self.place_labels('create')
+        self.place_labels(type='create')
         
-        self.triangle_error('create')
+        self.edit_triangle('create')
 
         self.clear_data()
+
+
+
+
+
+              
+
+        # change the shape of the triangle to match the inputted values
+
+        # limit the size of the triangle
+
+        # have a reset button
+
+        # have text boxes at the bottom for each side length and angle value
 
         self.parent.resizable(False, False)
 
@@ -420,7 +496,7 @@ class Gui:
 
         for box in self.angle_boxes:
 
-            box.data.edit_modified(False)
+            box.edit_modified(False)
 
 
 
@@ -446,28 +522,29 @@ class Gui:
 
         for box in self.length_boxes:
 
-            box.data.edit_modified(False)
+            box.edit_modified(False)
 
 
 
     def clear_data(self):
 
         for box in self.angle_boxes + self.length_boxes:
-            box.data.delete(1.0, tk.END)
-            box.data.edit_modified(False)
+            box.delete(1.0, tk.END)
+            box.edit_modified(False)
 
         try:self.canvas.delete(self.triangle)
         except:pass
 
-        self.logic.coordinates = {'a': [100.0, 519.8557158514986], 'b': [325.00000000000006, 130.14428414850133], 'c': [550.0, 519.8557158514986]}
+        self.logic.angles = [60, 60, 60]
+        self.logic.lengths = [1, 1, 1]
 
-        self.place_triangle(self.logic.coordinates, no=True)
+        self.place_triangle(self.logic.calculate_triangle(False), no=True)
 
         self.text_boxes_callback(-2147483648)
         
 
 
-    def triangle_error(self, type = ''):
+    def edit_triangle(self, type = ''):
 
         if type == 'delete':
 
@@ -499,70 +576,102 @@ class Gui:
         except:pass
 
         self.error_text.place(x = 125, y = 325)
-        self.place_labels('delete')
+        self.place_labels(type='delete')
         return 1
 
         
 
-    def update_text_boxes(self):
+    def update_text_boxes(self, data):
 
         for index in range(len(self.angle_boxes)):
 
             if self.angle_boxes[index] != self.last_modified:
 
-                self.angle_boxes[index].data.delete(1.0, tk.END)
-                self.angle_boxes[index].data.insert(tk.END, self.logic.angles[index])
+                self.angle_boxes[index].delete(1.0, tk.END)
+                self.angle_boxes[index].insert(tk.END, data.angles[index])
 
-                self.angle_boxes[index].data.edit_modified(False)
+                self.angle_boxes[index].edit_modified(False)
 
         for index in range(len(self.length_boxes)):
 
             if self.length_boxes[index] != self.last_modified:
 
-                self.length_boxes[index].data.delete(1.0, tk.END)
-                self.length_boxes[index].data.insert(tk.END, self.logic.lengths[index])
+                self.length_boxes[index].delete(1.0, tk.END)
+                self.length_boxes[index].insert(tk.END, data.lengths[index])
 
-                self.length_boxes[index].data.edit_modified(False)
+                self.length_boxes[index].edit_modified(False)
     
 
 
-    def place_triangle(self, coordinates, no = False):
+    def place_triangle(self, data, no = False):
 
-        if self.triangle_error(coordinates): return
+        if self.edit_triangle(data): return
 
-        self.place_labels()
-        
-        # something gotta be here for ambiguous case
+        self.place_labels(data)
 
-        points = [coordinates["a"][0], coordinates["a"][1], coordinates["b"][0], coordinates["b"][1], coordinates["c"][0], coordinates["c"][1]]
+        points = [data.coordinates["a"][0], data.coordinates["a"][1], data.coordinates["b"][0], data.coordinates["b"][1], data.coordinates["c"][0], data.coordinates["c"][1]]
 
         try: self.canvas.delete(self.triangle)
         except:pass
-        try: self.triangle_error('delete')
+        try: self.edit_triangle('delete')
         except:pass
 
         self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=3)
 
         if no: return
-        self.update_text_boxes()
+        self.update_text_boxes(data)
 
 
 
-    def place_labels(self, type = ''):
+    def ambiguous_toggle(self, mode = ''):
+
+
+        if mode == 'create':
+            self.ambiguous_button = tk.Button(self.parent, text='case 1', anchor='center', bg='white', command=lambda:self.ambiguous_toggle())
+            self.ambiguous_button.configure(font=('Arial', 15, 'bold'))
+            self.ambiguous_button.place(x = 5, y = 600)
+            return
+
+        elif mode == 'delete':
+            try: self.ambiguous_button.place_forget()
+            except:pass
+            return
+
+        else: Gui.is_ambiguous = not Gui.is_ambiguous
+
+        if Gui.is_ambiguous:
+
+            self.ambiguous_button.configure(text='case 2')
+            self.ambiguous_button.place(x = 5, y = 600)
+
+            self.place_triangle(self.ambiguous)
+
+        elif not Gui.is_ambiguous:
+
+            self.ambiguous_button.configure(text='case 1')
+            self.ambiguous_button.place(x = 5, y = 600)
+
+            self.place_triangle(self.logic)
+
+
+
+    def place_labels(self, data = True, type = ''):
+
+        if data == True: data = self.logic
 
         if type == 'create':
 
             self.labels = {}
 
-            for key in self.logic.angle_labels.keys():
+            for key in data.angle_labels.keys():
 
                 self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 25, 'bold'))
+                self.labels[key].configure(font=('Arial', 24, 'bold'))
 
-            for key in self.logic.length_labels.keys():
+            for key in data.length_labels.keys():
 
                 self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 25, 'bold'))
+                self.labels[key].configure(font=('Arial', 24, 'bold'))
 
         elif type == 'delete':
 
@@ -570,13 +679,15 @@ class Gui:
 
                 self.labels[key].place_forget()
 
+
+
         else: 
 
-            self.logic.calculate_labels()
+            data.calculate_labels()
 
             for key in self.labels.keys():
 
-                self.labels[key].place(x = (self.logic.angle_labels | self.logic.length_labels)[key][0] - 12.5, y = (self.logic.angle_labels | self.logic.length_labels)[key][1] - 12.5)
+                self.labels[key].place(x = (data.angle_labels | data.length_labels)[key][0] - 12, y = (data.angle_labels | data.length_labels)[key][1] - 21)
 
 
 

@@ -60,6 +60,8 @@ class Gui:
 
     def clear_gui(self):
 
+        keyboard.add_hotkey('e', print('hi'))
+
         keyboard.unhook_all_hotkeys()
 
         for widget in self.parent.winfo_children():
@@ -68,7 +70,7 @@ class Gui:
 
 
     def create_gui(self):
-
+        
         self.clear_gui()
 
         self.parent.title('Calculator')
@@ -508,6 +510,7 @@ class Gui:
         keyboard.add_hotkey('backspace', lambda:self.clear())
 
 
+
     # the function bound to the 'equals' button to output a result for an equation.
     def calculate(self):
 
@@ -734,7 +737,7 @@ class Gui:
         print(f"memory: {('').join(self.display_text)}")
 
         # assign a number to the memory variable
-        self.logic.memory = self.display_text
+        self.logic.memory = ('').join(self.display_text)
 
 
 
