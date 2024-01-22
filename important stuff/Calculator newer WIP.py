@@ -64,7 +64,7 @@ class Window:
         self.gui.create_gui()
 
         # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Trigonometry')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
         if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
