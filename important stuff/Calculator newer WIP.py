@@ -76,7 +76,7 @@ class Window:
         if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
         elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 655)
+        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
         elif type == 'Variable'    : self.gui.parent.options.place(x = 10, y = 185)
 
         

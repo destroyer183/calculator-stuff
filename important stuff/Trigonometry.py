@@ -10,10 +10,18 @@ import time
 
 add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
 
+add button to swap between manual and automatic calculation modes
+
 '''
 
 
-max_side_length = 450
+MAX_SIDE_LENGTH = 450
+
+ANGLE_TEXT_REFX = 100
+ANGLE_BOX_REFX  = 170
+
+LENGTH_TEXT_REFX = 350
+LENGTH_BOX_REFX = 420
 
 # function to convert text to superscript.
 def get_super(x):
@@ -247,7 +255,7 @@ class Logic:
     def build_triangle(self):
 
         # scale side lengths
-        scale_ratio = max_side_length / max(self.lengths)
+        scale_ratio = MAX_SIDE_LENGTH / max(self.lengths)
         temp = [x * scale_ratio for x in self.lengths]
 
         # calculate coordinates for the triangle points
@@ -297,8 +305,10 @@ class Logic:
             left_coord  = [x for x in self.coordinates.values()][self.info('left angle', index, 1)]
             right_coord = [x for x in self.coordinates.values()][self.info('right angle', index, 1)]
 
-            left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
-            right_alpha = math.degrees(math.atan((max(angle_coord[1], right_coord[1]) - min(angle_coord[1], right_coord[1])) / (max(angle_coord[0], right_coord[0]) - min(angle_coord[0], right_coord[0]))))
+            try: left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
+            except: left_alpha = 90
+            try: right_alpha = math.degrees(math.atan((max(angle_coord[1], right_coord[1]) - min(angle_coord[1], right_coord[1])) / (max(angle_coord[0], right_coord[0]) - min(angle_coord[0], right_coord[0]))))
+            except: right_alpha = 90
 
             if not angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 360 - left_alpha
             elif angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha
@@ -345,6 +355,15 @@ class Logic:
 
 
 
+            elif left_coord[0] == right_coord[0] and left_coord[1] == angle_coord[1] and left_coord[0] < angle_coord[0]:
+                if x_offset > 0: x_offset *= -1
+
+            elif left_coord[0] == right_coord[0] and right_coord[1] == angle_coord[1] and right_coord[0] > angle_coord[0]:
+                if x_offset < 0: x_offset *= -1
+
+
+
+
             self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
             
 
@@ -356,11 +375,16 @@ class Gui:
     def __init__(self, parent) -> None:
 
         self.parent = parent
+        self.mode_toggle = False 
+        self.logic = Logic(False, 'Logic')
+        self.ambiguous = Logic(True, 'ambiguous')
 
 
 
     # function to detect optionmenu changes
-    def text_boxes_callback(self, some_value_idk):
+    def text_boxes_callback(self, x = None):
+
+        if self.mode_toggle and x is not None: return
 
         for box in self.angle_boxes + self.length_boxes:
 
@@ -394,13 +418,12 @@ class Gui:
 
                 if ambiguous:
 
-
                     self.ambiguous.angles = 1 * self.logic.angles
                     self.ambiguous.lengths = 1 * self.logic.lengths
 
                     self.ambiguous.calculate_triangle(ambiguous) # somehow this is filling out all the values for the non ambiguous triangle
 
-                    self.ambiguous_toggle('create')
+                    self.ambiguous_toggle()
 
                 else: self.ambiguous_toggle('delete')
 
@@ -429,36 +452,80 @@ class Gui:
 
         self.parent.geometry('650x850')
 
-        self.logic = Logic(False, 'Logic')
-        self.ambiguous = Logic(True, 'ambiguous')
-
-        self.reset_button = tk.Button(self.parent, text='Clear', anchor='center', bg='white', command=lambda:self.clear_data())
-        self.reset_button.configure(font=('Arial', 15, 'bold'))
-        self.reset_button.place(x = 5, y = 655)
-
-        # add button to rotate triangle
-
         self.canvas = Canvas(self.parent, width = 650, height = 654)
 
         self.canvas.pack(fill = BOTH)
 
         self.canvas.create_rectangle(0, 650, 650, 654, fill='black')
 
-        self.make_angle_text()
+        self.reset_button = tk.Button(self.parent, text='Clear', anchor='center', bg='white', command=lambda:self.clear_data())
+        self.reset_button.configure(font=('Arial', 15, 'bold'))
+        self.reset_button.place(x = 5, y = 660)
 
-        self.make_length_text()
+        self.mode_button = tk.Button(self.parent, text='Automatic', anchor='center', bg='white', command=lambda:self.swap_modes())
+        self.mode_button.configure(font=('Arial', 15, 'bold'))
+        self.mode_button.place(x = 325, y = 660, anchor='n')
 
-        self.place_labels(type='create')
+        self.ambiguous_button = tk.Button(self.parent, text='case 1', anchor='center', bg='white', command=lambda:self.ambiguous_toggle())
+        self.ambiguous_button.configure(font=('Arial', 15, 'bold'))
+
+        self.error_text = tk.Label(self.parent, text='')
+        self.error_text.configure(font=('Arial', 25, 'bold'))
         
-        self.edit_triangle('create')
+        self.calculate = tk.Button(self.parent, text='Calculate', anchor='center', bg='white', command=lambda:self.text_boxes_callback(None))
+        self.calculate.configure(font=('Arial', 15, 'bold'))
+        
+        self.angle_boxes  = [0, 0, 0]
+        self.length_boxes = [0, 0, 0]
+
+        self.angle_text  = tk.Label(self.parent, text = 'A = \nB = \nC = ')
+        self.length_text = tk.Label(self.parent, text = 'a = \nb = \nc = ')
+
+        self.angle_boxes[0]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[1]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[2]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+
+        self.angle_text. configure(font=('Arial', 26, 'bold'))
+        self.length_text.configure(font=('Arial', 26, 'bold'))
+
+        self.angle_boxes[0]. configure(font=('Arial', 20))
+        self.angle_boxes[1]. configure(font=('Arial', 20))
+        self.angle_boxes[2]. configure(font=('Arial', 20))
+        self.length_boxes[0].configure(font=('Arial', 20))
+        self.length_boxes[1].configure(font=('Arial', 20))
+        self.length_boxes[2].configure(font=('Arial', 20))
+
+        self.angle_text. place(x = ANGLE_TEXT_REFX, y = 705)
+        self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
+
+        self.angle_boxes[0]. place(x = ANGLE_BOX_REFX, y = 709)
+        self.angle_boxes[1]. place(x = ANGLE_BOX_REFX, y = 751)
+        self.angle_boxes[2]. place(x = ANGLE_BOX_REFX, y = 792)
+        self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
+        self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
+        self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
+
+        self.labels = {'A': '', 'B': '', 'C': '', 'a': '', 'b': '', 'c': ''}
+
+        for key in self.labels.keys():
+
+            self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
+            self.labels[key].configure(font=('Arial', 24, 'bold'))
+
+        for box in self.angle_boxes + self.length_boxes:
+
+            box.bind("<KeyRelease>", self.text_boxes_callback)
+
+            box.edit_modified(False)
+
+
 
         self.clear_data()
 
 
-
-
-
-              
 
         # change the shape of the triangle to match the inputted values
 
@@ -472,59 +539,39 @@ class Gui:
 
 
 
-    def make_angle_text(self):
-        
-        self.angle_text = tk.Label(self.parent, text = 'A = \nB = \nC = ')
-        self.angle_text.configure(font=('Arial', 26, 'bold'))
-        self.angle_text.place(x = 100, y = 695)
+    def swap_modes(self):
 
-        self.angle_boxes = [0, 0, 0]
+        self.mode_toggle = not self.mode_toggle
 
-        self.angle_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[0].configure(font=('Arial', 20))
-        self.angle_boxes[0].place(x = 170, y = 699)
+        if self.mode_toggle:
+            
+            self.mode_button.configure(text='Manual')
+            self.calculate.place(x = 550, y = 750, anchor='n')
 
-        self.angle_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[1].configure(font=('Arial', 20))
-        self.angle_boxes[1].place(x = 170, y = 741)
+            self.angle_text. place(x = ANGLE_TEXT_REFX - 75, y = 705)
+            self.length_text.place(x = LENGTH_TEXT_REFX - 75, y = 705)
 
-        self.angle_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[2].configure(font=('Arial', 20))
-        self.angle_boxes[2].place(x = 170, y = 782)
+            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX - 75, y = 709)
+            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX - 75, y = 751)
+            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX - 75, y = 792)
+            self.length_boxes[0].place(x = LENGTH_BOX_REFX - 75, y = 709)
+            self.length_boxes[1].place(x = LENGTH_BOX_REFX - 75, y = 751)
+            self.length_boxes[2].place(x = LENGTH_BOX_REFX - 75, y = 792)
 
-        for box in self.angle_boxes:
+        else:
 
-            box.bind("<KeyRelease>", self.text_boxes_callback)
+            self.mode_button.configure(text='Automatic')
+            self.calculate.place_forget()
 
-            box.edit_modified(False)
-
-
-
-    def make_length_text(self):
-
-        self.length_text = tk.Label(self.parent, text = 'a = \nb = \nc = ')
-        self.length_text.configure(font=('Arial', 26, 'bold'))
-        self.length_text.place(x = 350, y = 695)
-
-        self.length_boxes = [0, 0, 0]
-
-        self.length_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[0].configure(font=('Arial', 20))
-        self.length_boxes[0].place(x = 420, y = 699)
-
-        self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[1].configure(font=('Arial', 20))
-        self.length_boxes[1].place(x = 420, y = 741)
-
-        self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[2].configure(font=('Arial', 20))
-        self.length_boxes[2].place(x = 420, y = 782)
-
-        for box in self.length_boxes:
-
-            box.bind("<KeyRelease>", self.text_boxes_callback)
-
-            box.edit_modified(False)
+            self.angle_text. place(x = ANGLE_TEXT_REFX, y = 705)
+            self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
+    
+            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX, y = 709)
+            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX, y = 751)
+            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX, y = 792)
+            self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
+            self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
+            self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
 
 
 
@@ -540,35 +587,29 @@ class Gui:
         self.logic.angles = [60, 60, 60]
         self.logic.lengths = [1, 1, 1]
 
+        self.ambiguous_toggle('delete')
+
         self.place_triangle(self.logic.calculate_triangle(False), no=True)
 
         self.text_boxes_callback(-2147483648)
+
+        Gui.is_ambiguous = False
         
 
 
     def edit_triangle(self, type = ''):
 
         if type == 'delete':
-
             self.error_text.place_forget()
             return
 
         elif type == 'unsolvable':
-
             self.error_text.configure(text='not enough information')
 
         elif type == 'impossible':
-
             self.error_text.configure(text='triangle does not exist')
 
-        elif type == 'create':
-
-            self.error_text = tk.Label(self.parent, text='')
-            self.error_text.configure(font=('Arial', 25, 'bold'))
-            return
-        
         elif type == 'clear data':
-
             self.clear_data()
             return
         
@@ -577,8 +618,8 @@ class Gui:
         try:self.canvas.delete(self.triangle)
         except:pass
 
-        self.error_text.place(x = 125, y = 325)
         self.place_labels(type='delete')
+        self.error_text.place(x = 125, y = 325)
         return 1
 
         
@@ -591,7 +632,6 @@ class Gui:
 
                 self.angle_boxes[index].delete(1.0, tk.END)
                 self.angle_boxes[index].insert(tk.END, data.angles[index])
-
                 self.angle_boxes[index].edit_modified(False)
 
         for index in range(len(self.length_boxes)):
@@ -600,7 +640,6 @@ class Gui:
 
                 self.length_boxes[index].delete(1.0, tk.END)
                 self.length_boxes[index].insert(tk.END, data.lengths[index])
-
                 self.length_boxes[index].edit_modified(False)
     
 
@@ -627,33 +666,25 @@ class Gui:
 
     def ambiguous_toggle(self, mode = ''):
 
-
-        if mode == 'create':
-            self.ambiguous_button = tk.Button(self.parent, text='case 1', anchor='center', bg='white', command=lambda:self.ambiguous_toggle())
-            self.ambiguous_button.configure(font=('Arial', 15, 'bold'))
-            self.ambiguous_button.place(x = 5, y = 600)
-            return
-
-        elif mode == 'delete':
+        if mode == 'delete':
             try: self.ambiguous_button.place_forget()
             except:pass
             return
 
-        else: Gui.is_ambiguous = not Gui.is_ambiguous
 
         if Gui.is_ambiguous:
 
             self.ambiguous_button.configure(text='case 2')
             self.ambiguous_button.place(x = 5, y = 600)
-
             self.place_triangle(self.ambiguous)
 
         elif not Gui.is_ambiguous:
 
             self.ambiguous_button.configure(text='case 1')
             self.ambiguous_button.place(x = 5, y = 600)
-
             self.place_triangle(self.logic)
+        
+        Gui.is_ambiguous = not Gui.is_ambiguous
 
 
 
@@ -661,27 +692,11 @@ class Gui:
 
         if data == True: data = self.logic
 
-        if type == 'create':
-
-            self.labels = {}
-
-            for key in data.angle_labels.keys():
-
-                self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 24, 'bold'))
-
-            for key in data.length_labels.keys():
-
-                self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-                self.labels[key].configure(font=('Arial', 24, 'bold'))
-
-        elif type == 'delete':
+        if type == 'delete':
 
             for key in self.labels.keys():
 
                 self.labels[key].place_forget()
-
-
 
         else: 
 
