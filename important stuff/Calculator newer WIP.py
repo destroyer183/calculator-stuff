@@ -2,7 +2,10 @@ import tkinter as tk
 from tkinter import *
 import os
 import Scientific
+import Factoring
+import Quadratic
 import Trigonometry
+import Variable
 
 
 ''' NOTES 
@@ -59,16 +62,22 @@ class Window:
     def make_gui(self, type):
 
         if   type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
+        elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
+        elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
         elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
+        elif type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
 
         self.gui.create_gui()
 
         # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Trigonometry')
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
         if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 655)
+        elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
+        elif type == 'Variable'    : self.gui.parent.options.place(x = 10, y = 185)
 
         
 
@@ -136,7 +145,7 @@ def main():
 
     Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', options_callback)
-    Window.option_choices.set('Scientific')
+    Window.option_choices.set('Trigonometry')
 
     # run the gui
     Window.instance.gui.parent.mainloop()
