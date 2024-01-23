@@ -432,8 +432,6 @@ class Gui:
         self.logic = Logic(False, 'Logic')
         self.ambiguous = Logic(True, 'ambiguous')
 
-        keyboard.hook(self.text_boxes_callback)
-
         self.reset_button = tk.Button(self.parent, text='Clear', anchor='center', bg='white', command=lambda:self.clear_data())
         self.reset_button.configure(font=('Arial', 15, 'bold'))
         self.reset_button.place(x = 5, y = 655)
@@ -496,6 +494,8 @@ class Gui:
 
         for box in self.angle_boxes:
 
+            box.bind("<KeyRelease>", self.text_boxes_callback)
+
             box.edit_modified(False)
 
 
@@ -521,6 +521,8 @@ class Gui:
         self.length_boxes[2].place(x = 420, y = 782)
 
         for box in self.length_boxes:
+
+            box.bind("<KeyRelease>", self.text_boxes_callback)
 
             box.edit_modified(False)
 
