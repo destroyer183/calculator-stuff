@@ -10,8 +10,6 @@ import time
 
 add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
 
-add button to swap between manual and automatic calculation modes
-
 '''
 
 
@@ -232,6 +230,7 @@ class Logic:
                 return
 
 
+
         # side angle side
         for index in range(len(self.angles)):
 
@@ -249,7 +248,6 @@ class Logic:
 
         return self.solve_triangle(ambiguous)
     
-
 
 
     def build_triangle(self):
@@ -354,14 +352,11 @@ class Logic:
                 if y_offset < 0: y_offset *= -1
 
 
-
             elif left_coord[0] == right_coord[0] and left_coord[1] == angle_coord[1] and left_coord[0] < angle_coord[0]:
                 if x_offset > 0: x_offset *= -1
 
             elif left_coord[0] == right_coord[0] and right_coord[1] == angle_coord[1] and right_coord[0] > angle_coord[0]:
                 if x_offset < 0: x_offset *= -1
-
-
 
 
             self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
