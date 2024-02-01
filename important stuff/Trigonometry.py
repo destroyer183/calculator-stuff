@@ -171,10 +171,10 @@ class Logic:
         # DON'T FORGET ABOUT THE AMBIGUOUS CASE!!!
         for index in range(len(self.angles)):
 
-            if self.angles[index] < 90 and (
+            if 0 < self.angles[index] < 90 and (
                     (self.info('adjacent side left', index)  > self.info('opposite side', index) and self.info('opposite side', index)) or
                     (self.info('adjacent side right', index) > self.info('opposite side', index) and self.info('opposite side', index))):
-                
+
                 # do something for ambiguous case
                 return 'yes', True
             
@@ -279,6 +279,9 @@ class Logic:
         # check if triangle is solvable
         output, temp = self.check_triangle()
 
+        if temp: print('triangle is ambiguous')
+        else: print('triangle is not ambiguous')
+
         if output != 'yes': return output
 
         # solve triangle
@@ -370,6 +373,7 @@ class Gui:
     def __init__(self, parent) -> None:
 
         self.parent = parent
+        self.ambiguous_triangle = False
         self.mode_toggle = False 
         self.logic = Logic(False, 'Logic')
         self.ambiguous = Logic(True, 'ambiguous')
@@ -379,11 +383,18 @@ class Gui:
     # function to detect optionmenu changes
     def text_boxes_callback(self, x = None):
 
-        if self.mode_toggle and x is not None: return
+        print(f"x: {x}")
 
         for box in self.angle_boxes + self.length_boxes:
 
             if box.edit_modified():
+
+                try: temp = float(box.get(1.0, tk.END))
+                except: box.delete(len(box.get(1.0, tk.END)) - 1.0, tk.END); return
+
+                print('yes')
+
+                if self.mode_toggle and x is not None: return
 
                 try: 
                     if box != self.last_modified:
@@ -416,7 +427,7 @@ class Gui:
                     self.ambiguous.angles = 1 * self.logic.angles
                     self.ambiguous.lengths = 1 * self.logic.lengths
 
-                    self.ambiguous.calculate_triangle(ambiguous) # somehow this is filling out all the values for the non ambiguous triangle
+                    self.ambiguous.calculate_triangle(ambiguous)
 
                     self.ambiguous_toggle()
 
@@ -446,6 +457,8 @@ class Gui:
         self.parent.title('Trigonometry Calculator')
 
         self.parent.geometry('650x850')
+
+        self.keybindings()
 
         self.canvas = Canvas(self.parent, width = 650, height = 654)
 
@@ -512,7 +525,7 @@ class Gui:
 
         for box in self.angle_boxes + self.length_boxes:
 
-            box.bind("<KeyRelease>", self.text_boxes_callback)
+            box.bind("<KeyRelease>", self.keybindings)
 
             box.edit_modified(False)
 
@@ -522,15 +535,20 @@ class Gui:
 
 
 
-        # change the shape of the triangle to match the inputted values
-
-        # limit the size of the triangle
-
-        # have a reset button
-
-        # have text boxes at the bottom for each side length and angle value
-
         self.parent.resizable(False, False)
+
+
+
+    def keybindings(self, input = None):
+
+        try: temp = input.keysym
+        except:return
+
+        if input.char == "\r": self.text_boxes_callback(None)
+        if input.keycode == 27: self.clear_data()
+        if input.char == "m": self.swap_modes()
+        if input.char == "t" and self.ambiguous_triangle: self.ambiguous_toggle()
+        else: self.text_boxes_callback(input)
 
 
 
@@ -543,12 +561,12 @@ class Gui:
             self.mode_button.configure(text='Manual')
             self.calculate.place(x = 550, y = 750, anchor='n')
 
-            self.angle_text. place(x = ANGLE_TEXT_REFX - 75, y = 705)
+            self.angle_text. place(x = ANGLE_TEXT_REFX  - 75, y = 705)
             self.length_text.place(x = LENGTH_TEXT_REFX - 75, y = 705)
 
-            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX - 75, y = 709)
-            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX - 75, y = 751)
-            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX - 75, y = 792)
+            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX  - 75, y = 709)
+            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX  - 75, y = 751)
+            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX  - 75, y = 792)
             self.length_boxes[0].place(x = LENGTH_BOX_REFX - 75, y = 709)
             self.length_boxes[1].place(x = LENGTH_BOX_REFX - 75, y = 751)
             self.length_boxes[2].place(x = LENGTH_BOX_REFX - 75, y = 792)
@@ -558,12 +576,12 @@ class Gui:
             self.mode_button.configure(text='Automatic')
             self.calculate.place_forget()
 
-            self.angle_text. place(x = ANGLE_TEXT_REFX, y = 705)
+            self.angle_text. place(x = ANGLE_TEXT_REFX,  y = 705)
             self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
     
-            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX, y = 709)
-            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX, y = 751)
-            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX, y = 792)
+            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX,  y = 709)
+            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX,  y = 751)
+            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX,  y = 792)
             self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
             self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
             self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
@@ -662,19 +680,21 @@ class Gui:
     def ambiguous_toggle(self, mode = ''):
 
         if mode == 'delete':
-            try: self.ambiguous_button.place_forget()
-            except:pass
-            return
 
+            self.ambiguous_triangle = False
+            self.ambiguous_button.place_forget()
+            return
 
         if Gui.is_ambiguous:
 
+            self.ambiguous_triangle = True
             self.ambiguous_button.configure(text='case 2')
             self.ambiguous_button.place(x = 5, y = 600)
             self.place_triangle(self.ambiguous)
 
         elif not Gui.is_ambiguous:
 
+            self.ambiguous_triangle = True
             self.ambiguous_button.configure(text='case 1')
             self.ambiguous_button.place(x = 5, y = 600)
             self.place_triangle(self.logic)
