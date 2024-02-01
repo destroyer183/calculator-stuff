@@ -171,10 +171,10 @@ class Logic:
         # DON'T FORGET ABOUT THE AMBIGUOUS CASE!!!
         for index in range(len(self.angles)):
 
-            if self.angles[index] < 90 and (
+            if 0 < self.angles[index] < 90 and (
                     (self.info('adjacent side left', index)  > self.info('opposite side', index) and self.info('opposite side', index)) or
                     (self.info('adjacent side right', index) > self.info('opposite side', index) and self.info('opposite side', index))):
-                
+
                 # do something for ambiguous case
                 return 'yes', True
             
@@ -278,6 +278,9 @@ class Logic:
 
         # check if triangle is solvable
         output, temp = self.check_triangle()
+
+        if temp: print('triangle is ambiguous')
+        else: print('triangle is not ambiguous')
 
         if output != 'yes': return output
 
@@ -531,14 +534,6 @@ class Gui:
         self.clear_data()
 
 
-
-        # change the shape of the triangle to match the inputted values
-
-        # limit the size of the triangle
-
-        # have a reset button
-
-        # have text boxes at the bottom for each side length and angle value
 
         self.parent.resizable(False, False)
 
