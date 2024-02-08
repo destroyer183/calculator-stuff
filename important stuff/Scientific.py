@@ -520,14 +520,14 @@ class Gui:
         equation_str = ('').join(self.logic.equation)
 
         # this is necessary
-        if equation_str == "9 + 10": answer = "21"
+        if equation_str == '9 + 10': answer = '21'
 
         # give the equation parser the equation string and set the output to a variable
         else: answer = shunting_yard_evaluator(equation_str, self.is_radians)
 
         if not answer:
 
-            print("Could not calculate answer")
+            print('Could not calculate answer')
             
             return
         

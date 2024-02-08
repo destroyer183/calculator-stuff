@@ -3,12 +3,15 @@ from tkinter import *
 import keyboard
 import math
 import time
+import enum
 
 
 
 ''' NOTES
 
 add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
+
+allow the user to input angles over 180* by using modulus
 
 '''
 
@@ -20,6 +23,30 @@ ANGLE_BOX_REFX  = 170
 
 LENGTH_TEXT_REFX = 350
 LENGTH_BOX_REFX = 420
+
+class Trig(enum.Enum):
+    SIDE_ANGLE_SIDE = 'side angle side'
+    SIDE_SIDE_SIDE = 'side side side'
+    ANGLE = 'angle'
+    SIDE = 'side'
+
+class Info(enum.Enum):
+    OPPOSITE_SIDE = 'opposite side'
+    OPPOSITE_ANGLE = 'opposite angle'
+    ADJACENT_SIDE_LEFT = 'adjacent side left'
+    ADJACENT_SIDE_RIGHT = 'adjacent side right'
+    ADJACENT_ANGLE_LEFT = 'adjacent angle left'
+    ADJACENT_ANGLE_RIGHT = 'adjacent angle right'
+    LEFT_SIDE = 'left side'
+    RIGHT_SIDE = 'right side'
+    LEFT_ANGLE = 'left angle'
+    RIGHT_ANGLE = 'right angle'
+
+class Data(enum.Enum):
+    DELETE = 'delete'
+    UNSOLVABLE = 'unsolvable'
+    IMPOSSIBLE = 'impossible'
+    CLEAR_DATA = 'clear data'
 
 # function to convert text to superscript.
 def get_super(x):
@@ -67,17 +94,17 @@ class Logic:
 
     def cos_law(self, type, index):
 
-        if type == 'side angle side':
+        if type == Trig.SIDE_ANGLE_SIDE:
             
-            part_1 = self.info('left side', index) ** 2 + self.info('right side', index) ** 2
-            part_2 = 2 * self.info('left side', index) * self.info('right side', index) * math.cos(math.radians(self.info('opposite angle', index)))
+            part_1 = self.info(Info.LEFT_SIDE, index) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2
+            part_2 = 2 * self.info(Info.LEFT_SIDE, index) * self.info(Info.RIGHT_SIDE, index) * math.cos(math.radians(self.info(Info.OPPOSITE_ANGLE, index)))
 
             return math.sqrt(part_1 - part_2)
 
-        if type == 'side side side':
+        if type == Trig.SIDE_SIDE_SIDE:
 
-            numerator = self.info('left side', index) ** 2 + self.info('right side', index) ** 2 - self.lengths[index] ** 2
-            denominator = 2 * self.info('left side', index) * self.info('right side', index)
+            numerator = self.info(Info.LEFT_SIDE, index) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2 - self.lengths[index] ** 2
+            denominator = 2 * self.info(Info.LEFT_SIDE, index) * self.info(Info.RIGHT_SIDE, index)
 
             return math.degrees(math.acos(numerator / denominator))
         
@@ -85,60 +112,60 @@ class Logic:
 
     def sin_law(self, type, index, angle_index):
 
-        if type == 'angle':
+        if type == Trig.ANGLE:
 
-            return math.degrees(math.asin(math.sin(math.radians(self.angles[angle_index])) / self.info('opposite side', angle_index) * self.info('opposite side', index)))
+            return math.degrees(math.asin(math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index) * self.info(Info.OPPOSITE_SIDE, index)))
         
-        elif type == 'side':
+        elif type == Trig.SIDE:
 
-            return math.sin(math.radians(self.info('opposite angle', index))) / (math.sin(math.radians(self.angles[angle_index])) / self.info('opposite side', angle_index))
+            return math.sin(math.radians(self.info(Info.OPPOSITE_ANGLE, index))) / (math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index))
         
 
 
-    def info(self, info, index, return_type = 0):
+    def info(self, request, index, return_type = 0):
 
-        if info == 'opposite side':
+        if request == Info.OPPOSITE_SIDE:
             return self.lengths[index]
         
-        elif info == 'opposite angle':
+        elif request == Info.OPPOSITE_ANGLE:
             return self.angles[index]
 
-        elif info == 'adjacent side left':
+        elif request == Info.ADJACENT_SIDE_LEFT:
             if index == 0: array, i = self.lengths, 2
             if index == 1: array, i = self.lengths, 0
             if index == 2: array, i = self.lengths, 1
 
-        elif info == 'adjacent side right':
+        elif request == Info.ADJACENT_SIDE_RIGHT:
             if index == 0: array, i = self.lengths, 1
             if index == 1: array, i = self.lengths, 2
             if index == 2: array, i = self.lengths, 0
 
-        elif info == 'adjacent angle left':
+        elif request == Info.ADJACENT_ANGLE_LEFT:
             if index == 0: array, i = self.angles, 2
             if index == 1: array, i = self.angles, 0
             if index == 2: array, i = self.angles, 1
 
-        elif info == 'adjacent angle right':
+        elif request == Info.ADJACENT_ANGLE_RIGHT:
             if index == 0: array, i = self.angles, 1
             if index == 1: array, i = self.angles, 2
             if index == 2: array, i = self.angles, 0
 
-        elif info == 'left side':
+        elif request == Info.LEFT_SIDE:
             if index == 0: array, i = self.lengths, 1
             if index == 1: array, i = self.lengths, 2
             if index == 2: array, i = self.lengths, 0
 
-        elif info == 'right side':
+        elif request == Info.RIGHT_SIDE:
             if index == 0: array, i = self.lengths, 2
             if index == 1: array, i = self.lengths, 0
             if index == 2: array, i = self.lengths, 1
 
-        elif info == 'left angle':
+        elif request == Info.LEFT_ANGLE:
             if index == 0: array, i = self.angles, 1
             if index == 1: array, i = self.angles, 2
             if index == 2: array, i = self.angles, 0
 
-        elif info == 'right angle':
+        elif request == Info.RIGHT_ANGLE:
             if index == 0: array, i = self.angles, 2
             if index == 1: array, i = self.angles, 0
             if index == 2: array, i = self.angles, 1
@@ -159,9 +186,9 @@ class Logic:
         for index in range(len(self.lengths)):
             if self.lengths[index] != 0: count += 1
 
-        if not count: return 'clear data', 0
+        if not count: return Data.CLEAR_DATA, 0
 
-        if count < 3: return 'unsolvable', 0
+        if count < 3: return Data.UNSOLVABLE, 0
 
         if max(self.lengths) == 0 and count <= 3: 
             self.lengths = [1, 1, 1]
@@ -172,15 +199,15 @@ class Logic:
         for index in range(len(self.angles)):
 
             if 0 < self.angles[index] < 90 and (
-                    (self.info('adjacent side left', index)  > self.info('opposite side', index) and self.info('opposite side', index)) or
-                    (self.info('adjacent side right', index) > self.info('opposite side', index) and self.info('opposite side', index))):
+                    (self.info(Info.ADJACENT_SIDE_LEFT, index)  > self.info(Info.OPPOSITE_SIDE, index) and self.info(Info.OPPOSITE_SIDE, index)) or
+                    (self.info(Info.ADJACENT_SIDE_RIGHT, index) > self.info(Info.OPPOSITE_SIDE, index) and self.info(Info.OPPOSITE_SIDE, index))):
 
                 # do something for ambiguous case
                 return 'yes', True
             
         # check if triangle can exist
         if min(self.lengths):
-            if max(self.lengths) >= 2 * (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return 'impossible', 0
+            if max(self.lengths) >= 2 * (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return Data.IMPOSSIBLE, 0
 
         return 'yes', False
 
@@ -191,7 +218,7 @@ class Logic:
         # all sides
         if min(self.lengths):
             for index in range(len(self.angles)):
-                if not self.angles[index]: self.angles[index] = self.cos_law('side side side', index)
+                if not self.angles[index]: self.angles[index] = self.cos_law(Trig.SIDE_SIDE_SIDE, index)
 
             return
         
@@ -201,13 +228,13 @@ class Logic:
             # find variable angle
             for index in range(len(self.lengths)):
 
-                if self.lengths[index] and not self.info('opposite angle', index):
+                if self.lengths[index] and not self.info(Info.OPPOSITE_ANGLE, index):
 
                     if self.is_ambiguous:
-                        self.angles[index] = 180 - self.sin_law('angle', index, find(self.angles, max(self.angles)))
+                        self.angles[index] = 180 - self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
 
                     else:
-                        self.angles[index] = self.sin_law('angle', index, find(self.angles, max(self.angles)))
+                        self.angles[index] = self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
 
 
 
@@ -216,7 +243,7 @@ class Logic:
 
             index = self.angles.index(min(self.angles))
 
-            self.angles[index] = 180 - self.info('left angle', index) - self.info('right angle', index)
+            self.angles[index] = 180 - self.info(Info.LEFT_ANGLE, index) - self.info(Info.RIGHT_ANGLE, index)
 
             # side angle angle angle
             if find(self.lengths, 0) != rfind(self.lengths, 0):
@@ -225,7 +252,7 @@ class Logic:
 
                     if not self.lengths[index]:
 
-                        self.lengths[index] = self.sin_law('side', index, self.lengths.index(max(self.lengths)))
+                        self.lengths[index] = self.sin_law(Trig.SIDE, index, self.lengths.index(max(self.lengths)))
 
                 return
 
@@ -234,8 +261,8 @@ class Logic:
         # side angle side
         for index in range(len(self.angles)):
 
-            if self.angles[index] and (self.info('adjacent side left', index) and self.info('adjacent side right', index)):
-                self.lengths[index] = self.cos_law('side angle side', index)
+            if self.angles[index] and (self.info(Info.ADJACENT_SIDE_LEFT, index) and self.info(Info.ADJACENT_SIDE_RIGHT, index)):
+                self.lengths[index] = self.cos_law(Trig.SIDE_ANGLE_SIDE, index)
 
                 return self.solve_triangle(ambiguous)
             
@@ -244,7 +271,7 @@ class Logic:
         # side side angle
         last_side = self.lengths.index(0)
 
-        self.lengths[last_side] = self.sin_law('side', last_side, self.angles.index(max(self.angles)))
+        self.lengths[last_side] = self.sin_law(Trig.SIDE, last_side, self.angles.index(max(self.angles)))
 
         return self.solve_triangle(ambiguous)
     
@@ -303,8 +330,8 @@ class Logic:
 
             angle_coord = [x for x in self.coordinates.values()][index]
 
-            left_coord  = [x for x in self.coordinates.values()][self.info('left angle', index, 1)]
-            right_coord = [x for x in self.coordinates.values()][self.info('right angle', index, 1)]
+            left_coord  = [x for x in self.coordinates.values()][self.info(Info.LEFT_ANGLE, index, 1)]
+            right_coord = [x for x in self.coordinates.values()][self.info(Info.RIGHT_ANGLE, index, 1)]
 
             try: left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
             except: left_alpha = 90
@@ -431,7 +458,7 @@ class Gui:
 
                     self.ambiguous_toggle()
 
-                else: self.ambiguous_toggle('delete')
+                else: self.ambiguous_toggle(Data.DELETE)
 
                 self.logic.calculate_triangle(ambiguous)
 
@@ -600,7 +627,7 @@ class Gui:
         self.logic.angles = [60, 60, 60]
         self.logic.lengths = [1, 1, 1]
 
-        self.ambiguous_toggle('delete')
+        self.ambiguous_toggle(Data.DELETE)
 
         self.place_triangle(self.logic.calculate_triangle(False), no=True)
 
@@ -612,17 +639,17 @@ class Gui:
 
     def edit_triangle(self, type = ''):
 
-        if type == 'delete':
+        if type == Data.DELETE:
             self.error_text.place_forget()
             return
 
-        elif type == 'unsolvable':
+        elif type == Data.UNSOLVABLE:
             self.error_text.configure(text='not enough information')
 
-        elif type == 'impossible':
+        elif type == Data.IMPOSSIBLE:
             self.error_text.configure(text='triangle does not exist')
 
-        elif type == 'clear data':
+        elif type == Data.CLEAR_DATA:
             self.clear_data()
             return
         
@@ -631,7 +658,7 @@ class Gui:
         try:self.canvas.delete(self.triangle)
         except:pass
 
-        self.place_labels(type='delete')
+        self.place_labels(type=Data.DELETE)
         self.error_text.place(x = 125, y = 325)
         return 1
 
@@ -667,7 +694,7 @@ class Gui:
 
         try: self.canvas.delete(self.triangle)
         except:pass
-        try: self.edit_triangle('delete')
+        try: self.edit_triangle(Data.DELETE)
         except:pass
 
         self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=3)
@@ -679,7 +706,7 @@ class Gui:
 
     def ambiguous_toggle(self, mode = ''):
 
-        if mode == 'delete':
+        if mode == Data.DELETE:
 
             self.ambiguous_triangle = False
             self.ambiguous_button.place_forget()
@@ -707,7 +734,7 @@ class Gui:
 
         if data == True: data = self.logic
 
-        if type == 'delete':
+        if type == Data.DELETE:
 
             for key in self.labels.keys():
 
