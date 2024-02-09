@@ -571,6 +571,8 @@ class Gui:
         try: temp = input.keysym
         except:return
 
+        print(f"keysm type: {type(input.keysym)}")
+
         if input.char == "\r": self.text_boxes_callback(None)
         if input.keycode == 27: self.clear_data()
         if input.char == "m": self.swap_modes()

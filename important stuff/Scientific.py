@@ -79,7 +79,9 @@ class Gui:
 
         self.logic = Logic()
 
-        self.keybindings()
+        # self.keybindings()
+
+        self.parent.bind('<KeyRelease>', self.keybindings)
 
         # graphical setup
         self.equation = tk.Label(self.parent, text = '')
@@ -118,15 +120,15 @@ class Gui:
         self.deg_rad        = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
 
         # column 2
-        self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memorystore())
+        self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_store())
         self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.trig_type())
         self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_SIN))
         self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_COS))
         self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_TAN))
 
         # column 3
-        self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memoryrecall())
-        self.factorial      = tk.Button(self.parent, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:self.put_factorials())
+        self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_recall())
+        self.factorial      = tk.Button(self.parent, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:self.put_factorial())
         self.exponent       = tk.Button(self.parent, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential())
         self.squared        = tk.Button(self.parent, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential(2))
         self.sqrt           = tk.Button(self.parent, text='sqrt',               anchor='center', bg='gainsboro',      command=lambda:self.put_square_root())
@@ -460,8 +462,57 @@ class Gui:
 
 
     # a function to handle all key inputs
-    def keybindings(self):
+    def keybindings(self, input):
 
+        try: temp = input.keysym
+        except:return
+
+        try: 
+            if input.state == 'Shift':
+                match input.keysym:
+
+                    case '1': lambda:self.put_factorial()
+                    case '3': lambda:self.put_square_root()
+                    case '5': lambda:self.handle_operator(' % ')
+                    case '6': lambda:self.put_exponential()
+                    case '8': lambda:self.handle_operator(' * ')
+                    case '9': lambda:self.put_brackets(L_BRACKET)
+                    case '0': lambda:self.put_brackets(R_BRACKET)
+                    case 'minus': lambda:self.negative()
+                    case 'equal': lambda:self.handle_operator(' + ')
+                    case 'BackSpace': lambda:self.clear(False)
+                    case 'm': lambda:self.memory_store()
+            
+            elif input.state == '0x20000':
+
+                if input.keysym in '1234567890': self.put_exponential(int(input.keysym))
+
+                match input.keysym:
+
+                    case 's': lambda:self.trigonometry(TRIG_FUNCTION_SIN)
+                    case 'c': lambda:self.trigonometry(TRIG_FUNCTION_COS)
+                    case 't': lambda:self.trigonometry(TRIG_FUNCTION_TAN)
+                    case 'a': lambda:self.answer()
+                    case 'u': lambda:self.unit_type()
+                    case 'e': lambda:self.put_e()
+                    case 'l': lambda:self.logarithm()
+                    case 'p': lambda:self.put_pi()
+                    case 'm': lambda:self.memory_clear()
+
+            return
+        except:pass
+
+        if input.keysym in '1234567890': lambda:self.put_number(int(input.keysym))
+
+        match input.keysym:
+            case 'BackSpace':  lambda:self.clear()
+            case 'minus':lambda:self.handle_operator(' _ ')
+            case 'Return': lambda:self.calculate()
+            case 'slash':lambda:self.handle_operator(' / ')
+            case 'period':lambda:self.put_decimal()
+            case 'm': lambda:self.memory_recall()
+
+        '''
         keyboard.add_hotkey('shift+=',   lambda:self.handle_operator(' + '))
         keyboard.add_hotkey('shift+8',   lambda:self.handle_operator(' * '))
         keyboard.add_hotkey('shift+5',   lambda:self.handle_operator(' % '))
@@ -476,7 +527,7 @@ class Gui:
         keyboard.add_hotkey('ctrl+8',    lambda:self.put_exponential(8))
         keyboard.add_hotkey('ctrl+9',    lambda:self.put_exponential(9))
         keyboard.add_hotkey('shift+0',   lambda:self.put_brackets(R_BRACKET))
-        keyboard.add_hotkey('shift+1',   lambda:self.put_factorials())
+        keyboard.add_hotkey('shift+1',   lambda:self.put_factorial())
         keyboard.add_hotkey('shift+6',   lambda:self.put_exponential())
         keyboard.add_hotkey('shift+3',   lambda:self.put_square_root())
         keyboard.add_hotkey('shift+9',   lambda:self.put_brackets(L_BRACKET))
@@ -489,11 +540,11 @@ class Gui:
         keyboard.add_hotkey('ctrl+l',    lambda:self.logarithm())
         keyboard.add_hotkey('ctrl+p',    lambda:self.put_pi())
         keyboard.add_hotkey('shift+-',   lambda:self.negative())
-        keyboard.add_hotkey('shift+m',   lambda:self.memorystore())
+        keyboard.add_hotkey('shift+m',   lambda:self.memory_store())
         keyboard.add_hotkey('ctrl+m',    lambda:self.memory_clear())
         keyboard.add_hotkey('shift+backspace', lambda:self.clear(False))
         keyboard.add_hotkey('enter',     lambda:self.calculate())
-        keyboard.add_hotkey('m',         lambda:self.memoryrecall())
+        keyboard.add_hotkey('m',         lambda:self.memory_recall())
         keyboard.add_hotkey('-',         lambda:self.handle_operator(' _ '))
         keyboard.add_hotkey('/',         lambda:self.handle_operator(' / '))
         keyboard.add_hotkey('.',         lambda:self.put_decimal())
@@ -508,6 +559,7 @@ class Gui:
         keyboard.add_hotkey('8',         lambda:self.put_number(8))
         keyboard.add_hotkey('9',         lambda:self.put_number(9))
         keyboard.add_hotkey('backspace', lambda:self.clear())
+        '''
 
 
 
@@ -708,7 +760,7 @@ class Gui:
 
 
     # function bound to the factorial button to allow for factorials to be used.
-    def put_factorials(self):
+    def put_factorial(self):
 
         # put the factorial sign in the equation and display strings
         self.update_text(string=['!', '!', ''], update=1)
@@ -716,7 +768,7 @@ class Gui:
 
 
     # function bound to the memory recall button to display the number stored in memory.
-    def memoryrecall(self):
+    def memory_recall(self):
 
         # add the number stored in memory to the equation and display strings
         self.update_text(string=[self.logic.memory, self.logic.memory, self.logic.memory])
@@ -732,7 +784,7 @@ class Gui:
 
 
     # function bound to the memory add button to set the memory number to the number displayed.
-    def memorystore(self):
+    def memory_store(self):
 
         print(f"memory: {('').join(self.display_text)}")
 
