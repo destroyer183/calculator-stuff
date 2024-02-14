@@ -55,47 +55,46 @@ class Token:
 
         match self.value:
 
-            case 's': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case 'c': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case 't': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case 'S': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case 'C': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case 'T': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.Sine:       return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.Cosine:     return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.Tangent:    return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.aSine:      return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.aCosine:    return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.aTangent:   return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.Logarithm:  return math.log(x)
+            case MathOperation.Factorial:  return math.factorial(int(x))
+            case MathOperation.SquareRoot: return x ** 0.5
 
-            case 'l': return math.log(x)
-            case 'f': return math.factorial(int(x))
-            case '#': return x ** 0.5
-
-            case '^': return x ** y
-            case '%': return x % y
-            case '/': return x / y
-            case '*': return x * y
-            case '+': return x + y
-            case '_': return x - y
+            case MathOperation.Exponential:    return x ** y
+            case MathOperation.Modulo:         return x % y
+            case MathOperation.Division:       return x / y
+            case MathOperation.Multiplication: return x * y
+            case MathOperation.Addition:       return x + y
+            case MathOperation.Subtraction:    return x - y
 
 
 
 TOKENS = [
 
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='s'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='c'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='t'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='S'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='C'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='T'),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='l'),
-    Token(TokenType.FUNCTION, 4, Associativity.LEFT,  value='f'),
-    Token(TokenType.FUNCTION, 2, Associativity.LEFT,  value='#'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Sine),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Cosine),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Tangent),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aSine),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aCosine),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aTangent),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Logarithm),
+    Token(TokenType.FUNCTION, 4, Associativity.LEFT,  MathOperation.Factorial),
+    Token(TokenType.FUNCTION, 2, Associativity.LEFT,  MathOperation.SquareRoot),
     
-    Token(TokenType.OPERATOR, 3, Associativity.RIGHT, value='^'),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='%'),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='/'),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='*'),
-    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  value='+'),
-    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  value='_'),
+    Token(TokenType.OPERATOR, 3, Associativity.RIGHT, MathOperation.Exponential),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Modulo),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Division),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Multiplication),
+    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  MathOperation.Addition),
+    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  MathOperation.Subtraction),
 
-    Token(TokenType.LEFT_BRACKET, 0, Associativity.RIGHT, value='('),
-    Token(TokenType.RIGHT_BRACKET, 0, Associativity.LEFT, value=')')
+    Token(TokenType.LEFT_BRACKET, 0, Associativity.RIGHT, '('),
+    Token(TokenType.RIGHT_BRACKET, 0, Associativity.LEFT, ')')
 
     ]
 
