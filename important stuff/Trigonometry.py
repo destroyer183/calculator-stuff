@@ -1,8 +1,6 @@
 import tkinter as tk
 from tkinter import *
-import keyboard
 import math
-import time
 import enum
 
 
@@ -467,10 +465,6 @@ class Gui:
 
 
     def clear_gui(self):
-
-        keyboard.add_hotkey('e', print('hi'))
-
-        keyboard.unhook_all_hotkeys()
 
         for widget in self.parent.winfo_children():
             widget.destroy()

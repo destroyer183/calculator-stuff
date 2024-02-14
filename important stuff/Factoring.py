@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-import keyboard
+
 
 
 # function to convert text to superscript.
@@ -33,10 +33,6 @@ class Gui:
 
 
     def clear_gui(self):
-
-        keyboard.add_hotkey('e', print('hi'))
-
-        keyboard.unhook_all_hotkeys()
 
         for widget in self.parent.winfo_children():
             widget.destroy()
