@@ -485,7 +485,7 @@ class Gui:
 
         self.parent.geometry('650x850')
 
-        self.keybindings()
+        self.parent.bind("<KeyRelease>", self.keybindings)
 
         self.canvas = Canvas(self.parent, width = 650, height = 654)
 
@@ -551,8 +551,6 @@ class Gui:
             self.labels[key].configure(font=('Arial', 24, 'bold'))
 
         for box in self.angle_boxes + self.length_boxes:
-
-            box.bind("<KeyRelease>", self.keybindings)
 
             box.edit_modified(False)
 

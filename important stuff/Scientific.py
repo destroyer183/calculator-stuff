@@ -81,7 +81,7 @@ class Gui:
 
         # self.keybindings()
 
-        self.parent.bind('<KeyRelease>', self.keybindings)
+        self.parent.bind("<KeyRelease>", self.keybindings)
 
         # graphical setup
         self.equation = tk.Label(self.parent, text = '')
@@ -464,24 +464,28 @@ class Gui:
     # a function to handle all key inputs
     def keybindings(self, input):
 
+        print(f"key: {input}")
+
         try: temp = input.keysym
-        except:return
+        except:print('keybinding error')
 
         try: 
             if input.state == 'Shift':
                 match input.keysym:
 
-                    case '1': lambda:self.put_factorial()
-                    case '3': lambda:self.put_square_root()
-                    case '5': lambda:self.handle_operator(' % ')
-                    case '6': lambda:self.put_exponential()
-                    case '8': lambda:self.handle_operator(' * ')
-                    case '9': lambda:self.put_brackets(L_BRACKET)
-                    case '0': lambda:self.put_brackets(R_BRACKET)
-                    case 'minus': lambda:self.negative()
-                    case 'equal': lambda:self.handle_operator(' + ')
-                    case 'BackSpace': lambda:self.clear(False)
-                    case 'm': lambda:self.memory_store()
+                    case '1': self.put_factorial()
+                    case '3': self.put_square_root()
+                    case '5': self.handle_operator(' % ')
+                    case '6': self.put_exponential()
+                    case '8': self.handle_operator(' * ')
+                    case '9': self.put_brackets(L_BRACKET)
+                    case '0': self.put_brackets(R_BRACKET)
+                    case 'minus': self.negative()
+                    case 'equal': self.handle_operator(' + ')
+                    case 'BackSpace': self.clear(False)
+                    case 'm': self.memory_store()
+
+                return
             
             elif input.state == '0x20000':
 
@@ -489,77 +493,28 @@ class Gui:
 
                 match input.keysym:
 
-                    case 's': lambda:self.trigonometry(TRIG_FUNCTION_SIN)
-                    case 'c': lambda:self.trigonometry(TRIG_FUNCTION_COS)
-                    case 't': lambda:self.trigonometry(TRIG_FUNCTION_TAN)
-                    case 'a': lambda:self.answer()
-                    case 'u': lambda:self.unit_type()
-                    case 'e': lambda:self.put_e()
-                    case 'l': lambda:self.logarithm()
-                    case 'p': lambda:self.put_pi()
-                    case 'm': lambda:self.memory_clear()
+                    case 's': self.trigonometry(TRIG_FUNCTION_SIN)
+                    case 'c': self.trigonometry(TRIG_FUNCTION_COS)
+                    case 't': self.trigonometry(TRIG_FUNCTION_TAN)
+                    case 'a': self.answer()
+                    case 'u': self.unit_type()
+                    case 'e': self.put_e()
+                    case 'l': self.logarithm()
+                    case 'p': self.put_pi()
+                    case 'm': self.memory_clear()
 
-            return
+                return
         except:pass
 
-        if input.keysym in '1234567890': lambda:self.put_number(int(input.keysym))
+        if input.keysym in '1234567890': self.put_number(int(input.keysym)); print('it worked something else is breaking')
 
         match input.keysym:
-            case 'BackSpace':  lambda:self.clear()
-            case 'minus':lambda:self.handle_operator(' _ ')
-            case 'Return': lambda:self.calculate()
-            case 'slash':lambda:self.handle_operator(' / ')
-            case 'period':lambda:self.put_decimal()
-            case 'm': lambda:self.memory_recall()
-
-        '''
-        keyboard.add_hotkey('shift+=',   lambda:self.handle_operator(' + '))
-        keyboard.add_hotkey('shift+8',   lambda:self.handle_operator(' * '))
-        keyboard.add_hotkey('shift+5',   lambda:self.handle_operator(' % '))
-        keyboard.add_hotkey('ctrl+0',    lambda:self.put_exponential(0))
-        keyboard.add_hotkey('ctrl+1',    lambda:self.put_exponential(1))
-        keyboard.add_hotkey('ctrl+2',    lambda:self.put_exponential(2))
-        keyboard.add_hotkey('ctrl+3',    lambda:self.put_exponential(3))
-        keyboard.add_hotkey('ctrl+4',    lambda:self.put_exponential(4))
-        keyboard.add_hotkey('ctrl+5',    lambda:self.put_exponential(5))
-        keyboard.add_hotkey('ctrl+6',    lambda:self.put_exponential(6))
-        keyboard.add_hotkey('ctrl+7',    lambda:self.put_exponential(7))
-        keyboard.add_hotkey('ctrl+8',    lambda:self.put_exponential(8))
-        keyboard.add_hotkey('ctrl+9',    lambda:self.put_exponential(9))
-        keyboard.add_hotkey('shift+0',   lambda:self.put_brackets(R_BRACKET))
-        keyboard.add_hotkey('shift+1',   lambda:self.put_factorial())
-        keyboard.add_hotkey('shift+6',   lambda:self.put_exponential())
-        keyboard.add_hotkey('shift+3',   lambda:self.put_square_root())
-        keyboard.add_hotkey('shift+9',   lambda:self.put_brackets(L_BRACKET))
-        keyboard.add_hotkey('ctrl+s',    lambda:self.trigonometry(TRIG_FUNCTION_SIN))
-        keyboard.add_hotkey('ctrl+c',    lambda:self.trigonometry(TRIG_FUNCTION_COS))
-        keyboard.add_hotkey('ctrl+t',    lambda:self.trigonometry(TRIG_FUNCTION_TAN))
-        keyboard.add_hotkey('ctrl+a',    lambda:self.answer())
-        keyboard.add_hotkey('ctrl+u',    lambda:self.unit_type())
-        keyboard.add_hotkey('ctrl+e',    lambda:self.put_e())
-        keyboard.add_hotkey('ctrl+l',    lambda:self.logarithm())
-        keyboard.add_hotkey('ctrl+p',    lambda:self.put_pi())
-        keyboard.add_hotkey('shift+-',   lambda:self.negative())
-        keyboard.add_hotkey('shift+m',   lambda:self.memory_store())
-        keyboard.add_hotkey('ctrl+m',    lambda:self.memory_clear())
-        keyboard.add_hotkey('shift+backspace', lambda:self.clear(False))
-        keyboard.add_hotkey('enter',     lambda:self.calculate())
-        keyboard.add_hotkey('m',         lambda:self.memory_recall())
-        keyboard.add_hotkey('-',         lambda:self.handle_operator(' _ '))
-        keyboard.add_hotkey('/',         lambda:self.handle_operator(' / '))
-        keyboard.add_hotkey('.',         lambda:self.put_decimal())
-        keyboard.add_hotkey('0',         lambda:self.put_number(0))
-        keyboard.add_hotkey('1',         lambda:self.put_number(1))
-        keyboard.add_hotkey('2',         lambda:self.put_number(2))
-        keyboard.add_hotkey('3',         lambda:self.put_number(3))
-        keyboard.add_hotkey('4',         lambda:self.put_number(4))
-        keyboard.add_hotkey('5',         lambda:self.put_number(5))
-        keyboard.add_hotkey('6',         lambda:self.put_number(6))
-        keyboard.add_hotkey('7',         lambda:self.put_number(7))
-        keyboard.add_hotkey('8',         lambda:self.put_number(8))
-        keyboard.add_hotkey('9',         lambda:self.put_number(9))
-        keyboard.add_hotkey('backspace', lambda:self.clear())
-        '''
+            case 'BackSpace':  self.clear()
+            case 'minus':self.handle_operator(' _ ')
+            case 'Return': self.calculate()
+            case 'slash':self.handle_operator(' / ')
+            case 'period':self.put_decimal()
+            case 'm': self.memory_recall()
 
 
 
