@@ -1,4 +1,5 @@
 import math
+from enum import Enum
 
 
 
@@ -9,16 +10,35 @@ maybe instead of using lambda for the 'apply' attribute, use a function like the
 '''
 
 
-LEFT = True
-RIGHT = False
 
-NUMBER = 0
-OPERATOR = 0
-BRACKET = 3
-FUNCTION = 1
-COMMA = 5
-LEFT_BRACKET = 2
-RIGHT_BRACKET = 3
+class MathOperation(Enum):
+    Sine = 's'
+    Cosine = 'c'
+    Tangent = 't'
+    aSine = 'S'
+    aCosine = 'C'
+    aTangent = 'T'
+    Logarithm = 'l'
+    Factorial = 'f'
+    SquareRoot = '#'
+    Exponential = '^'
+    Modulo = '%'
+    Division = '/'
+    Multiplication = '*'
+    Addition = '+'
+    Subtraction = '_'
+    Null = None
+
+class Associativity(Enum):
+    LEFT = False
+    RIGHT = True
+
+class TokenType(Enum):
+    NUMBER = 0
+    OPERATOR = 1
+    FUNCTION = 3
+    LEFT_BRACKET = 5
+    RIGHT_BRACKET = 6
 
 
 
@@ -31,60 +51,51 @@ class Token:
         self.associativity = associativity
         self.value = value
 
-    def math(self, is_radians, x, y = 0):
+    def math(self, is_radians, x, y):
 
-        if is_radians:
-            if self.value == 's':  return math.sin(float(x))
-            if self.value == 'c':  return math.cos(float(x))
-            if self.value == 't':  return math.tan(float(x))
-            if self.value == 'S': return math.asin(float(x))
-            if self.value == 'C': return math.acos(float(x))
-            if self.value == 'T': return math.atan(float(x))
+        match self.value:
 
-        else: 
-            if self.value == 's':  return math.sin(math.radians(float(x)))
-            if self.value == 'c':  return math.cos(math.radians(float(x)))
-            if self.value == 't':  return math.tan(math.radians(float(x)))
-            if self.value == 'S': return math.degrees(math.asin(float(x)))
-            if self.value == 'C': return math.degrees(math.acos(float(x)))
-            if self.value == 'T': return math.degrees(math.atan(float(x)))
+            case 's': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case 'c': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case 't': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case 'S': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case 'C': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case 'T': return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
 
-        if self.value == 'l': return math.log(float(x))
-        if self.value == 'f': return math.factorial(int(x))
-        if self.value == '#': return float(x) ** 0.5
+            case 'l': return math.log(x)
+            case 'f': return math.factorial(int(x))
+            case '#': return x ** 0.5
 
-        if self.value == '^': return float(x) ** float(y)
-        if self.value == '%': return float(x) % float(y)
-        if self.value == '/': return float(x) / float(y)
-        if self.value == '*': return float(x) * float(y)
-        if self.value == '+': return float(x) + float(y)
-        if self.value == '_': return float(x) - float(y)
-
-        
+            case '^': return x ** y
+            case '%': return x % y
+            case '/': return x / y
+            case '*': return x * y
+            case '+': return x + y
+            case '_': return x - y
 
 
 
 TOKENS = [
 
-    Token(FUNCTION, 5, LEFT,  value='s'),
-    Token(FUNCTION, 5, LEFT,  value='c'),
-    Token(FUNCTION, 5, LEFT,  value='t'),
-    Token(FUNCTION, 5, LEFT,  value='S'),
-    Token(FUNCTION, 5, LEFT,  value='C'),
-    Token(FUNCTION, 5, LEFT,  value='T'),
-    Token(FUNCTION, 5, LEFT,  value='l'),
-    Token(FUNCTION, 4, LEFT,  value='f'),
-    Token(FUNCTION, 2, LEFT,  value='#'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='s'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='c'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='t'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='S'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='C'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='T'),
+    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  value='l'),
+    Token(TokenType.FUNCTION, 4, Associativity.LEFT,  value='f'),
+    Token(TokenType.FUNCTION, 2, Associativity.LEFT,  value='#'),
     
-    Token(OPERATOR, 3, RIGHT, value='^'),
-    Token(OPERATOR, 1, LEFT,  value='%'),
-    Token(OPERATOR, 1, LEFT,  value='/'),
-    Token(OPERATOR, 1, LEFT,  value='*'),
-    Token(OPERATOR, 0, LEFT,  value='+'),
-    Token(OPERATOR, 0, LEFT,  value='_'),
+    Token(TokenType.OPERATOR, 3, Associativity.RIGHT, value='^'),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='%'),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='/'),
+    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  value='*'),
+    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  value='+'),
+    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  value='_'),
 
-    Token(LEFT_BRACKET, 0, RIGHT, value='('),
-    Token(RIGHT_BRACKET, 0, LEFT, value=')')
+    Token(TokenType.LEFT_BRACKET, 0, Associativity.RIGHT, value='('),
+    Token(TokenType.RIGHT_BRACKET, 0, Associativity.LEFT, value=')')
 
     ]
 
@@ -163,18 +174,18 @@ def shunting_yard_converter(equation):
 
         try:
 
-            if token.type == FUNCTION:
+            if token.type == TokenType.FUNCTION:
 
                 op_stack.append(token)
 
             
 
-            elif token.type == OPERATOR:
+            elif token.type == TokenType.OPERATOR:
 
                 while op_stack and op_stack[-1].value != '(' and (
                         op_stack[-1].precedence > token.precedence or (
                         op_stack[-1].precedence == token.precedence and 
-                        token.associativity)):
+                        token.associativity == Associativity.RIGHT)):
 
                     out_stack.append(op_stack.pop())
 
@@ -182,15 +193,15 @@ def shunting_yard_converter(equation):
 
 
 
-            elif token.type == LEFT_BRACKET:
+            elif token.type == TokenType.LEFT_BRACKET:
 
                 op_stack.append(token)
 
 
 
-            elif token.type == RIGHT_BRACKET:
+            elif token.type == TokenType.RIGHT_BRACKET:
 
-                while op_stack and op_stack[-1].type != LEFT_BRACKET:
+                while op_stack and op_stack[-1].type != TokenType.LEFT_BRACKET:
 
                     out_stack.append(op_stack.pop())
 
@@ -229,7 +240,7 @@ def shunting_yard_evaluator(equation, is_radians):
 
             a, b, hist = find_numbers(i.type, hist)
 
-            hist.append(str(i.math(is_radians, a, b)))
+            hist.append(str(i.math(is_radians, float(a), float(b))))
 
     x = ('').join(hist)
 
