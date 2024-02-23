@@ -44,7 +44,7 @@ class TokenType(Enum):
 
 class Token:
 
-    def __init__(self, type: int, precedence: int, associativity: bool, value) -> None:
+    def __init__(self, type: TokenType, precedence: int, associativity: Associativity, value: MathOperation) -> None:
         
         self.type  = type
         self.precedence = precedence
