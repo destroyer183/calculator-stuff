@@ -377,7 +377,7 @@ class Logic:
 
             angle_coord = [x for x in self.coordinates.values()][index]
 
-            left_coord  = [x for x in self.coordinates.values()][self.info(Info.LEFT_ANGLE, index, 1)]
+            left_coord  = [x for x in self.coordinates.values()][self.info(Info.LEFT_ANGLE,  index, 1)]
             right_coord = [x for x in self.coordinates.values()][self.info(Info.RIGHT_ANGLE, index, 1)]
 
             try: left_alpha = math.degrees(math.atan((max(angle_coord[1], left_coord[1]) - min(angle_coord[1], left_coord[1])) / (max(angle_coord[0], left_coord[0]) - min(angle_coord[0], left_coord[0]))))
@@ -385,15 +385,15 @@ class Logic:
             try: right_alpha = math.degrees(math.atan((max(angle_coord[1], right_coord[1]) - min(angle_coord[1], right_coord[1])) / (max(angle_coord[0], right_coord[0]) - min(angle_coord[0], right_coord[0]))))
             except: right_alpha = 90
 
-            if not angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 360 - left_alpha
-            elif angle_coord[0] > left_coord[0] and angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha
-            elif angle_coord[0] > left_coord[0] and not angle_coord[1] < left_coord[1]: left_angle = 180 - left_alpha
-            else: left_angle = left_alpha
+            if not angle_coord[0] > left_coord[0] and     angle_coord[1] < left_coord[1]: left_angle = 360 - left_alpha
+            elif   angle_coord[0] > left_coord[0] and     angle_coord[1] < left_coord[1]: left_angle = 180 + left_alpha
+            elif   angle_coord[0] > left_coord[0] and not angle_coord[1] < left_coord[1]: left_angle = 180 - left_alpha
+            else:  left_angle = left_alpha
 
-            if not angle_coord[0] > right_coord[0] and angle_coord[1] < right_coord[1]: right_angle = 360 - right_alpha
-            elif angle_coord[0] > right_coord[0] and angle_coord[1] < right_coord[1]: right_angle = 180 + right_alpha
-            elif angle_coord[0] > right_coord[0] and not angle_coord[1] < right_coord[1]: right_angle = 180 - right_alpha
-            else: right_angle = right_alpha
+            if not angle_coord[0] > right_coord[0] and     angle_coord[1] < right_coord[1]: right_angle = 360 - right_alpha
+            elif   angle_coord[0] > right_coord[0] and     angle_coord[1] < right_coord[1]: right_angle = 180 + right_alpha
+            elif   angle_coord[0] > right_coord[0] and not angle_coord[1] < right_coord[1]: right_angle = 180 - right_alpha
+            else:  right_angle = right_alpha
 
             total_angle = (left_angle + right_angle) / 2
 
