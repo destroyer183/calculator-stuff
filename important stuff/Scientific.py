@@ -10,6 +10,10 @@ show when the memory is being used
 
 add a history function
 
+
+attempt to enter in sqrt(1 / 3 * (6(5! - 3) - ((3^3)6 - (5! - 6^2) - (6^2))))
+
+
 '''
 
 

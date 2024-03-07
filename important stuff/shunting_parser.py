@@ -44,16 +44,17 @@ class TokenType(Enum):
 
 class Token:
 
-    def __init__(self, type: TokenType, precedence: int, associativity: Associativity, value: MathOperation) -> None:
+    def __init__(self, type: TokenType, precedence: int, associativity: Associativity, math_operation: MathOperation, value: str) -> None:
         
         self.type  = type
         self.precedence = precedence
         self.associativity = associativity
+        self.math_operation = math_operation
         self.value = value
 
     def math(self, is_radians, x, y):
 
-        match self.value:
+        match self.math_operation:
 
             case MathOperation.Sine:       return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
             case MathOperation.Cosine:     return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
@@ -76,25 +77,25 @@ class Token:
 
 TOKENS = [
 
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Sine),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Cosine),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Tangent),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aSine),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aCosine),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.aTangent),
-    Token(TokenType.FUNCTION, 5, Associativity.LEFT,  MathOperation.Logarithm),
-    Token(TokenType.FUNCTION, 4, Associativity.LEFT,  MathOperation.Factorial),
-    Token(TokenType.FUNCTION, 2, Associativity.LEFT,  MathOperation.SquareRoot),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Sine,       value = 's'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Cosine,     value = 'c'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Tangent,    value = 't'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aSine,      value = 'S'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aCosine,    value = 'C'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aTangent,   value = 'T'),
+    Token(type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Logarithm,  value = 'l'),
+    Token(type = TokenType.FUNCTION, precedence = 4, associativity = Associativity.LEFT,  math_operation = MathOperation.Factorial,  value = 'f'),
+    Token(type = TokenType.FUNCTION, precedence = 2, associativity = Associativity.LEFT,  math_operation = MathOperation.SquareRoot, value = '#'),
     
-    Token(TokenType.OPERATOR, 3, Associativity.RIGHT, MathOperation.Exponential),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Modulo),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Division),
-    Token(TokenType.OPERATOR, 1, Associativity.LEFT,  MathOperation.Multiplication),
-    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  MathOperation.Addition),
-    Token(TokenType.OPERATOR, 0, Associativity.LEFT,  MathOperation.Subtraction),
+    Token(type = TokenType.OPERATOR, precedence = 3, associativity = Associativity.RIGHT, math_operation = MathOperation.Exponential,    value = '^'),
+    Token(type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Modulo,         value = '%'),
+    Token(type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Division,       value = '/'),
+    Token(type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Multiplication, value = '*'),
+    Token(type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Addition,       value = '+'),
+    Token(type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Subtraction,    value = '-'),
 
-    Token(TokenType.LEFT_BRACKET, 0, Associativity.RIGHT, '('),
-    Token(TokenType.RIGHT_BRACKET, 0, Associativity.LEFT, ')')
+    Token(type = TokenType.LEFT_BRACKET,  precedence = 0, associativity = Associativity.RIGHT, math_operation = MathOperation.Null, value = '('),
+    Token(type = TokenType.RIGHT_BRACKET, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Null, value = ')')
 
     ]
 
@@ -177,14 +178,14 @@ def shunting_yard_converter(equation):
 
                 op_stack.append(token)
 
-            
+
 
             elif token.type == TokenType.OPERATOR:
 
                 while op_stack and op_stack[-1].value != '(' and (
                         op_stack[-1].precedence > token.precedence or (
                         op_stack[-1].precedence == token.precedence and 
-                        token.associativity == Associativity.RIGHT)):
+                        token.associativity == Associativity.LEFT)):
 
                     out_stack.append(op_stack.pop())
 
@@ -251,7 +252,7 @@ def shunting_yard_evaluator(equation, is_radians):
 
 def find_numbers(type, hist):
 
-    if type: return hist.pop(-1), None, hist
+    if type == TokenType.FUNCTION: return hist.pop(-1), None, hist
 
     else: return hist.pop(-2), hist.pop(-1), hist
     
@@ -261,7 +262,7 @@ if __name__ == '__main__':
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    # equation = 's(s(60))'
+    equation = '(3 + 2) * 6'
 
     is_radians = False
 
