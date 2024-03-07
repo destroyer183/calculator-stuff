@@ -10,9 +10,7 @@ show when the memory is being used
 
 add a history function
 
-
-attempt to enter in sqrt(1 / 3 * (6(5! - 3) - ((3^3)6 - (5! - 6^2) - (6^2))))
-
+attempt to enter in ((3^3)6) - this is a display error, the equation passed to the parser is correct.
 
 '''
 
