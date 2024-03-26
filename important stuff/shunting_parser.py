@@ -252,7 +252,7 @@ def shunting_yard_evaluator(equation, is_radians):
 
 def find_numbers(type, hist):
 
-    if type == TokenType.FUNCTION: return hist.pop(-1), None, hist
+    if type == TokenType.FUNCTION: return hist.pop(-1), 0, hist
 
     else: return hist.pop(-2), hist.pop(-1), hist
     

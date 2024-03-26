@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from enum import Enum
 from shunting_parser import shunting_yard_evaluator
 
 
@@ -8,20 +9,22 @@ from shunting_parser import shunting_yard_evaluator
 
 show when the memory is being used
 
+scroll equation when it goes off-screen
+
 add a history function
 
 attempt to enter in ((3^3)6) - this is a display error, the equation passed to the parser is correct.
 
 '''
 
-
-
-TRIG_FUNCTION_SIN = 0
-TRIG_FUNCTION_COS = 1
-TRIG_FUNCTION_TAN = 2
+class TrigFunction(Enum):
+    Sine = 0
+    Cosine = 1
+    Tangent = 2
 
 L_BRACKET = True
 R_BRACKET = False
+
 
 
 # function to convert text to superscript.
@@ -77,8 +80,6 @@ class Gui:
 
         self.logic = Logic()
 
-        # self.keybindings()
-
         self.parent.bind("<KeyRelease>", self.keybindings)
 
         # graphical setup
@@ -120,9 +121,9 @@ class Gui:
         # column 2
         self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_store())
         self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.trig_type())
-        self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_SIN))
-        self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_COS))
-        self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TRIG_FUNCTION_TAN))
+        self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Sine))
+        self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Cosine))
+        self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Tangent))
 
         # column 3
         self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_recall())
@@ -471,17 +472,17 @@ class Gui:
             if input.state == 'Shift':
                 match input.keysym:
 
-                    case '1': self.put_factorial()
-                    case '3': self.put_square_root()
-                    case '5': self.handle_operator(' % ')
-                    case '6': self.put_exponential()
-                    case '8': self.handle_operator(' * ')
-                    case '9': self.put_brackets(L_BRACKET)
-                    case '0': self.put_brackets(R_BRACKET)
-                    case 'minus': self.negative()
-                    case 'equal': self.handle_operator(' + ')
+                    case 'exclam': self.put_factorial()
+                    case 'numbersign': self.put_square_root()
+                    case 'percent': self.handle_operator(' % ')
+                    case 'asciicircum': self.put_exponential()
+                    case 'asterisk': self.handle_operator(' * ')
+                    case 'parenleft': self.put_brackets(L_BRACKET)
+                    case 'parenright': self.put_brackets(R_BRACKET)
+                    case 'underscore': self.negative()
+                    case 'plus': self.handle_operator(' + ')
                     case 'BackSpace': self.clear(False)
-                    case 'm': self.memory_store()
+                    case 'M': self.memory_store()
 
                 return
             
@@ -491,9 +492,9 @@ class Gui:
 
                 match input.keysym:
 
-                    case 's': self.trigonometry(TRIG_FUNCTION_SIN)
-                    case 'c': self.trigonometry(TRIG_FUNCTION_COS)
-                    case 't': self.trigonometry(TRIG_FUNCTION_TAN)
+                    case 's': self.trigonometry(TrigFunction.Sine)
+                    case 'c': self.trigonometry(TrigFunction.Cosine)
+                    case 't': self.trigonometry(TrigFunction.Tangent)
                     case 'a': self.answer()
                     case 'u': self.unit_type()
                     case 'e': self.put_e()
@@ -793,21 +794,21 @@ class Gui:
         # add an alternate function for inverse trigonometry functions
         if self.trig_toggle:
 
-            if trig_function == TRIG_FUNCTION_SIN:
+            if trig_function == TrigFunction.Sine:
 
                 # add the inverse sine indicator to the equation and display strings
                 self.update_text(string=['S()', 'sin' + get_super('-1') + '()', ''], update=1)
 
 
 
-            elif trig_function == TRIG_FUNCTION_COS:
+            elif trig_function == TrigFunction.Cosine:
                 
                 # add the inverse cosine indicator to the equation and display strings
                 self.update_text(string=['C()', 'cos' + get_super('-1') + '()', ''], update=1)
 
 
 
-            elif trig_function == TRIG_FUNCTION_TAN:
+            elif trig_function == TrigFunction.Tangent:
                 
                 # add the inverse tangent indicator to the equation and display strings
                 self.update_text(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
@@ -819,21 +820,21 @@ class Gui:
 
 
 
-        if trig_function == TRIG_FUNCTION_SIN:
+        if trig_function == TrigFunction.Sine:
 
             # add the sine indicator to the equation and display strings
             self.update_text(string=['s()', 'sin()', ''], update=1)
 
 
 
-        elif trig_function == TRIG_FUNCTION_COS:
+        elif trig_function == TrigFunction.Cosine:
             
             # add the cosine indicator to the equation and display strings
             self.update_text(string=['c()', 'cos()', ''], update=1)
 
 
 
-        elif trig_function == TRIG_FUNCTION_TAN:
+        elif trig_function == TrigFunction.Tangent:
             
             # add the tangent indicator to the equation and display strings
             self.update_text(string=['t()', 'tan()', ''], update=1)

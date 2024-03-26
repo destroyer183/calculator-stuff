@@ -142,7 +142,7 @@ def main():
             errorCode = ctypes.windll.shcore.SetProcessDpiAwareness(2)
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
-
+ 
     Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', options_callback)
     Window.option_choices.set('Scientific')
