@@ -92,7 +92,7 @@ TOKENS = [
     Token(type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Division,       value = '/'),
     Token(type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Multiplication, value = '*'),
     Token(type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Addition,       value = '+'),
-    Token(type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Subtraction,    value = '-'),
+    Token(type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Subtraction,    value = '_'),
 
     Token(type = TokenType.LEFT_BRACKET,  precedence = 0, associativity = Associativity.RIGHT, math_operation = MathOperation.Null, value = '('),
     Token(type = TokenType.RIGHT_BRACKET, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Null, value = ')')
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '(3 + 2) * 6'
+    equation = '35.43 _ 36.33'
 
     is_radians = False
 
