@@ -15,6 +15,8 @@ add a history function
 
 attempt to enter in ((3^3)6) - this is a display error, the equation passed to the parser is correct.
 
+enter in 2^32, hit enter, then subtract 1, this is a display error again
+
 '''
 
 class TrigFunction(Enum):
