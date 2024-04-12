@@ -59,13 +59,13 @@ class Window:
         self.gui = Scientific.Gui(gui)
         
     # scientific calculator display configuration
-    def make_gui(self, type):
+    def make_gui(self, gui_type):
 
-        if   type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
-        elif type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
-        elif type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
-        elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
-        elif type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
+        if   gui_type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
+        elif gui_type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
+        elif gui_type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
+        elif gui_type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
+        elif gui_type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
 
         self.gui.create_gui()
 
@@ -73,11 +73,11 @@ class Window:
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
-        elif type == 'Variable'    : self.gui.parent.options.place(x = 10, y = 185)
+        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
+        elif gui_type == 'Factoring'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif gui_type == 'Quadratic'   : self.gui.parent.options.place(x = 10, y = 185)
+        elif gui_type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
+        elif gui_type == 'Variable'    : self.gui.parent.options.place(x = 10, y = 185)
 
         
 

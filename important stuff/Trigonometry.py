@@ -87,6 +87,8 @@ class Logic:
 
     def __init__(self, is_ambiguous = False, name = '') -> None:
 
+        print(f"gui ambiguous: {Gui.is_ambiguous}")
+
         # variable to store whether or not a triangle is ambiguous, 
         # there will be two instances of this class, one that is for the ambiguous triangle, the other for the normal triangle.
         self.is_ambiguous = is_ambiguous
@@ -446,6 +448,8 @@ class Gui:
 
     def __init__(self, parent) -> None:
 
+        Gui.is_ambiguous = True
+
         self.parent = parent
         self.ambiguous_triangle = False
         self.mode_toggle = False 
@@ -600,8 +604,6 @@ class Gui:
 
 
         self.clear_data()
-
-
 
         self.parent.resizable(False, False)
 
