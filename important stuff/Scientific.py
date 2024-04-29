@@ -13,7 +13,7 @@ scroll equation when it goes off-screen
 
 add a history function
 
-numbers big enough to trigger scientific notation break it
+numbers big enough to trigger scientific notation break it, this is because programming languages can't do math properly (6.02 * 10 ^ (23) = 601999999999999995805696.000000) ???
 
 '''
 
