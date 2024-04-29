@@ -17,6 +17,8 @@ attempt to enter in ((3^3)6) - this is a display error, the equation passed to t
 
 enter in 2^32, hit enter, then subtract 1, this is a display error again
 
+numbers big enough to trigger scientific notation break it
+
 '''
 
 class TrigFunction(Enum):
