@@ -473,7 +473,9 @@ class Gui:
         except:print('keybinding error')
 
         try: 
-            if input.state == 'Shift':
+            print(f"input.state: {input.state}")
+            if input.state == 1:
+                print(f"input.keysym: {input.keysym}")
                 match input.keysym:
 
                     case 'exclam': self.put_factorial()
@@ -490,7 +492,7 @@ class Gui:
 
                 return
             
-            elif input.state == '0x20000':
+            elif input.state == 4:
 
                 if input.keysym in '1234567890': self.put_exponential(int(input.keysym))
 
@@ -507,9 +509,9 @@ class Gui:
                     case 'm': self.memory_clear()
 
                 return
-        except:pass
+        except: print('exception triggered')
 
-        if input.keysym in '1234567890': self.put_number(int(input.keysym)); print('it worked something else is breaking')
+        if input.keysym in '1234567890': self.put_number(int(input.keysym))
 
         match input.keysym:
             case 'BackSpace':  self.clear()
