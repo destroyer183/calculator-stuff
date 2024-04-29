@@ -13,10 +13,6 @@ scroll equation when it goes off-screen
 
 add a history function
 
-attempt to enter in ((3^3)6) - this is a display error, the equation passed to the parser is correct.
-
-enter in 2^32, hit enter, then subtract 1, this is a display error again
-
 numbers big enough to trigger scientific notation break it
 
 '''
@@ -50,6 +46,7 @@ class Logic:
         self.equation = ['']
         self.bracket_num = 0
         self.exponent = False
+        self.bracket_exponent_depth = 0
         self.output = ''
         self.memory = []
 
@@ -418,6 +415,8 @@ class Gui:
 
             self.logic.exponent = False
 
+            self.logic.bracket_exponent_depth = 0
+
 
 
             # update display
@@ -556,6 +555,10 @@ class Gui:
         self.display_text = self.logic.output
 
         self.logic.bracket_num = 0
+
+        self.logic.exponent = False
+
+        self.logic.bracket_exponent_depth = 0
 
 
 
@@ -769,6 +772,10 @@ class Gui:
             # keep track of brackets
             self.logic.bracket_num += 1
 
+            if self.logic.exponent:
+
+                self.logic.bracket_exponent_depth += 1
+
 
 
         else:
@@ -780,9 +787,17 @@ class Gui:
 
                     self.logic.bracket_num -= 1
 
-                    if self.logic.exponent and not self.logic.bracket_num:
+                    if self.logic.exponent:
 
-                        self.logic.exponent = not self.logic.exponent
+                        if self.logic.bracket_exponent_depth:
+                            
+                            self.logic.bracket_exponent_depth -= 1
+
+                        else:
+
+                            self.logic.exponent = not self.logic.exponent
+
+
 
                     # display numbers within brackets
                     self.update_text(type=0, update=1)
