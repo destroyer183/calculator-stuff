@@ -542,7 +542,12 @@ class Gui:
             
             return
         
-        print(f"output: {answer}")
+        try: 
+            answer = float(answer)
+            print(f"output: {answer:f}")
+        except:
+            print(f"output: {answer}")
+        
 
         # round the output to the specified number of decimal places
         self.logic.output = str(round(float(answer), int(self.round_choice.get())))
@@ -749,7 +754,13 @@ class Gui:
     # function bound to the memory add button to set the memory number to the number displayed.
     def memory_store(self):
 
-        print(f"memory: {('').join(self.display_text)}")
+        try: 
+            memory = float(('').join(self.display_text))
+            print(f"memory: {memory:f}")
+        except: 
+            memory = ('').join(self.display_text)
+            print(f"memory: {memory}")
+
 
         # assign a number to the memory variable
         self.logic.memory = ('').join(self.display_text)

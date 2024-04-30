@@ -268,4 +268,9 @@ if __name__ == '__main__':
 
     output = shunting_yard_evaluator(equation, is_radians)
 
-    print(f"output: {('').join(output)}") 
+    output = ('').join(output)
+
+    try: 
+        output = float(output)
+        print(f"output: {output:f}") 
+    except: print(f"output: {output}")
