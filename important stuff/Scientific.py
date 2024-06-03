@@ -7,13 +7,15 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
+make the text start appearing from the right side of the screen instead of the left, this will automatically scroll
+
 show when the memory is being used
 
 scroll equation when it goes off-screen
 
 add a history function
 
-numbers big enough to trigger scientific notation break it, this is because programming languages can't do math properly (6.02 * 10 ^ (23) = 601999999999999995805696.000000) ???
+numbers big enough to trigger scientific notation break it, this is because computers can't do math properly (6.02 * 10 ^ (23) = 601999999999999995805696.000000) ???
 
 '''
 
@@ -644,7 +646,11 @@ class Gui:
             
 
             # find where display text is within the equation text
-            index = ('').join(self.equation_text).rfind(('').join(self.display_text))
+            if self.logic.exponent:
+                index = ('').join(self.equation_text).rfind(('').join([get_super(x) for x in self.display_text]))
+            else:
+                index = ('').join(self.equation_text).rfind(('').join(self.display_text))
+            index2 = ('').join(self.logic.equation).rfind(('').join(self.display_text))
 
 
 
@@ -653,14 +659,14 @@ class Gui:
                 if self.equation_text[index] != '-':
 
                     # put an integer sign on the number if it doesn't have one
-                    self.update_text(type=1, string=['-', '-', '-'], index=[index, index, 0]) 
+                    self.update_text(type=1, string=['-', '-', '-'], index=[index2, index, 0]) 
 
 
 
             else:
 
                 # remove the integer sign from the number
-                self.logic.equation.pop(index)
+                self.logic.equation.pop(index2)
 
                 self.equation_text.pop(index)
 

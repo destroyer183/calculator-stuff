@@ -10,6 +10,7 @@ import enum
 if the user inputs 4 values, like 3 sides and 1 angle, and the triangle wouldn't technically be possible, make code to check for this.
 
 add thingy that points to the 'clear' button if someone keeps trying to change values after they were calculated
+use the flash() method whenever the user tries to edit a text box after things have been calculated - https://www.tutorialspoint.com/python/tk_button.htm
 
 allow the user to input angles over 180* by using modulus
 
