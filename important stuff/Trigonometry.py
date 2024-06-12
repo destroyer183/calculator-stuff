@@ -14,6 +14,8 @@ use the flash() method whenever the user tries to edit a text box after things h
 
 allow the user to input angles over 180* by using modulus
 
+
+
 '''
 
 
@@ -146,7 +148,7 @@ class Logic:
 
             # return the sine of the opposite angle divided by (the sine of the given angle divided by the opposite side)
             return math.sin(math.radians(self.info(Info.OPPOSITE_ANGLE, index))) / (math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index))
-        
+
 
 
     # function to return information about the current triangle
@@ -319,9 +321,40 @@ class Logic:
 
 
         # side side angle
-        last_side = self.lengths.index(0)
+        if max(self.angles) == (self.angles[0] + self.angles[1] + self.angles[2]):
 
-        self.lengths[last_side] = self.sin_law(Trig.SIDE, last_side, self.angles.index(max(self.angles)))
+            known_angle = self.angles.index(max(self.angles))
+
+            # get side that doesn't have a known opposite angle
+            for side in self.lengths:
+
+                if side and not self.info(Info.OPPOSITE_ANGLE, self.lengths.index(side)):
+
+                    opposite_side = self.lengths.index(side)
+
+            self.angles[opposite_side] = self.sin_law(Trig.ANGLE, opposite_side, known_angle)
+
+ 
+        
+        # side angle angle
+        else:
+
+            known_side = self.lengths.index(max(self.lengths))
+
+            # get angle that doesn't have a known opposite side
+            for angle in self.angles:
+
+                if angle and not self.info(Info.OPPOSITE_SIDE, self.angles.index(angle)):
+
+                    opposite_angle = self.angles.index(angle)
+
+            self.lengths[self.info(Info.OPPOSITE_SIDE, opposite_angle, return_type = 1)] = self.sin_law(Trig.SIDE, known_side, opposite_angle)
+
+            # last_side = self.lengths.index(0)
+
+            # self.lengths[last_side] = self.sin_law(Trig.SIDE, last_side, self.angles.index(max(self.angles)))
+
+
 
         return self.solve_triangle(ambiguous)
     

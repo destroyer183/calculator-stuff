@@ -17,6 +17,15 @@ add a history function
 
 numbers big enough to trigger scientific notation break it, this is because computers can't do math properly (6.02 * 10 ^ (23) = 601999999999999995805696.000000) ???
 
+make 'backspace' work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
+perhaps make a class variable list in the 'Gui' class, and every time the user makes an input, 
+create a new class object with the same attribute values, and store it in the class variable.
+when the user presses 'backspace' load the last element in the class variable list, and then pop it out.
+clear this list whenever the user clears the equation
+
+use the above concept to create a way for the user to see the session history, and load the answers for that.
+make a separate class variable list that only stores a new element when the user hits 'calculate'
+
 '''
 
 class TrigFunction(Enum):
