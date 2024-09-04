@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 import math
 import enum
+import sys
 
 
 
@@ -14,7 +15,7 @@ use the flash() method whenever the user tries to edit a text box after things h
 
 allow the user to input angles over 180* by using modulus
 
-
+there's still a problem with the impossible triangle detection, as part of it is based in the 'solve_triangle()' function, which means that unnecesary stuff gets calculated.
 
 '''
 
@@ -137,17 +138,24 @@ class Logic:
     # function to calculate sine law
     def sin_law(self, type, index, angle_index):
 
-        # check if an angle is being calculated
-        if type == Trig.ANGLE:
+        try:
 
-            # return the inverse sine of the sine of the given angle divided by the opposite side, divided by the opposite side of the angle we are solving for.
-            return math.degrees(math.asin(math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index) * self.info(Info.OPPOSITE_SIDE, index)))
-        
-        # check if a side is being solved
-        elif type == Trig.SIDE:
+            # check if an angle is being calculated
+            if type == Trig.ANGLE:
 
-            # return the sine of the opposite angle divided by (the sine of the given angle divided by the opposite side)
-            return math.sin(math.radians(self.info(Info.OPPOSITE_ANGLE, index))) / (math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index))
+                # return the inverse sine of the sine of the given angle divided by the opposite side, divided by the opposite side of the angle we are solving for.
+                return math.degrees(math.asin(math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index) * self.info(Info.OPPOSITE_SIDE, index)))
+            
+            # check if a side is being solved
+            elif type == Trig.SIDE:
+
+                # return the sine of the opposite angle divided by (the sine of the given angle divided by the opposite side)
+                return math.sin(math.radians(self.info(Info.OPPOSITE_ANGLE, index))) / (math.sin(math.radians(self.angles[angle_index])) / self.info(Info.OPPOSITE_SIDE, angle_index))
+
+        except ValueError:
+            err_type, value, traceback = sys.exc_info()
+            print(f"\nVALUE ERROR ENCOUNTERED:\nerror type: {err_type}\nvalue: {value}\ntraceback: {traceback}\n")
+            return Data.IMPOSSIBLE
 
 
 
@@ -246,7 +254,11 @@ class Logic:
             
         # if there are 3 given side lengths, check if the side lengths won't display a triangle with connected edges
         if min(self.lengths):
-            if max(self.lengths) >= (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): return Data.IMPOSSIBLE, 0
+            if max(self.lengths) >= (self.lengths[0] + self.lengths[1] + self.lengths[2] - max(self.lengths)): 
+                return Data.IMPOSSIBLE, 0
+
+
+        
 
         # if nothing else triggers, return identifier that tells the calculator the triangle is solvable.
         return 'yes', False
@@ -266,7 +278,7 @@ class Logic:
                 if not self.angles[index]: self.angles[index] = self.cos_law(Trig.SIDE_SIDE_SIDE, index)
 
             # return to avoid extra calculations that will create incorrect values
-            return
+            return 'solved'
         
         # check if there is an ambiguous angle
         if ambiguous:
@@ -281,12 +293,21 @@ class Logic:
                     if self.is_ambiguous:
 
                         # calculate obtuse angle for ambiguous triangle
-                        self.angles[index] = 180 - self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
+
+                        output = self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
+
+                        if output == Data.IMPOSSIBLE: return output
+
+                        self.angles[index] = 180 - output
 
                     else:
 
                         # calculate acute angle for ambiguous triangle
-                        self.angles[index] = self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
+                        output = self.sin_law(Trig.ANGLE, index, find(self.angles, max(self.angles)))
+
+                        if output == Data.IMPOSSIBLE: return output
+
+                        self.angles[index] = output
 
 
 
@@ -304,9 +325,13 @@ class Logic:
 
                     if not self.lengths[index]:
 
-                        self.lengths[index] = self.sin_law(Trig.SIDE, index, self.lengths.index(max(self.lengths)))
+                        output = self.sin_law(Trig.SIDE, index, self.lengths.index(max(self.lengths)))
 
-                return
+                        if output == Data.IMPOSSIBLE: return output
+
+                        self.lengths[index] = output
+
+                return 'solved'
 
 
 
@@ -332,7 +357,11 @@ class Logic:
 
                     opposite_side = self.lengths.index(side)
 
-            self.angles[opposite_side] = self.sin_law(Trig.ANGLE, opposite_side, known_angle)
+            output = self.sin_law(Trig.ANGLE, opposite_side, known_angle)
+
+            if output == Data.IMPOSSIBLE: return output
+
+            self.angles[opposite_side] = output
 
  
         
@@ -348,11 +377,11 @@ class Logic:
 
                     opposite_angle = self.angles.index(angle)
 
-            self.lengths[self.info(Info.OPPOSITE_SIDE, opposite_angle, return_type = 1)] = self.sin_law(Trig.SIDE, known_side, opposite_angle)
+            output = self.sin_law(Trig.SIDE, known_side, opposite_angle)
 
-            # last_side = self.lengths.index(0)
+            if output == Data.IMPOSSIBLE: return output
 
-            # self.lengths[last_side] = self.sin_law(Trig.SIDE, last_side, self.angles.index(max(self.angles)))
+            self.lengths[opposite_angle] = output
 
 
 
@@ -395,7 +424,9 @@ class Logic:
         if output != 'yes': return output
 
         # solve triangle
-        self.solve_triangle(ambiguous)
+        output = self.solve_triangle(ambiguous)
+
+        if output != 'solved': return output
             
         # calculate coordinates
         self.build_triangle()

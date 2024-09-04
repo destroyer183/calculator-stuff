@@ -7,9 +7,9 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-make the text start appearing from the right side of the screen instead of the left, this will automatically scroll
+make the text start appearing from the right side of the screen instead of the left, this will automatically scroll - DONE
 
-show when the memory is being used
+show when the memory is being used - DONE
 
 scroll equation when it goes off-screen
 
@@ -21,7 +21,7 @@ make 'backspace' work like regular backspace (bug: if an operator is deleted, th
 perhaps make a class variable list in the 'Gui' class, and every time the user makes an input, 
 create a new class object with the same attribute values, and store it in the class variable.
 when the user presses 'backspace' load the last element in the class variable list, and then pop it out.
-clear this list whenever the user clears the equation
+clear this list whenever the user clears the equation or presses 'calculate'
 
 use the above concept to create a way for the user to see the session history, and load the answers for that.
 make a separate class variable list that only stores a new element when the user hits 'calculate'
@@ -65,6 +65,8 @@ class Logic:
 # main class to handle all the gui stuff
 class Gui:
 
+    history = []
+
     def __init__(self, parent) -> None:
         
         self.parent = parent
@@ -72,6 +74,7 @@ class Gui:
         self.is_radians = False
         self.equation_text = ['']
         self.display_text  = ['', '']
+        self.logic = None
 
 
 
@@ -88,20 +91,24 @@ class Gui:
 
         self.parent.title('Calculator')
 
-        self.parent.geometry('700x675')
+        self.gui_width = 700
+        self.gui_height = 675
+        self.parent.geometry(f"{self.gui_width}x{self.gui_height}")
 
         self.logic = Logic()
 
         self.parent.bind("<KeyRelease>", self.keybindings)
 
         # graphical setup
+        display_offset = 10
+        
         self.equation = tk.Label(self.parent, text = '')
         self.equation.configure(font=('Arial', 40, ''))
-        self.equation.place(x = 0, y = 10)
+        self.equation.place(x = self.gui_width - display_offset, y = 10, anchor = 'ne')
 
         self.display = tk.Label(self.parent, text = '0')
         self.display.configure(font=('Arial', 75, 'bold'))
-        self.display.place(x = 0, y = 80)
+        self.display.place(x = self.gui_width - display_offset, y = 80, anchor = 'ne')
 
         # variable to help attach the round option to the text
         round_x = 370
@@ -284,6 +291,65 @@ class Gui:
         self.parent.resizable(False, False)
 
 
+
+    # a function to handle all key inputs
+    def keybindings(self, input):
+
+        print(f"key: {input}")
+
+        try: temp = input.keysym
+        except:print('keybinding error')
+
+        try: 
+            print(f"input.state: {input.state}")
+            if input.state == 1:
+                print(f"input.keysym: {input.keysym}")
+                match input.keysym:
+
+                    case 'exclam': self.put_factorial()
+                    case 'numbersign': self.put_square_root()
+                    case 'percent': self.handle_operator(' % ')
+                    case 'asciicircum': self.put_exponential()
+                    case 'asterisk': self.handle_operator(' * ')
+                    case 'parenleft': self.put_brackets(L_BRACKET)
+                    case 'parenright': self.put_brackets(R_BRACKET)
+                    case 'underscore': self.negative()
+                    case 'plus': self.handle_operator(' + ')
+                    case 'BackSpace': self.clear(False)
+                    case 'M': self.memory_store()
+
+                return
+            
+            elif input.state == 4:
+
+                if input.keysym in '1234567890': self.put_exponential(int(input.keysym))
+
+                match input.keysym:
+
+                    case 's': self.trigonometry(TrigFunction.Sine)
+                    case 'c': self.trigonometry(TrigFunction.Cosine)
+                    case 't': self.trigonometry(TrigFunction.Tangent)
+                    case 'a': self.answer()
+                    case 'u': self.unit_type()
+                    case 'e': self.put_e()
+                    case 'l': self.logarithm()
+                    case 'p': self.put_pi()
+                    case 'm': self.memory_clear()
+
+                return
+        except: print('exception triggered')
+
+        if input.keysym in '1234567890': self.put_number(int(input.keysym))
+
+        match input.keysym:
+            case 'BackSpace':  self.clear()
+            case 'minus':self.handle_operator(' _ ')
+            case 'Return': self.calculate()
+            case 'slash':self.handle_operator(' / ')
+            case 'period':self.put_decimal()
+            case 'm': self.memory_recall()
+
+
     
     # function bound to the invert button to allow inverse functions to be used.
     def trig_type(self):
@@ -325,7 +391,7 @@ class Gui:
             
             self.deg_rad.configure(text='Rad')
 
-            self.deg_rad.place(x = 0,   y = 525, width = 100, height = 75)
+            self.deg_rad.place(x = 0, y = 525, width = 100, height = 75)
             
             pass
         
@@ -333,7 +399,7 @@ class Gui:
             
             self.deg_rad.configure(text='Deg')
 
-            self.deg_rad.place(x = 0,   y = 525, width = 100, height = 75)
+            self.deg_rad.place(x = 0, y = 525, width = 100, height = 75)
             
 
 
@@ -471,65 +537,6 @@ class Gui:
         # check if the last thing entered in was an operator
         # check if the last thing is a bracket, if it is, go inside the bracket instead of deleting it
             # figure out how to show this
-
-
-
-    # a function to handle all key inputs
-    def keybindings(self, input):
-
-        print(f"key: {input}")
-
-        try: temp = input.keysym
-        except:print('keybinding error')
-
-        try: 
-            print(f"input.state: {input.state}")
-            if input.state == 1:
-                print(f"input.keysym: {input.keysym}")
-                match input.keysym:
-
-                    case 'exclam': self.put_factorial()
-                    case 'numbersign': self.put_square_root()
-                    case 'percent': self.handle_operator(' % ')
-                    case 'asciicircum': self.put_exponential()
-                    case 'asterisk': self.handle_operator(' * ')
-                    case 'parenleft': self.put_brackets(L_BRACKET)
-                    case 'parenright': self.put_brackets(R_BRACKET)
-                    case 'underscore': self.negative()
-                    case 'plus': self.handle_operator(' + ')
-                    case 'BackSpace': self.clear(False)
-                    case 'M': self.memory_store()
-
-                return
-            
-            elif input.state == 4:
-
-                if input.keysym in '1234567890': self.put_exponential(int(input.keysym))
-
-                match input.keysym:
-
-                    case 's': self.trigonometry(TrigFunction.Sine)
-                    case 'c': self.trigonometry(TrigFunction.Cosine)
-                    case 't': self.trigonometry(TrigFunction.Tangent)
-                    case 'a': self.answer()
-                    case 'u': self.unit_type()
-                    case 'e': self.put_e()
-                    case 'l': self.logarithm()
-                    case 'p': self.put_pi()
-                    case 'm': self.memory_clear()
-
-                return
-        except: print('exception triggered')
-
-        if input.keysym in '1234567890': self.put_number(int(input.keysym))
-
-        match input.keysym:
-            case 'BackSpace':  self.clear()
-            case 'minus':self.handle_operator(' _ ')
-            case 'Return': self.calculate()
-            case 'slash':self.handle_operator(' / ')
-            case 'period':self.put_decimal()
-            case 'm': self.memory_recall()
 
 
 
@@ -764,6 +771,10 @@ class Gui:
         # clear the memory variable
         self.logic.memory = []
 
+        # reset button color
+        self.mem_add.configure(bg = 'gainsboro')
+
+
 
 
     # function bound to the memory add button to set the memory number to the number displayed.
@@ -779,6 +790,9 @@ class Gui:
 
         # assign a number to the memory variable
         self.logic.memory = ('').join(self.display_text)
+
+        # update button color to show that memory is being used
+        self.mem_add.configure(bg = 'pale green')
 
 
 
