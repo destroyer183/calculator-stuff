@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from enum import Enum
-from shunting_parser import shunting_yard_evaluator
+from parsers.shunting_parser import shunting_yard_evaluator
 
 
 

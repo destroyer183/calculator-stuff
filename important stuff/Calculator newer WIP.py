@@ -1,11 +1,8 @@
 import tkinter as tk
 from tkinter import *
 import os
-import Scientific
-import Factoring
-import Quadratic
-import Trigonometry
-import Variable
+from gui_classes import Scientific, Factoring, Quadratic, Trigonometry, Variable
+import sys
 
 
 ''' NOTES 
@@ -52,6 +49,14 @@ create the necessary variables
 create logic for parser
 link parser & display
 '''
+
+
+
+# if running from source, update the path to the parent directory
+if __package__ is None and not hasattr(sys, 'frozen'):
+    import os.path
+    path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.realpath(path))
 
 
 
