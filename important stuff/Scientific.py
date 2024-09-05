@@ -7,11 +7,9 @@ from shunting_parser import shunting_yard_evaluator
 
 ''' NOTES
 
-make the text start appearing from the right side of the screen instead of the left, this will automatically scroll - DONE
+change how the buttons are displayed to make it easier to resize the display - DONE
 
-show when the memory is being used - DONE
-
-scroll equation when it goes off-screen
+add buttons to create additional dynamic displays that will show the full equation and current number when they get too big
 
 add a history function
 
@@ -66,6 +64,7 @@ class Logic:
 class Gui:
 
     history = []
+    temp_history = []
 
     def __init__(self, parent) -> None:
         
@@ -75,6 +74,7 @@ class Gui:
         self.equation_text = ['']
         self.display_text  = ['', '']
         self.logic = None
+        self.gui_columns = []
 
 
 
@@ -110,6 +110,9 @@ class Gui:
         self.display.configure(font=('Arial', 75, 'bold'))
         self.display.place(x = self.gui_width - display_offset, y = 80, anchor = 'ne')
 
+        # button to open history
+
+
         # variable to help attach the round option to the text
         round_x = 370
 
@@ -136,6 +139,8 @@ class Gui:
         self.ee             = tk.Button(self.parent, text='e',                  anchor='center', bg='gainsboro',      command=lambda:self.put_e())
         self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.logarithm())
         self.deg_rad        = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
+        self.gui_column_1 = [self.mem_clear, self.pie, self.ee, self.log, self.deg_rad]
+        self.gui_columns.append(self.gui_column_1)
 
         # column 2
         self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_store())
@@ -143,6 +148,8 @@ class Gui:
         self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Sine))
         self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Cosine))
         self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Tangent))
+        self.gui_column_2 = [self.mem_add, self.shift, self.sine, self.cosine, self.tangent]
+        self.gui_columns.append(self.gui_column_2)
 
         # column 3
         self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_recall())
@@ -150,6 +157,8 @@ class Gui:
         self.exponent       = tk.Button(self.parent, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential())
         self.squared        = tk.Button(self.parent, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential(2))
         self.sqrt           = tk.Button(self.parent, text='sqrt',               anchor='center', bg='gainsboro',      command=lambda:self.put_square_root())
+        self.gui_column_3 = [self.mem_recall, self.factorial, self.exponent, self.squared, self.sqrt]
+        self.gui_columns.append(self.gui_column_3)
 
         # column 4
         self.open_b         = tk.Button(self.parent, text='(',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(L_BRACKET))
@@ -157,6 +166,8 @@ class Gui:
         self.num4           = tk.Button(self.parent, text='4',                  anchor='center', bg='white',          command=lambda:self.put_number(4))
         self.num1           = tk.Button(self.parent, text='1',                  anchor='center', bg='white',          command=lambda:self.put_number(1))
         self.integer        = tk.Button(self.parent, text='+/-',                anchor='center', bg='white',          command=lambda:self.negative())
+        self.gui_column_4 = [self.open_b, self.num7, self.num4, self.num1, self.integer]
+        self.gui_columns.append(self.gui_column_4)
         
         # column 5
         self.close_b        = tk.Button(self.parent, text=')',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(R_BRACKET))
@@ -164,6 +175,8 @@ class Gui:
         self.num5           = tk.Button(self.parent, text='5',                  anchor='center', bg='white',          command=lambda:self.put_number(5))
         self.num2           = tk.Button(self.parent, text='2',                  anchor='center', bg='white',          command=lambda:self.put_number(2))
         self.num0           = tk.Button(self.parent, text='0',                  anchor='center', bg='white',          command=lambda:self.put_number(0))
+        self.gui_column_5 = [self.close_b, self.num8, self.num5, self.num2, self.num0]
+        self.gui_columns.append(self.gui_column_5)
         
         # column 6
         self.modulus        = tk.Button(self.parent, text='%',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' % '))
@@ -171,6 +184,8 @@ class Gui:
         self.num6           = tk.Button(self.parent, text='6',                  anchor='center', bg='white',          command=lambda:self.put_number(6))
         self.num3           = tk.Button(self.parent, text='3',                  anchor='center', bg='white',          command=lambda:self.put_number(3))
         self.decimal        = tk.Button(self.parent, text='.',                  anchor='center', bg='white',          command=lambda:self.put_decimal())
+        self.gui_column_6 = [self.modulus, self.num9, self.num6, self.num3, self.decimal]
+        self.gui_columns.append(self.gui_column_6)
 
         # column 7
         self.clear_data     = tk.Button(self.parent, text='CE',                 anchor='center', bg='lightcoral',     command=lambda:self.clear())
@@ -178,114 +193,30 @@ class Gui:
         self.multiply       = tk.Button(self.parent, text='x',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' * '))
         self.minus          = tk.Button(self.parent, text='-',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' _ '))
         self.plus           = tk.Button(self.parent, text='+',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' + '))
+        self.gui_column_7 = [self.clear_data, self.divide, self.multiply, self.minus, self.plus]
+        self.gui_columns.append(self.gui_column_7)
 
 
 
         # create button fonts
-        self.equal.         configure(font=('Arial', 25, 'bold'))
+        self.equal.configure(font=('Arial', 25, 'bold'))
+
+        for column in self.gui_columns:
+            for button in column:
+                button.configure(font=('Arial', 25, 'bold'))
         
-        # column 1
-        self.mem_clear.     configure(font=('Arial', 25, 'bold'))
-        self.pie.           configure(font=('Arial', 25, 'bold'))
-        self.ee.            configure(font=('Arial', 25, 'bold'))
-        self.log.           configure(font=('Arial', 25, 'bold'))
-        self.deg_rad.       configure(font=('Arial', 25, 'bold'))
-        
-        # column 2
-        self.mem_add.       configure(font=('Arial', 25, 'bold'))
-        self.shift.         configure(font=('Arial', 25, 'bold'))
-        self.sine.          configure(font=('Arial', 25, 'bold'))
-        self.cosine.        configure(font=('Arial', 25, 'bold'))
-        self.tangent.       configure(font=('Arial', 25, 'bold'))
-
-        # column 3
-        self.mem_recall.    configure(font=('Arial', 25, 'bold'))
-        self.factorial.     configure(font=('Arial', 25, 'bold'))
-        self.exponent.      configure(font=('Arial', 25, 'bold'))
-        self.squared.       configure(font=('Arial', 25, 'bold'))
-        self.sqrt.          configure(font=('Arial', 25, 'bold'))
-
-        # column 4
-        self.open_b.        configure(font=('Arial', 25, 'bold'))
-        self.num7.          configure(font=('Arial', 25, 'bold'))
-        self.num4.          configure(font=('Arial', 25, 'bold'))
-        self.num1.          configure(font=('Arial', 25, 'bold'))
-        self.integer.       configure(font=('Arial', 25, 'bold'))
-        
-        # column 5
-        self.close_b.       configure(font=('Arial', 25, 'bold'))
-        self.num8.          configure(font=('Arial', 25, 'bold'))
-        self.num5.          configure(font=('Arial', 25, 'bold'))
-        self.num2.          configure(font=('Arial', 25, 'bold'))
-        self.num0.          configure(font=('Arial', 25, 'bold'))
-        
-        # column 6
-        self.modulus.       configure(font=('Arial', 25, 'bold'))
-        self.num9.          configure(font=('Arial', 25, 'bold'))
-        self.num6.          configure(font=('Arial', 25, 'bold'))
-        self.num3.          configure(font=('Arial', 25, 'bold'))
-        self.decimal.       configure(font=('Arial', 25, 'bold'))
-
-        # column 7
-        self.clear_data.    configure(font=('Arial', 25, 'bold'))
-        self.divide.        configure(font=('Arial', 25, 'bold'))
-        self.multiply.      configure(font=('Arial', 25, 'bold'))
-        self.minus.         configure(font=('Arial', 25, 'bold'))
-        self.plus.          configure(font=('Arial', 25, 'bold'))
-
-
 
         # place buttons
-        self.equal.         place(x = 0,   y = 600, width = 700, height = 75)
-        
-        # column 1
-        self.mem_clear.     place(x = 0,   y = 225, width = 100, height = 75)
-        self.pie.           place(x = 0,   y = 300, width = 100, height = 75)
-        self.ee.            place(x = 0,   y = 375, width = 100, height = 75)
-        self.log.           place(x = 0,   y = 450, width = 100, height = 75)
-        self.deg_rad.       place(x = 0,   y = 525, width = 100, height = 75)
-        
-        # column 2
-        self.mem_add.       place(x = 100, y = 225, width = 100, height = 75)
-        self.shift.         place(x = 100, y = 300, width = 100, height = 75)
-        self.sine.          place(x = 100, y = 375, width = 100, height = 75)
-        self.cosine.        place(x = 100, y = 450, width = 100, height = 75)
-        self.tangent.       place(x = 100, y = 525, width = 100, height = 75)
-        
-        # column 3
-        self.mem_recall.    place(x = 200, y = 225, width = 100, height = 75)
-        self.factorial.     place(x = 200, y = 300, width = 100, height = 75)
-        self.exponent.      place(x = 200, y = 375, width = 100, height = 75)
-        self.squared.       place(x = 200, y = 450, width = 100, height = 75)
-        self.sqrt.          place(x = 200, y = 525, width = 100, height = 75)
+        self.button_width = self.gui_width / 7
+        self.button_height = 75
 
-        # column 4
-        self.open_b.        place(x = 300, y = 225, width = 100, height = 75)
-        self.num7.          place(x = 300, y = 300, width = 100, height = 75)
-        self.num4.          place(x = 300, y = 375, width = 100, height = 75)
-        self.num1.          place(x = 300, y = 450, width = 100, height = 75)
-        self.integer.       place(x = 300, y = 525, width = 100, height = 75)
-        
-        # column 5
-        self.close_b.       place(x = 400, y = 225, width = 100, height = 75)
-        self.num8.          place(x = 400, y = 300, width = 100, height = 75)
-        self.num5.          place(x = 400, y = 375, width = 100, height = 75)
-        self.num2.          place(x = 400, y = 450, width = 100, height = 75)
-        self.num0.          place(x = 400, y = 525, width = 100, height = 75)
-        
-        # column 6
-        self.modulus.       place(x = 500, y = 225, width = 100, height = 75)
-        self.num9.          place(x = 500, y = 300, width = 100, height = 75)
-        self.num6.          place(x = 500, y = 375, width = 100, height = 75)
-        self.num3.          place(x = 500, y = 450, width = 100, height = 75)
-        self.decimal.       place(x = 500, y = 525, width = 100, height = 75)
+        self.equal.place(x = 0,   y = self.gui_height - self.button_height * 1, width = self.gui_width, height = self.button_height)
 
-        # column 7
-        self.clear_data.    place(x = 600, y = 225, width = 100, height = 75)
-        self.divide.        place(x = 600, y = 300, width = 100, height = 75)
-        self.multiply.      place(x = 600, y = 375, width = 100, height = 75)
-        self.minus.         place(x = 600, y = 450, width = 100, height = 75)
-        self.plus.          place(x = 600, y = 525, width = 100, height = 75)
+        for index, column in enumerate(self.gui_columns):
+            row_num = 6
+            for button in column:
+                button.place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height)
+                row_num -= 1
 
         # prevent the calculator from being resized
         self.parent.resizable(False, False)
@@ -350,58 +281,63 @@ class Gui:
             case 'm': self.memory_recall()
 
 
-    
-    # function bound to the invert button to allow inverse functions to be used.
-    def trig_type(self):
 
-        # flip the variable whenever the button is pressed
-        self.trig_toggle = not self.trig_toggle
+    # the function bound to the 'equals' button to output a result for an equation.
+    def calculate(self):
 
-        # change the button text to inverted functions
-        if self.trig_toggle:
+        print(f"equation: {('').join(self.logic.equation)}")
 
-            self.sine.   configure(text='sin' + get_super('-1'))
-            self.cosine. configure(text='cos' + get_super('-1'))
-            self.tangent.configure(text='tan' + get_super('-1'))
+        # assemble equation list into a string
+        equation_str = ('').join(self.logic.equation)
 
-            self.sine.   place(x = 100, y = 375, width = 100, height = 75)
-            self.cosine. place(x = 100, y = 450, width = 100, height = 75)
-            self.tangent.place(x = 100, y = 525, width = 100, height = 75)
+        # this is necessary
+        if equation_str == '9 + 10': answer = '21'
 
+        # give the equation parser the equation string and set the output to a variable
+        else: answer = shunting_yard_evaluator(equation_str, self.is_radians)
 
+        if not answer:
 
-        # change the button text to normal functions
-        else:
-
-            self.sine.   configure(text='sin')
-            self.cosine. configure(text='cos')
-            self.tangent.configure(text='tan')
-
-            self.sine.   place(x = 100, y = 375, width = 100, height = 75)
-            self.cosine. place(x = 100, y = 450, width = 100, height = 75)
-            self.tangent.place(x = 100, y = 525, width = 100, height = 75)
-
-    
-
-    def unit_type(self):
+            print('Could not calculate answer')
+            
+            return
         
-        self.is_radians = not self.is_radians
-
-        if self.is_radians:
-            
-            self.deg_rad.configure(text='Rad')
-
-            self.deg_rad.place(x = 0, y = 525, width = 100, height = 75)
-            
-            pass
+        try: 
+            answer = float(answer)
+            print(f"output: {answer:f}")
+        except:
+            print(f"output: {answer}")
         
-        else:
-            
-            self.deg_rad.configure(text='Deg')
 
-            self.deg_rad.place(x = 0, y = 525, width = 100, height = 75)
-            
+        # round the output to the specified number of decimal places
+        self.logic.output = str(round(float(answer), int(self.round_choice.get())))
 
+
+
+        # edit display strings
+        self.equation_text += ' = ' + self.logic.output
+
+        self.display_text = self.logic.output
+
+        self.logic.bracket_num = 0
+
+        self.logic.exponent = False
+
+        self.logic.bracket_exponent_depth = 0
+
+
+
+        # update display
+        self.update_text(type=2)
+
+
+
+        # reset variables
+        self.equation_text = self.logic.output
+
+        self.logic.equation = self.logic.output
+
+    
 
     def update_text(self, type = 0, string = None, index = None, update = 0):
 
@@ -540,60 +476,54 @@ class Gui:
 
 
 
-    # the function bound to the 'equals' button to output a result for an equation.
-    def calculate(self):
+    # function bound to the invert button to allow inverse functions to be used.
+    def trig_type(self):
 
-        print(f"equation: {('').join(self.logic.equation)}")
+        # flip the variable whenever the button is pressed
+        self.trig_toggle = not self.trig_toggle
 
-        # assemble equation list into a string
-        equation_str = ('').join(self.logic.equation)
+        # change the button text to inverted functions
+        if self.trig_toggle:
 
-        # this is necessary
-        if equation_str == '9 + 10': answer = '21'
+            self.sine.   configure(text='sin' + get_super('-1'))
+            self.cosine. configure(text='cos' + get_super('-1'))
+            self.tangent.configure(text='tan' + get_super('-1'))
 
-        # give the equation parser the equation string and set the output to a variable
-        else: answer = shunting_yard_evaluator(equation_str, self.is_radians)
+            self.sine.   place(x = self.button_width * 1, y = self.gui_height - self.button_height * 4, width = self.button_width, height = self.button_height)
+            self.cosine. place(x = self.button_width * 1, y = self.gui_height - self.button_height * 3, width = self.button_width, height = self.button_height)
+            self.tangent.place(x = self.button_width * 1, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
 
-        if not answer:
 
-            print('Could not calculate answer')
+
+        # change the button text to normal functions
+        else:
+
+            self.sine.   configure(text='sin')
+            self.cosine. configure(text='cos')
+            self.tangent.configure(text='tan')
+
+            self.sine.   place(x = self.button_width * 1, y = self.gui_height - self.button_height * 4, width = self.button_width, height = self.button_height)
+            self.cosine. place(x = self.button_width * 1, y = self.gui_height - self.button_height * 3, width = self.button_width, height = self.button_height)
+            self.tangent.place(x = self.button_width * 1, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
+
+    
+
+    def unit_type(self):
+        
+        self.is_radians = not self.is_radians
+
+        if self.is_radians:
             
-            return
+            self.deg_rad.configure(text='Rad')
+
+            self.deg_rad.place(x = 0, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
         
-        try: 
-            answer = float(answer)
-            print(f"output: {answer:f}")
-        except:
-            print(f"output: {answer}")
-        
+        else:
+            
+            self.deg_rad.configure(text='Deg')
 
-        # round the output to the specified number of decimal places
-        self.logic.output = str(round(float(answer), int(self.round_choice.get())))
-
-
-
-        # edit display strings
-        self.equation_text += ' = ' + self.logic.output
-
-        self.display_text = self.logic.output
-
-        self.logic.bracket_num = 0
-
-        self.logic.exponent = False
-
-        self.logic.bracket_exponent_depth = 0
-
-
-
-        # update display
-        self.update_text(type=2)
-
-
-
-        # reset variables
-        self.equation_text = self.logic.output
-
-        self.logic.equation = self.logic.output
+            self.deg_rad.place(x = 0, y = 525, width = self.button_width, height = self.button_height)
+            
 
 
     # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
