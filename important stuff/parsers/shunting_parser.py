@@ -56,12 +56,12 @@ class Token:
 
         match self.math_operation:
 
-            case MathOperation.Sine:       return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case MathOperation.Cosine:     return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case MathOperation.Tangent:    return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case MathOperation.aSine:      return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case MathOperation.aCosine:    return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
-            case MathOperation.aTangent:   return (math.sin(x) * is_radians) + (math.sin(math.radians(x)) * (not is_radians))
+            case MathOperation.Sine:       return (math.sin(x) * is_radians)  + (math.sin(math.radians(x))  * (not is_radians))
+            case MathOperation.Cosine:     return (math.cos(x) * is_radians)  + (math.cos(math.radians(x))  * (not is_radians))
+            case MathOperation.Tangent:    return (math.tan(x) * is_radians)  + (math.tan(math.radians(x))  * (not is_radians))
+            case MathOperation.aSine:      return (math.asin(x) * is_radians) + (math.asin(math.radians(x)) * (not is_radians))
+            case MathOperation.aCosine:    return (math.acos(x) * is_radians) + (math.acos(math.radians(x)) * (not is_radians))
+            case MathOperation.aTangent:   return (math.atan(x) * is_radians) + (math.atan(math.radians(x)) * (not is_radians))
             case MathOperation.Logarithm:  return math.log(x)
             case MathOperation.Factorial:  return math.factorial(int(x))
             case MathOperation.SquareRoot: return x ** 0.5
