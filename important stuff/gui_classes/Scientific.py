@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import *
 from enum import Enum
+import copy
 from parsers.shunting_parser import shunting_yard_evaluator
 
 
@@ -12,6 +13,8 @@ change how the buttons are displayed to make it easier to resize the display - D
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big
 
 add a history function
+
+show the location where the typing is happening in the equation with something
 
 numbers big enough to trigger scientific notation break it, this is because computers can't do math properly (6.02 * 10 ^ (23) = 601999999999999995805696.000000) ???
 
@@ -30,6 +33,15 @@ class TrigFunction(Enum):
     Sine = 0
     Cosine = 1
     Tangent = 2
+
+class ClearType(Enum):
+    Clear = 0
+    Backspace = 1
+
+class HistoryUpdateType(Enum):
+    Add = 0
+    Remove = 1
+    Clear = 2
 
 L_BRACKET = True
 R_BRACKET = False
@@ -87,6 +99,7 @@ class Gui:
 
     def create_gui(self):
         
+        # initialize gui
         self.clear_gui()
 
         self.parent.title('Calculator')
@@ -99,7 +112,7 @@ class Gui:
 
         self.parent.bind("<KeyRelease>", self.keybindings)
 
-        # graphical setup
+        # create display text labels
         display_offset = 10
         
         self.equation = tk.Label(self.parent, text = '')
@@ -110,26 +123,6 @@ class Gui:
         self.display.configure(font=('Arial', 75, 'bold'))
         self.display.place(x = self.gui_width - display_offset, y = 80, anchor = 'ne')
 
-        # button to open history
-
-
-        # variable to help attach the round option to the text
-        round_x = 370
-
-        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
-        self.round_label.configure(font=('Arial', 15, 'bold'))
-        self.round_label.place(x = round_x, y = 190)
-
-        # decimal changer
-        self.round_choice = StringVar(self.parent)
-        self.round_choice.set(11)
-
-        self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-        self.round_numbers.configure(font=('Arial', 15, 'bold'))
-        self.round_numbers.place(x = round_x + 100, y = 185)
-
-        
-
         # create button information
         self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
 
@@ -138,8 +131,8 @@ class Gui:
         self.pie            = tk.Button(self.parent, text='pi',                 anchor='center', bg='gainsboro',      command=lambda:self.put_pi())
         self.ee             = tk.Button(self.parent, text='e',                  anchor='center', bg='gainsboro',      command=lambda:self.put_e())
         self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.logarithm())
-        self.deg_rad        = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
-        self.gui_column_1 = [self.mem_clear, self.pie, self.ee, self.log, self.deg_rad]
+        self.unit_toggle    = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
+        self.gui_column_1   = [self.mem_clear, self.pie, self.ee, self.log, self.unit_toggle]
         self.gui_columns.append(self.gui_column_1)
 
         # column 2
@@ -148,7 +141,7 @@ class Gui:
         self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Sine))
         self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Cosine))
         self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Tangent))
-        self.gui_column_2 = [self.mem_add, self.shift, self.sine, self.cosine, self.tangent]
+        self.gui_column_2   = [self.mem_add, self.shift, self.sine, self.cosine, self.tangent]
         self.gui_columns.append(self.gui_column_2)
 
         # column 3
@@ -157,7 +150,7 @@ class Gui:
         self.exponent       = tk.Button(self.parent, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential())
         self.squared        = tk.Button(self.parent, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential(2))
         self.sqrt           = tk.Button(self.parent, text='sqrt',               anchor='center', bg='gainsboro',      command=lambda:self.put_square_root())
-        self.gui_column_3 = [self.mem_recall, self.factorial, self.exponent, self.squared, self.sqrt]
+        self.gui_column_3   = [self.mem_recall, self.factorial, self.exponent, self.squared, self.sqrt]
         self.gui_columns.append(self.gui_column_3)
 
         # column 4
@@ -166,7 +159,7 @@ class Gui:
         self.num4           = tk.Button(self.parent, text='4',                  anchor='center', bg='white',          command=lambda:self.put_number(4))
         self.num1           = tk.Button(self.parent, text='1',                  anchor='center', bg='white',          command=lambda:self.put_number(1))
         self.integer        = tk.Button(self.parent, text='+/-',                anchor='center', bg='white',          command=lambda:self.negative())
-        self.gui_column_4 = [self.open_b, self.num7, self.num4, self.num1, self.integer]
+        self.gui_column_4   = [self.open_b, self.num7, self.num4, self.num1, self.integer]
         self.gui_columns.append(self.gui_column_4)
         
         # column 5
@@ -175,7 +168,7 @@ class Gui:
         self.num5           = tk.Button(self.parent, text='5',                  anchor='center', bg='white',          command=lambda:self.put_number(5))
         self.num2           = tk.Button(self.parent, text='2',                  anchor='center', bg='white',          command=lambda:self.put_number(2))
         self.num0           = tk.Button(self.parent, text='0',                  anchor='center', bg='white',          command=lambda:self.put_number(0))
-        self.gui_column_5 = [self.close_b, self.num8, self.num5, self.num2, self.num0]
+        self.gui_column_5   = [self.close_b, self.num8, self.num5, self.num2, self.num0]
         self.gui_columns.append(self.gui_column_5)
         
         # column 6
@@ -184,39 +177,73 @@ class Gui:
         self.num6           = tk.Button(self.parent, text='6',                  anchor='center', bg='white',          command=lambda:self.put_number(6))
         self.num3           = tk.Button(self.parent, text='3',                  anchor='center', bg='white',          command=lambda:self.put_number(3))
         self.decimal        = tk.Button(self.parent, text='.',                  anchor='center', bg='white',          command=lambda:self.put_decimal())
-        self.gui_column_6 = [self.modulus, self.num9, self.num6, self.num3, self.decimal]
+        self.gui_column_6   = [self.modulus, self.num9, self.num6, self.num3, self.decimal]
         self.gui_columns.append(self.gui_column_6)
 
         # column 7
-        self.clear_data     = tk.Button(self.parent, text='CE',                 anchor='center', bg='lightcoral',     command=lambda:self.clear())
+        self.clear_data     = tk.Button(self.parent, text='CLR',                anchor='center', bg='lightcoral',     command=lambda:self.clear(ClearType.Clear))
+        self.backspace      = tk.Button(self.parent, text='DEL',                anchor='center', bg='lightcoral',     command=lambda:self.clear(ClearType.Backspace))
         self.divide         = tk.Button(self.parent, text='/',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' / '))
         self.multiply       = tk.Button(self.parent, text='x',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' * '))
         self.minus          = tk.Button(self.parent, text='-',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' _ '))
         self.plus           = tk.Button(self.parent, text='+',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' + '))
-        self.gui_column_7 = [self.clear_data, self.divide, self.multiply, self.minus, self.plus]
+        self.gui_column_7   = [[self.clear_data, self.backspace], self.divide, self.multiply, self.minus, self.plus]
         self.gui_columns.append(self.gui_column_7)
 
 
 
-        # create button fonts
+        # configure button fonts
         self.equal.configure(font=('Arial', 25, 'bold'))
 
         for column in self.gui_columns:
             for button in column:
-                button.configure(font=('Arial', 25, 'bold'))
+                # check for split buttons
+                if type(button) == list:
+                    button[0].configure(font=('Arial', 25, 'bold'))
+                    button[1].configure(font=('Arial', 25, 'bold'))
+                else:
+                    button.configure(font=('Arial', 25, 'bold'))
         
 
         # place buttons
         self.button_width = self.gui_width / 7
-        self.button_height = 75
+        self.button_height = 70
 
         self.equal.place(x = 0,   y = self.gui_height - self.button_height * 1, width = self.gui_width, height = self.button_height)
 
         for index, column in enumerate(self.gui_columns):
             row_num = 6
             for button in column:
-                button.place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height)
+                # check for split buttons
+                if type(button) == list:
+                    button[0].place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height / 2)
+                    button[1].place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num + self.button_height / 2, width = self.button_width, height = self.button_height / 2)
+                else:
+                    button.place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height)
                 row_num -= 1
+
+
+
+        # additional graphical setup
+        
+
+        # button to open history
+
+
+        # variable to help attach the round option to the text
+        round_x = 370
+
+        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
+        self.round_label.configure(font=('Arial', 15, 'bold'))
+        self.round_label.place(x = round_x, y = self.gui_height - self.button_height * 6 - self.button_height / 2)
+
+        # decimal changer
+        self.round_choice = StringVar(self.parent)
+        self.round_choice.set(11)
+
+        self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.round_numbers.configure(font=('Arial', 15, 'bold'))
+        self.round_numbers.place(x = round_x + 100, y = self.gui_height - self.button_height * 6 - self.button_height / 2 - 5)
 
         # prevent the calculator from being resized
         self.parent.resizable(False, False)
@@ -233,6 +260,7 @@ class Gui:
 
         try: 
             print(f"input.state: {input.state}")
+            # check if 'shift' is held
             if input.state == 1:
                 print(f"input.keysym: {input.keysym}")
                 match input.keysym:
@@ -251,6 +279,7 @@ class Gui:
 
                 return
             
+            # check if 'ctrl' is held
             elif input.state == 4:
 
                 if input.keysym in '1234567890': self.put_exponential(int(input.keysym))
@@ -325,7 +354,8 @@ class Gui:
 
         self.logic.bracket_exponent_depth = 0
 
-
+        # clear temp history
+        self.update_history(HistoryUpdateType.Clear)
 
         # update display
         self.update_text(type=2)
@@ -359,7 +389,6 @@ class Gui:
         c = self.display_text
         e = self.logic.exponent
 
-
         # edit main equation variables
         self.logic.equation = list(('').join(a[0:index[0] - d]) + string[0] + ('').join(a[index[0] - d:len(a)]))
 
@@ -381,8 +410,6 @@ class Gui:
         else: 
             
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
-
-
 
         if update == 0:
 
@@ -412,10 +439,25 @@ class Gui:
 
 
 
-    # function bound to the clear equation button that clears the variables and display.
-    def clear(self, type = True):
+    # function to update the history variables
+    def update_history(self, type: HistoryUpdateType):
 
-        if type:
+        if type == HistoryUpdateType.Add:
+            Gui.history.append(copy.deepcopy(self))
+            Gui.temp_history.append(copy.deepcopy(self))
+        
+        elif type == HistoryUpdateType.Remove:
+            Gui.temp_history.pop()
+
+        elif type == HistoryUpdateType.Clear:
+            Gui.temp_history = []
+
+
+
+    # function bound to the clear equation button that clears the variables and display.
+    def clear(self, type: ClearType):
+
+        if type == ClearType.Clear:
 
             # reset variables
             self.logic.equation = ['']
@@ -430,7 +472,7 @@ class Gui:
 
             self.logic.bracket_exponent_depth = 0
 
-
+            self.update_history(HistoryUpdateType.Clear)
 
             # update display
             self.display.configure(text = '0')
@@ -439,40 +481,13 @@ class Gui:
 
 
 
-        else:
+        elif type == ClearType.Backspace:
 
-            # check if there is anything in the display text variable
-            if self.equation_text[-1] in list('1234567890.-' + get_super('1234567890.-')):
+            self = Gui.temp_history[-1]
 
-                # delete last digit in each variable
-                self.logic.equation.pop()
+            self.update_history(HistoryUpdateType.Remove)
 
-                self.equation_text.pop()
-
-                # only delete from the display text if there is stuff to delete
-                if len(self.display_text) != 0:
-
-                    self.display_text.pop()
-
-                # update display
-                self.update_text(type=2)
-
-
-
-            # check if there is an operator in the right-most position in the equation
-            elif self.equation_text[-1] == ' ':
-
-                # delete last operator
-                self.logic.equation = self.logic.equation[0:-3]
-
-                self.equation_text = self.equation_text[0:-3]
-
-                # update display
-                self.update_text(type=2)
-
-        # check if the last thing entered in was an operator
-        # check if the last thing is a bracket, if it is, go inside the bracket instead of deleting it
-            # figure out how to show this
+            self.update_text()
 
 
 
@@ -514,20 +529,23 @@ class Gui:
 
         if self.is_radians:
             
-            self.deg_rad.configure(text='Rad')
+            self.unit_toggle.configure(text='Rad')
 
-            self.deg_rad.place(x = 0, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
+            self.unit_toggle.place(x = 0, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
         
         else:
             
-            self.deg_rad.configure(text='Deg')
+            self.unit_toggle.configure(text='Deg')
 
-            self.deg_rad.place(x = 0, y = 525, width = self.button_width, height = self.button_height)
+            self.unit_toggle.place(x = 0, y = 525, width = self.button_width, height = self.button_height)
             
 
 
     # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
     def handle_operator(self, operation = None):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         try:
 
@@ -562,6 +580,9 @@ class Gui:
     # function bound to the decimal button to allow decimal numbers to be inputted.
     def put_decimal(self):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         if self.display_text == '':
 
             # put the decimal in the equation and display strings
@@ -578,6 +599,9 @@ class Gui:
 
     # function bound to the integer button to allow the user to toggle a number between positive and negative.
     def negative(self):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         try:
 
@@ -635,6 +659,9 @@ class Gui:
     # function to input numbers.
     def put_number(self, x):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         # allow for bracket multiplication without pressing the multiplication button
         if self.logic.equation[-1 - self.logic.bracket_num] in list(')' + get_super(')')):
 
@@ -647,6 +674,9 @@ class Gui:
 
     # function bound to the exponent button that allows for exponents to be used.
     def put_exponential(self, ctrl_exp = -1):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         # check if a keybinding was used
         if ctrl_exp != -1:
@@ -671,6 +701,9 @@ class Gui:
     # function bound to the sqrt button that adds square root
     def put_square_root(self):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         # add the sqrt function indicator to the equation and display strings
         self.update_text(string=['#()', 'sqrt()', ''], update=1)
 
@@ -681,6 +714,9 @@ class Gui:
 
     # function bound to the factorial button to allow for factorials to be used.
     def put_factorial(self):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         # put the factorial sign in the equation and display strings
         self.update_text(string=['!', '!', ''], update=1)
@@ -729,6 +765,9 @@ class Gui:
     # function bound to the brackets button to add them to the display.
     def put_brackets(self, type):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         if type:
 
             # allow for bracket multiplication without pressing the multiplication button
@@ -776,6 +815,9 @@ class Gui:
 
     # function bound to the trigonometry buttons to allow them to be used.
     def trigonometry(self, trig_function = 0):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         # allow for bracket multiplication without pressing the multiplication button
         if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
@@ -838,6 +880,9 @@ class Gui:
     # function bound to the pi button to allow for the pi number to be accessed easily.
     def put_pi(self):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         # add the pi number to the equation and display strings
         self.update_text(string=['3.14159265359', 'pi', '3.14159265359'])
 
@@ -846,6 +891,9 @@ class Gui:
     # function bound to the e button to allow for eulers number to be accessed easily.
     def put_e(self):
 
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
         # add eulers number to the equation and display strings
         self.update_text(string=['2.71828182846', 'e', '2.71828182846'])
 
@@ -853,6 +901,9 @@ class Gui:
 
     # function bound to the log button to allow for logarithms to be used.
     def logarithm(self):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         # allow for bracket multiplication without pressing the multiplication button
         if self.logic.equation[-1] in list('1234567890)' + get_super('1234567890)')):
@@ -869,6 +920,9 @@ class Gui:
 
     # function bound to the answer button to allow for the previous answer to be used.
     def answer(self):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
 
         # add the previous answer to the equation and display strings
         self.update_text(string=[self.logic.output, self.logic.output, self.logic.output])
