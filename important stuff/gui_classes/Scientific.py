@@ -90,6 +90,13 @@ class Gui:
 
 
 
+    # this function allows the object to be converted to a dictionary of key-value pairs for the variables
+    def __iter__(self):
+        for attr, value in self.__dict__.items():
+            yield attr, value
+
+
+
     def clear_gui(self):
 
         for widget in self.parent.winfo_children():
@@ -302,12 +309,12 @@ class Gui:
         if input.keysym in '1234567890': self.put_number(int(input.keysym))
 
         match input.keysym:
-            case 'BackSpace':  self.clear()
-            case 'minus':self.handle_operator(' _ ')
-            case 'Return': self.calculate()
-            case 'slash':self.handle_operator(' / ')
-            case 'period':self.put_decimal()
-            case 'm': self.memory_recall()
+            case 'BackSpace': self.clear()
+            case 'minus':     self.handle_operator(' _ ')
+            case 'Return':    self.calculate()
+            case 'slash':     self.handle_operator(' / ')
+            case 'period':    self.put_decimal()
+            case 'm':         self.memory_recall()
 
 
 
@@ -358,7 +365,7 @@ class Gui:
         self.update_history(HistoryUpdateType.Clear)
 
         # update display
-        self.update_text(type=2)
+        self.update_text(type=1)
 
 
 
@@ -401,15 +408,22 @@ class Gui:
         except:print('well fuck')
 
 
-        if not type:
+        if type == 0:
 
             self.display_text = list(string[2])
 
             self.display_text.append('')
 
-        else: 
+        elif type == 1: 
             
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
+
+        elif type == 2:
+
+            self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
+
+            if ('').join(self.display_text).strip() == '':
+                update = 1
 
         if update == 0:
 
@@ -443,8 +457,21 @@ class Gui:
     def update_history(self, type: HistoryUpdateType):
 
         if type == HistoryUpdateType.Add:
-            Gui.history.append(copy.deepcopy(self))
-            Gui.temp_history.append(copy.deepcopy(self))
+            
+            # this loads all the variables in 'self' and copies them if possible and puts them in a new object
+            temp = dict(self)
+
+            for attr, value in temp.items():
+                try:
+                    temp[attr] = copy.deepcopy(value)
+
+                except:
+                    temp[attr] = value
+
+
+
+            Gui.history.append(temp)
+            Gui.temp_history.append(temp)
         
         elif type == HistoryUpdateType.Remove:
             Gui.temp_history.pop()
@@ -483,11 +510,16 @@ class Gui:
 
         elif type == ClearType.Backspace:
 
-            self = Gui.temp_history[-1]
+            if len(Gui.temp_history) <= 1:
+                self.clear(ClearType.Clear)
+                return
+            
+            for attr, value in Gui.temp_history[-1].items():
+                setattr(self, attr, value)
 
             self.update_history(HistoryUpdateType.Remove)
 
-            self.update_text()
+            self.update_text(type=2)
 
 
 
