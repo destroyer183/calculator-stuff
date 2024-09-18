@@ -10,6 +10,8 @@ from parsers.shunting_parser import shunting_yard_evaluator
 
 change how the buttons are displayed to make it easier to resize the display - DONE
 
+allow the display to be resized by making the buttons change size depending on the current size of the gui
+
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big
 
 add a history function
@@ -111,24 +113,26 @@ class Gui:
 
         self.parent.title('Calculator')
 
-        self.gui_width = 700
-        self.gui_height = 675
-        self.parent.geometry(f"{self.gui_width}x{self.gui_height}")
+        self.parent.geometry(f"700x675")
+
+        # update the window
+        self.parent.update()
 
         self.logic = Logic()
 
         self.parent.bind("<KeyRelease>", self.keybindings)
+        self.parent.bind("<Configure>", self.on_resize)
 
         # create display text labels
         display_offset = 10
         
         self.equation = tk.Label(self.parent, text = '')
         self.equation.configure(font=('Arial', 40, ''))
-        self.equation.place(x = self.gui_width - display_offset, y = 10, anchor = 'ne')
+        self.equation.place(x = self.parent.winfo_width() - display_offset, y = 10, anchor = 'ne')
 
         self.display = tk.Label(self.parent, text = '0')
         self.display.configure(font=('Arial', 75, 'bold'))
-        self.display.place(x = self.gui_width - display_offset, y = 80, anchor = 'ne')
+        self.display.place(x = self.parent.winfo_width() - display_offset, y = 80, anchor = 'ne')
 
         # create button information
         self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
@@ -213,20 +217,20 @@ class Gui:
         
 
         # place buttons
-        self.button_width = self.gui_width / 7
+        self.button_width = lambda gui_width = self.parent.winfo_width(): gui_width / 7
         self.button_height = 70
 
-        self.equal.place(x = 0,   y = self.gui_height - self.button_height * 1, width = self.gui_width, height = self.button_height)
+        self.equal.place(x = 0,   y = self.parent.winfo_height() - self.button_height * 1, width = self.parent.winfo_width(), height = self.button_height)
 
         for index, column in enumerate(self.gui_columns):
             row_num = 6
             for button in column:
                 # check for split buttons
                 if type(button) == list:
-                    button[0].place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height / 2)
-                    button[1].place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num + self.button_height / 2, width = self.button_width, height = self.button_height / 2)
+                    button[0].place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width(), height = self.button_height / 2)
+                    button[1].place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num + self.button_height / 2, width = self.button_width(), height = self.button_height / 2)
                 else:
-                    button.place(x = self.button_width * index, y = self.gui_height - self.button_height * row_num, width = self.button_width, height = self.button_height)
+                    button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width(), height = self.button_height)
                 row_num -= 1
 
 
@@ -238,11 +242,11 @@ class Gui:
 
 
         # variable to help attach the round option to the text
-        round_x = 370
+        round_x = self.parent.winfo_width() - 330
 
         self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
         self.round_label.configure(font=('Arial', 15, 'bold'))
-        self.round_label.place(x = round_x, y = self.gui_height - self.button_height * 6 - self.button_height / 2)
+        self.round_label.place(x = round_x, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2)
 
         # decimal changer
         self.round_choice = StringVar(self.parent)
@@ -250,15 +254,22 @@ class Gui:
 
         self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
         self.round_numbers.configure(font=('Arial', 15, 'bold'))
-        self.round_numbers.place(x = round_x + 100, y = self.gui_height - self.button_height * 6 - self.button_height / 2 - 5)
+        self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2 - 5)
 
-        # prevent the calculator from being resized
-        self.parent.resizable(False, False)
+
+
+    # function to update the display when the window is resized
+    def on_resize(self, event):
+        self.parent.update()
+        print(f"resize detected. new window size: {self.parent.winfo_width()}x{self.parent.winfo_height()}")
 
 
 
     # a function to handle all key inputs
     def keybindings(self, input):
+
+        print(f"width: {self.parent.winfo_width()}")
+        print(f"height: {self.parent.winfo_height()}")
 
         print(f"key: {input}")
 
@@ -536,9 +547,9 @@ class Gui:
             self.cosine. configure(text='cos' + get_super('-1'))
             self.tangent.configure(text='tan' + get_super('-1'))
 
-            self.sine.   place(x = self.button_width * 1, y = self.gui_height - self.button_height * 4, width = self.button_width, height = self.button_height)
-            self.cosine. place(x = self.button_width * 1, y = self.gui_height - self.button_height * 3, width = self.button_width, height = self.button_height)
-            self.tangent.place(x = self.button_width * 1, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
+            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 4, width = self.button_width(), height = self.button_height)
+            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 3, width = self.button_width(), height = self.button_height)
+            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
 
 
 
@@ -549,9 +560,9 @@ class Gui:
             self.cosine. configure(text='cos')
             self.tangent.configure(text='tan')
 
-            self.sine.   place(x = self.button_width * 1, y = self.gui_height - self.button_height * 4, width = self.button_width, height = self.button_height)
-            self.cosine. place(x = self.button_width * 1, y = self.gui_height - self.button_height * 3, width = self.button_width, height = self.button_height)
-            self.tangent.place(x = self.button_width * 1, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
+            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 4, width = self.button_width(), height = self.button_height)
+            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 3, width = self.button_width(), height = self.button_height)
+            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
 
     
 
@@ -563,13 +574,13 @@ class Gui:
             
             self.unit_toggle.configure(text='Rad')
 
-            self.unit_toggle.place(x = 0, y = self.gui_height - self.button_height * 2, width = self.button_width, height = self.button_height)
+            self.unit_toggle.place(x = 0, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
         
         else:
             
             self.unit_toggle.configure(text='Deg')
 
-            self.unit_toggle.place(x = 0, y = 525, width = self.button_width, height = self.button_height)
+            self.unit_toggle.place(x = 0, y = 525, width = self.button_width(), height = self.button_height)
             
 
 

@@ -49,7 +49,8 @@ create the necessary variables
 create logic for parser
 link parser & display
 
-command to compile: pyinstaller --onefile --windowed --add-data=.:"gui_classes" --add-data=.:"parsers" -p gui_classes/ -p parsers/ "Calculator newer WIP.py"
+command to compile:
+pyinstaller --onefile --windowed --add-data=.:"gui_classes" --add-data=.:"parsers" -p gui_classes/ -p parsers/ "Calculator newer WIP.py"
 '''
 
 
@@ -87,7 +88,7 @@ class Window:
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10,  y = 215)
+        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10,  y = self.gui.parent.winfo_height() - 460) # 215
         elif gui_type == 'Factoring'   : self.gui.parent.options.place(x = 10,  y = 185)
         elif gui_type == 'Quadratic'   : self.gui.parent.options.place(x = 10,  y = 185)
         elif gui_type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
