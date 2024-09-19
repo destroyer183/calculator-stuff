@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import *
+from parsers.variable_parser import Logic
 
 
 
@@ -13,14 +14,6 @@ def get_super(x):
     res     = x.maketrans(('').join(normal), ('').join(super_s))
 
     return x.translate(res)
-
-
-
-class Logic:
-
-    def __init__(self) -> None:
-        
-        pass
 
 
 
@@ -39,7 +32,7 @@ class Gui:
     
 
 
-    def create_gui(self):
+    def initialize_gui(self):
 
         self.clear_gui()
 
@@ -50,6 +43,12 @@ class Gui:
         self.logic = Logic()
 
         self.keybindings()
+
+        self.initialize_gui()
+
+
+
+    def create_gui(self):
 
         self.label = tk.Label(self.parent, text='WIP')
         self.label.configure(font=('Arial', 50, 'bold'))

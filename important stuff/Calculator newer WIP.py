@@ -82,13 +82,14 @@ class Window:
         elif gui_type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
         elif gui_type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
 
-        self.gui.create_gui()
+        self.gui.initialize_gui()
 
         # options to switch between calculators
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
+        # test = OptionMenu(self.gui.parent, )
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10,  y = self.gui.parent.winfo_height() - 460) # 215
+        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10,  y = self.gui.parent.winfo_height() - 460)
         elif gui_type == 'Factoring'   : self.gui.parent.options.place(x = 10,  y = 185)
         elif gui_type == 'Quadratic'   : self.gui.parent.options.place(x = 10,  y = 185)
         elif gui_type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)

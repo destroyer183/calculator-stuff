@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 from enum import Enum
 import copy
+import math
 from parsers.shunting_parser import shunting_yard_evaluator
 
 
@@ -11,6 +12,8 @@ from parsers.shunting_parser import shunting_yard_evaluator
 change how the buttons are displayed to make it easier to resize the display - DONE
 
 allow the display to be resized by making the buttons change size depending on the current size of the gui
+
+SWAP MEMORY BUTTONS WITH BRACKET AND MODULUS BUTTONS ON THE DISPLAY TO KEEP FUNCTIONALITY IN NON-SCIENTIFIC MODE
 
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big
 
@@ -89,6 +92,7 @@ class Gui:
         self.display_text  = ['', '']
         self.logic = None
         self.gui_columns = []
+        self.previous_column_count = 0
 
 
 
@@ -101,19 +105,30 @@ class Gui:
 
     def clear_gui(self):
 
+        # this will delete every widget except for the one that lets the user switch the calculator type
         for widget in self.parent.winfo_children():
-            widget.destroy()
+            print(f"widget: {widget}, type: {type(widget)}")
+            try:
+                if type(widget) != tk.OptionMenu or widget.variable.get() not in ['Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable']:
+                    print(f"widget values: {widget.values}")
+                    widget.destroy()
+            except:
+                if type(widget) == tk.OptionMenu:
+                    print(f"widget values: {widget.variable.get()}")
+                widget.destroy()
         
 
 
-    def create_gui(self):
+    def initialize_gui(self):
         
         # initialize gui
         self.clear_gui()
 
         self.parent.title('Calculator')
 
-        self.parent.geometry(f"700x675")
+        self.min_gui_width = 400
+        self.min_gui_height = 675
+        self.parent.geometry('700x675')
 
         # update the window
         self.parent.update()
@@ -123,16 +138,24 @@ class Gui:
         self.parent.bind("<KeyRelease>", self.keybindings)
         self.parent.bind("<Configure>", self.on_resize)
 
+        self.create_gui()
+
+        self.build_gui()
+
+
+
+    # function to create all of the objects that will be placed on the gui
+    def create_gui(self):        
+
         # create display text labels
-        display_offset = 10
-        
         self.equation = tk.Label(self.parent, text = '')
         self.equation.configure(font=('Arial', 40, ''))
-        self.equation.place(x = self.parent.winfo_width() - display_offset, y = 10, anchor = 'ne')
 
         self.display = tk.Label(self.parent, text = '0')
         self.display.configure(font=('Arial', 75, 'bold'))
-        self.display.place(x = self.parent.winfo_width() - display_offset, y = 80, anchor = 'ne')
+
+        # clear column array
+        self.gui_columns = []
 
         # create button information
         self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
@@ -214,15 +237,49 @@ class Gui:
                     button[1].configure(font=('Arial', 25, 'bold'))
                 else:
                     button.configure(font=('Arial', 25, 'bold'))
+
+
+
+        # variable to help attach the round option to the text
+        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
+        self.round_label.configure(font=('Arial', 15, 'bold'))
+
+        # decimal changer
+        self.round_choice = StringVar(self.parent)
+        self.round_choice.set(11)
+
+        self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.round_numbers.configure(font=('Arial', 15, 'bold'))
+
+
+
+    # function to place every element on the gui
+    def build_gui(self):
+
+        # determine the column count, with a max of 7
+        column_count = math.floor(self.parent.winfo_width() / 100) * (self.parent.winfo_width() < 800) + 7 * (self.parent.winfo_width() >= 800)
+
+        if self.previous_column_count != column_count:
+            self.clear_gui()
+            self.create_gui()
+
+
+        # create display text labels
+        display_offset = 10
         
+        self.equation.place(x = self.parent.winfo_width() - display_offset, y = 10, anchor = 'ne')
+
+        self.display.place(x = self.parent.winfo_width() - display_offset, y = 80, anchor = 'ne')
+
+
 
         # place buttons
-        self.button_width = lambda gui_width = self.parent.winfo_width(): gui_width / 7
+        self.button_width = lambda gui_width = self.parent.winfo_width(): gui_width / column_count
         self.button_height = 70
 
-        self.equal.place(x = 0,   y = self.parent.winfo_height() - self.button_height * 1, width = self.parent.winfo_width(), height = self.button_height)
+        self.equal.place(x = 0, y = self.parent.winfo_height() - self.button_height * 1, width = self.parent.winfo_width(), height = self.button_height)
 
-        for index, column in enumerate(self.gui_columns):
+        for index, column in enumerate(self.gui_columns[7 - column_count:7]):
             row_num = 6
             for button in column:
                 # check for split buttons
@@ -241,27 +298,41 @@ class Gui:
         # button to open history
 
 
-        # variable to help attach the round option to the text
-        round_x = self.parent.winfo_width() - 330
+        if column_count >= 5:
 
-        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
-        self.round_label.configure(font=('Arial', 15, 'bold'))
-        self.round_label.place(x = round_x, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2)
+            # variable to help attach the round option to the text
+            round_x = self.parent.winfo_width() - 330
 
-        # decimal changer
-        self.round_choice = StringVar(self.parent)
-        self.round_choice.set(11)
+            self.round_label.place(x = round_x, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2)
 
-        self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-        self.round_numbers.configure(font=('Arial', 15, 'bold'))
-        self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2 - 5)
+            # decimal changer
+            self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2 - 5)
+
+
+
+        # variable to determine whether or not the buttons need to be cleared
+        self.previous_column_count = column_count
 
 
 
     # function to update the display when the window is resized
     def on_resize(self, event):
-        self.parent.update()
-        print(f"resize detected. new window size: {self.parent.winfo_width()}x{self.parent.winfo_height()}")
+
+        # check if the parent window is being adjusted
+        if event.widget == self.parent:
+
+            if self.parent.winfo_width() < self.min_gui_width or self.parent.winfo_height() < self.min_gui_height:
+
+                self.parent.geometry(f"{max(self.parent.winfo_width(), self.min_gui_width)}x{max(self.parent.winfo_height(), self.min_gui_height)}")
+
+            # update window
+            self.parent.update()
+
+            # print info
+            print(f"resize detected. new window size: {self.parent.winfo_width()}x{self.parent.winfo_height()}")
+
+            # rebuild gui
+            self.build_gui()
 
 
 

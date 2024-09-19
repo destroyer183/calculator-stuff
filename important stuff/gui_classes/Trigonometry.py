@@ -55,65 +55,6 @@ class Gui:
 
 
 
-    # function to detect optionmenu changes
-    def text_boxes_callback(self, x = None):
-
-        print(f"x: {x}")
-
-        for box in self.angle_boxes + self.length_boxes:
-
-            if box.edit_modified():
-
-                try: temp = float(box.get(1.0, tk.END))
-                except: box.delete(len(box.get(1.0, tk.END)) - 1.0, tk.END); return
-
-                print('yes')
-
-                if self.mode_toggle and x is not None: return
-
-                try: 
-                    if box != self.last_modified:
-
-                        # loop through all boxes, and reset the previous last modified box
-                        for item in self.angle_boxes + self.length_boxes:
-                            item.edit_modified(False)
-
-                        self.last_modified = box
-
-                except: self.last_modified = box
-
-                box.edit_modified(False)
-
-                self.logic.angles = [x.get(1.0, tk.END) for x in self.angle_boxes]
-                self.logic.lengths = [x.get(1.0, tk.END) for x in self.length_boxes]
-
-                for index in range(len(self.logic.angles)):
-                    try: self.logic.angles[index] = float(self.logic.angles[index])
-                    except: self.logic.angles[index] = 0
-
-                for index in range(len(self.logic.lengths)):
-                    try: self.logic.lengths[index] = float(self.logic.lengths[index])
-                    except: self.logic.lengths[index] = 0
-
-                output, ambiguous = self.logic.check_triangle()
-
-                if ambiguous:
-
-                    self.ambiguous.angles = 1 * self.logic.angles
-                    self.ambiguous.lengths = 1 * self.logic.lengths
-
-                    self.ambiguous.calculate_triangle(ambiguous)
-
-                    self.ambiguous_toggle()
-
-                else: self.ambiguous_toggle(Data.DELETE)
-
-                self.logic.calculate_triangle(ambiguous)
-
-                self.place_triangle(self.logic.calculate_triangle(ambiguous))
-
-
-
     def clear_gui(self):
 
         for widget in self.parent.winfo_children():
@@ -121,7 +62,7 @@ class Gui:
 
 
 
-    def create_gui(self):
+    def initialize_gui(self):
 
         self.clear_gui()
 
@@ -130,6 +71,12 @@ class Gui:
         self.parent.geometry('650x850')
 
         self.parent.bind("<KeyRelease>", self.keybindings)
+
+        self.create_gui()
+
+    
+
+    def create_gui(self):
 
         self.canvas = Canvas(self.parent, width = 650, height = 654)
 
@@ -219,6 +166,67 @@ class Gui:
         if input.char == "t" and self.ambiguous_triangle: self.ambiguous_toggle()
         else: self.text_boxes_callback(input)
 
+
+    # function to detect optionmenu changes
+    def text_boxes_callback(self, x = None):
+
+        print(f"x: {x}")
+
+        for box in self.angle_boxes + self.length_boxes:
+
+            if box.edit_modified():
+
+                try: temp = float(box.get(1.0, tk.END))
+                except: box.delete(len(box.get(1.0, tk.END)) - 1.0, tk.END); return
+
+                print('yes')
+
+                if self.mode_toggle and x is not None: return
+
+                try: 
+                    if box != self.last_modified:
+
+                        # loop through all boxes, and reset the previous last modified box
+                        for item in self.angle_boxes + self.length_boxes:
+                            item.edit_modified(False)
+
+                        self.last_modified = box
+
+                except: self.last_modified = box
+
+                box.edit_modified(False)
+
+                self.logic.angles = [x.get(1.0, tk.END) for x in self.angle_boxes]
+                self.logic.lengths = [x.get(1.0, tk.END) for x in self.length_boxes]
+
+                for index in range(len(self.logic.angles)):
+                    try: self.logic.angles[index] = float(self.logic.angles[index])
+                    except: self.logic.angles[index] = 0
+
+                for index in range(len(self.logic.lengths)):
+                    try: self.logic.lengths[index] = float(self.logic.lengths[index])
+                    except: self.logic.lengths[index] = 0
+
+                output, ambiguous = self.logic.check_triangle()
+
+                if ambiguous:
+
+                    self.ambiguous.angles = 1 * self.logic.angles
+                    self.ambiguous.lengths = 1 * self.logic.lengths
+
+                    self.ambiguous.calculate_triangle(ambiguous)
+
+                    self.ambiguous_toggle()
+
+                else: self.ambiguous_toggle(Data.DELETE)
+
+                self.logic.calculate_triangle(ambiguous)
+
+                self.place_triangle(self.logic.calculate_triangle(ambiguous))
+
+
+
+    
 
 
     def swap_modes(self):
