@@ -11,11 +11,11 @@ from parsers.shunting_parser import shunting_yard_evaluator
 
 change how the buttons are displayed to make it easier to resize the display - DONE
 
-allow the display to be resized by making the buttons change size depending on the current size of the gui
+allow the display to be resized by making the buttons change size depending on the current size of the gui - DONE
 
 SWAP MEMORY BUTTONS WITH BRACKET AND MODULUS BUTTONS ON THE DISPLAY TO KEEP FUNCTIONALITY IN NON-SCIENTIFIC MODE
 
-add buttons to create additional dynamic displays that will show the full equation and current number when they get too big
+add buttons to create additional dynamic displays that will show the full equation and current number when they get too big - WORKAROUND
 
 add a history function
 
@@ -107,16 +107,9 @@ class Gui:
 
         # this will delete every widget except for the one that lets the user switch the calculator type
         for widget in self.parent.winfo_children():
-            print(f"widget: {widget}, type: {type(widget)}")
-            try:
-                if type(widget) != tk.OptionMenu or widget.variable.get() not in ['Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable']:
-                    print(f"widget values: {widget.values}")
-                    widget.destroy()
-            except:
-                if type(widget) == tk.OptionMenu:
-                    print(f"widget values: {widget.variable.get()}")
+            if type(widget) != OptionMenu:
                 widget.destroy()
-        
+
 
 
     def initialize_gui(self):
@@ -246,9 +239,9 @@ class Gui:
 
         # decimal changer
         self.round_choice = StringVar(self.parent)
-        self.round_choice.set(11)
+        self.round_choice.set(10)
 
-        self.round_numbers = OptionMenu(self.parent, self.round_choice, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
+        self.round_numbers = tk.Spinbox(self.parent, from_ = 0, to = 100, textvariable = self.round_choice)
         self.round_numbers.configure(font=('Arial', 15, 'bold'))
 
 
@@ -306,7 +299,7 @@ class Gui:
             self.round_label.place(x = round_x, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2)
 
             # decimal changer
-            self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2 - 5)
+            self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2, width = 65)
 
 
 
@@ -363,7 +356,7 @@ class Gui:
                     case 'parenright': self.put_brackets(R_BRACKET)
                     case 'underscore': self.negative()
                     case 'plus': self.handle_operator(' + ')
-                    case 'BackSpace': self.clear(False)
+                    case 'BackSpace': self.clear(ClearType.Clear)
                     case 'M': self.memory_store()
 
                 return
@@ -391,7 +384,7 @@ class Gui:
         if input.keysym in '1234567890': self.put_number(int(input.keysym))
 
         match input.keysym:
-            case 'BackSpace': self.clear()
+            case 'BackSpace': self.clear(ClearType.Backspace)
             case 'minus':     self.handle_operator(' _ ')
             case 'Return':    self.calculate()
             case 'slash':     self.handle_operator(' / ')
