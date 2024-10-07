@@ -17,6 +17,10 @@ SWAP MEMORY BUTTONS WITH BRACKET AND MODULUS BUTTONS ON THE DISPLAY TO KEEP FUNC
 
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big - WORKAROUND
 
+put the brackets into a split button, and add an absolute value button to fill in the gap - MAKE ABSOLUTE VALUE BUTTON WORK SIMILAR TO EXPONENT BUTTON
+
+make split button placing work universally (make it work no matter how many buttons fill one space) - DONE
+
 add a history function
 
 show the location where the typing is happening in the equation with something
@@ -35,18 +39,22 @@ make a separate class variable list that only stores a new element when the user
 '''
 
 class TrigFunction(Enum):
-    Sine = 0
-    Cosine = 1
-    Tangent = 2
+    Sine = 'sine'
+    Cosine = 'cosine'
+    Tangent = 'tangent'
 
 class ClearType(Enum):
-    Clear = 0
-    Backspace = 1
+    Clear = 'clear'
+    Backspace = 'backspace'
 
 class HistoryUpdateType(Enum):
-    Add = 0
-    Remove = 1
-    Clear = 2
+    Add = 'add'
+    Remove = 'remove'
+    Clear = 'clear'
+
+class SplitType(Enum):
+    Horizontal = 'horizontal'
+    Vertical = 'vertical'
 
 L_BRACKET = True
 R_BRACKET = False
@@ -131,6 +139,8 @@ class Gui:
         self.parent.bind("<KeyRelease>", self.keybindings)
         self.parent.bind("<Configure>", self.on_resize)
 
+        self.parent.resizable(True, False)
+
         self.create_gui()
 
         self.build_gui()
@@ -154,57 +164,58 @@ class Gui:
         self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
 
         # column 1
-        self.mem_clear      = tk.Button(self.parent, text='MC',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_clear())
+        self.absolute       = tk.Button(self.parent, text='|x|',                anchor='center', bg='gainsboro',      command='')
         self.pie            = tk.Button(self.parent, text='pi',                 anchor='center', bg='gainsboro',      command=lambda:self.put_pi())
         self.ee             = tk.Button(self.parent, text='e',                  anchor='center', bg='gainsboro',      command=lambda:self.put_e())
         self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.logarithm())
         self.unit_toggle    = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
-        self.gui_column_1   = [self.mem_clear, self.pie, self.ee, self.log, self.unit_toggle]
+        self.gui_column_1   = [self.absolute, self.pie, self.ee, self.log, self.unit_toggle]
         self.gui_columns.append(self.gui_column_1)
 
         # column 2
-        self.mem_add        = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_store())
+        self.open_b         = tk.Button(self.parent, text='(',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(L_BRACKET))
+        self.close_b        = tk.Button(self.parent, text=')',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(R_BRACKET))
         self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.trig_type())
         self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Sine))
         self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Cosine))
         self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Tangent))
-        self.gui_column_2   = [self.mem_add, self.shift, self.sine, self.cosine, self.tangent]
+        self.gui_column_2   = [(self.open_b, self.close_b, SplitType.Vertical), self.shift, self.sine, self.cosine, self.tangent]
         self.gui_columns.append(self.gui_column_2)
 
         # column 3
-        self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_recall())
+        self.modulus        = tk.Button(self.parent, text='%',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' % '))
         self.factorial      = tk.Button(self.parent, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:self.put_factorial())
         self.exponent       = tk.Button(self.parent, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential())
         self.squared        = tk.Button(self.parent, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential(2))
         self.sqrt           = tk.Button(self.parent, text='sqrt',               anchor='center', bg='gainsboro',      command=lambda:self.put_square_root())
-        self.gui_column_3   = [self.mem_recall, self.factorial, self.exponent, self.squared, self.sqrt]
+        self.gui_column_3   = [self.modulus, self.factorial, self.exponent, self.squared, self.sqrt]
         self.gui_columns.append(self.gui_column_3)
 
         # column 4
-        self.open_b         = tk.Button(self.parent, text='(',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(L_BRACKET))
+        self.mem_clear      = tk.Button(self.parent, text='MC',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_clear())
         self.num7           = tk.Button(self.parent, text='7',                  anchor='center', bg='white',          command=lambda:self.put_number(7))
         self.num4           = tk.Button(self.parent, text='4',                  anchor='center', bg='white',          command=lambda:self.put_number(4))
         self.num1           = tk.Button(self.parent, text='1',                  anchor='center', bg='white',          command=lambda:self.put_number(1))
         self.integer        = tk.Button(self.parent, text='+/-',                anchor='center', bg='white',          command=lambda:self.negative())
-        self.gui_column_4   = [self.open_b, self.num7, self.num4, self.num1, self.integer]
+        self.gui_column_4   = [self.mem_clear, self.num7, self.num4, self.num1, self.integer]
         self.gui_columns.append(self.gui_column_4)
         
         # column 5
-        self.close_b        = tk.Button(self.parent, text=')',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(R_BRACKET))
+        self.mem_store      = tk.Button(self.parent, text='MS',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_store())
         self.num8           = tk.Button(self.parent, text='8',                  anchor='center', bg='white',          command=lambda:self.put_number(8))
         self.num5           = tk.Button(self.parent, text='5',                  anchor='center', bg='white',          command=lambda:self.put_number(5))
         self.num2           = tk.Button(self.parent, text='2',                  anchor='center', bg='white',          command=lambda:self.put_number(2))
         self.num0           = tk.Button(self.parent, text='0',                  anchor='center', bg='white',          command=lambda:self.put_number(0))
-        self.gui_column_5   = [self.close_b, self.num8, self.num5, self.num2, self.num0]
+        self.gui_column_5   = [self.mem_store, self.num8, self.num5, self.num2, self.num0]
         self.gui_columns.append(self.gui_column_5)
         
         # column 6
-        self.modulus        = tk.Button(self.parent, text='%',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' % '))
+        self.mem_recall     = tk.Button(self.parent, text='MR',                 anchor='center', bg='gainsboro',      command=lambda:self.memory_recall())
         self.num9           = tk.Button(self.parent, text='9',                  anchor='center', bg='white',          command=lambda:self.put_number(9))
         self.num6           = tk.Button(self.parent, text='6',                  anchor='center', bg='white',          command=lambda:self.put_number(6))
         self.num3           = tk.Button(self.parent, text='3',                  anchor='center', bg='white',          command=lambda:self.put_number(3))
         self.decimal        = tk.Button(self.parent, text='.',                  anchor='center', bg='white',          command=lambda:self.put_decimal())
-        self.gui_column_6   = [self.modulus, self.num9, self.num6, self.num3, self.decimal]
+        self.gui_column_6   = [self.mem_recall, self.num9, self.num6, self.num3, self.decimal]
         self.gui_columns.append(self.gui_column_6)
 
         # column 7
@@ -214,7 +225,7 @@ class Gui:
         self.multiply       = tk.Button(self.parent, text='x',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' * '))
         self.minus          = tk.Button(self.parent, text='-',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' _ '))
         self.plus           = tk.Button(self.parent, text='+',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' + '))
-        self.gui_column_7   = [[self.clear_data, self.backspace], self.divide, self.multiply, self.minus, self.plus]
+        self.gui_column_7   = [(self.clear_data, self.backspace, SplitType.Horizontal), self.divide, self.multiply, self.minus, self.plus]
         self.gui_columns.append(self.gui_column_7)
 
 
@@ -225,9 +236,9 @@ class Gui:
         for column in self.gui_columns:
             for button in column:
                 # check for split buttons
-                if type(button) == list:
-                    button[0].configure(font=('Arial', 25, 'bold'))
-                    button[1].configure(font=('Arial', 25, 'bold'))
+                if type(button) == tuple:
+                    for i in range(0, len(button) - 1):
+                        button[i].configure(font=('Arial', 25, 'bold'))
                 else:
                     button.configure(font=('Arial', 25, 'bold'))
 
@@ -275,10 +286,42 @@ class Gui:
         for index, column in enumerate(self.gui_columns[7 - column_count:7]):
             row_num = 6
             for button in column:
+
                 # check for split buttons
-                if type(button) == list:
-                    button[0].place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width(), height = self.button_height / 2)
-                    button[1].place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num + self.button_height / 2, width = self.button_width(), height = self.button_height / 2)
+                if type(button) == tuple:
+                    if button[-1] == SplitType.Horizontal:
+
+                        # place first button
+                        button[0].place(x = self.button_width() * index, 
+                                        y = self.parent.winfo_height() - self.button_height * row_num, 
+                                        width = self.button_width(), 
+                                        height = self.button_height / (len(button) - 1))
+
+                        # place rest of buttons
+                        for i in range(1, len(button) - 1):
+                            button[i].place(x = self.button_width() * index, 
+                                            y = self.parent.winfo_height() - self.button_height * row_num + self.button_height / (len(button) - 1) * i, 
+                                            width = self.button_width(),  
+                                            height = self.button_height / (len(button) - 1))
+                    
+
+
+                    elif button[-1] == SplitType.Vertical:
+
+                        # place first button
+                        button[0].place(x = self.button_width() * index, 
+                                        y = self.parent.winfo_height() - self.button_height * row_num, 
+                                        width = self.button_width() / (len(button) - 1), 
+                                        height = self.button_height)
+
+                        # place rest of buttons
+                        for i in range(1, len(button) - 1):
+                            button[i].place(x = self.button_width() * index + self.button_width() / (len(button) - 1) * i, 
+                                            y = self.parent.winfo_height() - self.button_height * row_num, 
+                                            width = self.button_width() / (len(button) - 1), 
+                                            height = self.button_height)
+
+                        # button[1].place(x = self.button_width() * index + self.button_width() / 2, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width() / 2, height = self.button_height)
                 else:
                     button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width(), height = self.button_height)
                 row_num -= 1
@@ -331,9 +374,6 @@ class Gui:
 
     # a function to handle all key inputs
     def keybindings(self, input):
-
-        print(f"width: {self.parent.winfo_width()}")
-        print(f"height: {self.parent.winfo_height()}")
 
         print(f"key: {input}")
 
@@ -845,7 +885,7 @@ class Gui:
         self.logic.memory = []
 
         # reset button color
-        self.mem_add.configure(bg = 'gainsboro')
+        self.mem_store.configure(bg = 'gainsboro')
 
 
 
@@ -865,7 +905,7 @@ class Gui:
         self.logic.memory = ('').join(self.display_text)
 
         # update button color to show that memory is being used
-        self.mem_add.configure(bg = 'pale green')
+        self.mem_store.configure(bg = 'pale green')
 
 
 
