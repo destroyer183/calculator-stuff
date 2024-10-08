@@ -57,6 +57,8 @@ class Gui:
 
     def clear_gui(self):
 
+        self.parent.unbind("<Configure>")
+
         for widget in self.parent.winfo_children():
             widget.destroy()
 

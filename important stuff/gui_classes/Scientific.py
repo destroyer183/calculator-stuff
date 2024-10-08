@@ -17,7 +17,7 @@ SWAP MEMORY BUTTONS WITH BRACKET AND MODULUS BUTTONS ON THE DISPLAY TO KEEP FUNC
 
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big - WORKAROUND
 
-put the brackets into a split button, and add an absolute value button to fill in the gap - MAKE ABSOLUTE VALUE BUTTON WORK SIMILAR TO EXPONENT BUTTON
+put the brackets into a split button, and add an absolute value button to fill in the gap - MAKE ABSOLUTE VALUE BUTTON WORK SIMILAR TO EXPONENT BUTTON - or make it work by treating it as a function with brackets and just displaying different brackets than what is put into the equation
 
 make split button placing work universally (make it work no matter how many buttons fill one space) - DONE
 
@@ -38,7 +38,7 @@ make a separate class variable list that only stores a new element when the user
 
 '''
 
-class TrigFunction(Enum):
+class TrigFunctionType(Enum):
     Sine = 'sine'
     Cosine = 'cosine'
     Tangent = 'tangent'
@@ -56,8 +56,14 @@ class SplitType(Enum):
     Horizontal = 'horizontal'
     Vertical = 'vertical'
 
-L_BRACKET = True
-R_BRACKET = False
+class BracketType(Enum):
+    Left = 'left'
+    Right = 'right'
+
+class DisplayTextUpdateType(Enum):
+    Replace = 'replace'
+    Insert = 'insert'
+    InsertCheckEmpty = 'replace_check_empty'
 
 
 
@@ -161,29 +167,29 @@ class Gui:
         self.gui_columns = []
 
         # create button information
-        self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate())
+        self.equal          = tk.Button(self.parent, text='=',                  anchor='center', bg='DarkSlateGray2', command=lambda:self.calculate_equation())
 
         # column 1
-        self.absolute       = tk.Button(self.parent, text='|x|',                anchor='center', bg='gainsboro',      command='')
+        self.absolute       = tk.Button(self.parent, text='|x|',                anchor='center', bg='gainsboro',      command=lambda:self.put_absolute())
         self.pie            = tk.Button(self.parent, text='pi',                 anchor='center', bg='gainsboro',      command=lambda:self.put_pi())
         self.ee             = tk.Button(self.parent, text='e',                  anchor='center', bg='gainsboro',      command=lambda:self.put_e())
-        self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.logarithm())
-        self.unit_toggle    = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.unit_type())
+        self.log            = tk.Button(self.parent, text='log',                anchor='center', bg='gainsboro',      command=lambda:self.put_log())
+        self.unit_toggle    = tk.Button(self.parent, text='Deg',                anchor='center', bg='gainsboro',      command=lambda:self.toggle_unit_type())
         self.gui_column_1   = [self.absolute, self.pie, self.ee, self.log, self.unit_toggle]
         self.gui_columns.append(self.gui_column_1)
 
         # column 2
-        self.open_b         = tk.Button(self.parent, text='(',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(L_BRACKET))
-        self.close_b        = tk.Button(self.parent, text=')',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(R_BRACKET))
-        self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.trig_type())
-        self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Sine))
-        self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Cosine))
-        self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.trigonometry(TrigFunction.Tangent))
+        self.open_b         = tk.Button(self.parent, text='(',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(BracketType.Left))
+        self.close_b        = tk.Button(self.parent, text=')',                  anchor='center', bg='gainsboro',      command=lambda:self.put_brackets(BracketType.Right))
+        self.shift          = tk.Button(self.parent, text='Inv',                anchor='center', bg='gainsboro',      command=lambda:self.toggle_trig_type())
+        self.sine           = tk.Button(self.parent, text='sin',                anchor='center', bg='gainsboro',      command=lambda:self.put_trig_function(TrigFunctionType.Sine))
+        self.cosine         = tk.Button(self.parent, text='cos',                anchor='center', bg='gainsboro',      command=lambda:self.put_trig_function(TrigFunctionType.Cosine))
+        self.tangent        = tk.Button(self.parent, text='tan',                anchor='center', bg='gainsboro',      command=lambda:self.put_trig_function(TrigFunctionType.Tangent))
         self.gui_column_2   = [(self.open_b, self.close_b, SplitType.Vertical), self.shift, self.sine, self.cosine, self.tangent]
         self.gui_columns.append(self.gui_column_2)
 
         # column 3
-        self.modulus        = tk.Button(self.parent, text='%',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' % '))
+        self.modulus        = tk.Button(self.parent, text='%',                  anchor='center', bg='gainsboro',      command=lambda:self.put_operator(' % '))
         self.factorial      = tk.Button(self.parent, text='x!',                 anchor='center', bg='gainsboro',      command=lambda:self.put_factorial())
         self.exponent       = tk.Button(self.parent, text='x' + get_super('y'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential())
         self.squared        = tk.Button(self.parent, text='x' + get_super('2'), anchor='center', bg='gainsboro',      command=lambda:self.put_exponential(2))
@@ -196,7 +202,7 @@ class Gui:
         self.num7           = tk.Button(self.parent, text='7',                  anchor='center', bg='white',          command=lambda:self.put_number(7))
         self.num4           = tk.Button(self.parent, text='4',                  anchor='center', bg='white',          command=lambda:self.put_number(4))
         self.num1           = tk.Button(self.parent, text='1',                  anchor='center', bg='white',          command=lambda:self.put_number(1))
-        self.integer        = tk.Button(self.parent, text='+/-',                anchor='center', bg='white',          command=lambda:self.negative())
+        self.integer        = tk.Button(self.parent, text='+/-',                anchor='center', bg='white',          command=lambda:self.toggle_number_sign())
         self.gui_column_4   = [self.mem_clear, self.num7, self.num4, self.num1, self.integer]
         self.gui_columns.append(self.gui_column_4)
         
@@ -219,12 +225,12 @@ class Gui:
         self.gui_columns.append(self.gui_column_6)
 
         # column 7
-        self.clear_data     = tk.Button(self.parent, text='CLR',                anchor='center', bg='lightcoral',     command=lambda:self.clear(ClearType.Clear))
-        self.backspace      = tk.Button(self.parent, text='DEL',                anchor='center', bg='lightcoral',     command=lambda:self.clear(ClearType.Backspace))
-        self.divide         = tk.Button(self.parent, text='/',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' / '))
-        self.multiply       = tk.Button(self.parent, text='x',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' * '))
-        self.minus          = tk.Button(self.parent, text='-',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' _ '))
-        self.plus           = tk.Button(self.parent, text='+',                  anchor='center', bg='gainsboro',      command=lambda:self.handle_operator(' + '))
+        self.clear_data     = tk.Button(self.parent, text='CLR',                anchor='center', bg='lightcoral',     command=lambda:self.clear_data(ClearType.Clear))
+        self.backspace      = tk.Button(self.parent, text='DEL',                anchor='center', bg='lightcoral',     command=lambda:self.clear_data(ClearType.Backspace))
+        self.divide         = tk.Button(self.parent, text='/',                  anchor='center', bg='gainsboro',      command=lambda:self.put_operator(' / '))
+        self.multiply       = tk.Button(self.parent, text='x',                  anchor='center', bg='gainsboro',      command=lambda:self.put_operator(' * '))
+        self.minus          = tk.Button(self.parent, text='-',                  anchor='center', bg='gainsboro',      command=lambda:self.put_operator(' _ '))
+        self.plus           = tk.Button(self.parent, text='+',                  anchor='center', bg='gainsboro',      command=lambda:self.put_operator(' + '))
         self.gui_column_7   = [(self.clear_data, self.backspace, SplitType.Horizontal), self.divide, self.multiply, self.minus, self.plus]
         self.gui_columns.append(self.gui_column_7)
 
@@ -389,14 +395,14 @@ class Gui:
 
                     case 'exclam': self.put_factorial()
                     case 'numbersign': self.put_square_root()
-                    case 'percent': self.handle_operator(' % ')
+                    case 'percent': self.put_operator(' % ')
                     case 'asciicircum': self.put_exponential()
-                    case 'asterisk': self.handle_operator(' * ')
-                    case 'parenleft': self.put_brackets(L_BRACKET)
-                    case 'parenright': self.put_brackets(R_BRACKET)
-                    case 'underscore': self.negative()
-                    case 'plus': self.handle_operator(' + ')
-                    case 'BackSpace': self.clear(ClearType.Clear)
+                    case 'asterisk': self.put_operator(' * ')
+                    case 'parenleft': self.put_brackets(BracketType.Left)
+                    case 'parenright': self.put_brackets(BracketType.Right)
+                    case 'underscore': self.toggle_number_sign()
+                    case 'plus': self.put_operator(' + ')
+                    case 'BackSpace': self.clear_data(ClearType.Clear)
                     case 'M': self.memory_store()
 
                 return
@@ -408,13 +414,13 @@ class Gui:
 
                 match input.keysym:
 
-                    case 's': self.trigonometry(TrigFunction.Sine)
-                    case 'c': self.trigonometry(TrigFunction.Cosine)
-                    case 't': self.trigonometry(TrigFunction.Tangent)
-                    case 'a': self.answer()
-                    case 'u': self.unit_type()
+                    case 's': self.put_trig_function(TrigFunctionType.Sine)
+                    case 'c': self.put_trig_function(TrigFunctionType.Cosine)
+                    case 't': self.put_trig_function(TrigFunctionType.Tangent)
+                    case 'a': self.put_previous_answer()
+                    case 'u': self.toggle_unit_type()
                     case 'e': self.put_e()
-                    case 'l': self.logarithm()
+                    case 'l': self.put_log()
                     case 'p': self.put_pi()
                     case 'm': self.memory_clear()
 
@@ -424,17 +430,17 @@ class Gui:
         if input.keysym in '1234567890': self.put_number(int(input.keysym))
 
         match input.keysym:
-            case 'BackSpace': self.clear(ClearType.Backspace)
-            case 'minus':     self.handle_operator(' _ ')
-            case 'Return':    self.calculate()
-            case 'slash':     self.handle_operator(' / ')
+            case 'BackSpace': self.clear_data(ClearType.Backspace)
+            case 'minus':     self.put_operator(' _ ')
+            case 'Return':    self.calculate_equation()
+            case 'slash':     self.put_operator(' / ')
             case 'period':    self.put_decimal()
             case 'm':         self.memory_recall()
 
 
 
     # the function bound to the 'equals' button to output a result for an equation.
-    def calculate(self):
+    def calculate_equation(self):
 
         print(f"equation: {('').join(self.logic.equation)}")
 
@@ -480,7 +486,7 @@ class Gui:
         self.update_history(HistoryUpdateType.Clear)
 
         # update display
-        self.update_text(type=1)
+        self.update_text(type=DisplayTextUpdateType.Insert)
 
 
 
@@ -491,15 +497,15 @@ class Gui:
 
     
 
-    def update_text(self, type = 0, string = None, index = None, update = 0):
+    def update_text(self, type: DisplayTextUpdateType = DisplayTextUpdateType.Replace, string = None, index = None, update = 0):
 
         if string is None:
 
-            string = ['', '', '']
+            string = ('', '', '')
 
         if index is None:
 
-            index = [len(self.logic.equation), len(self.equation_text), len(self.display_text)]
+            index = (len(self.logic.equation), len(self.equation_text), len(self.display_text))
 
             d = self.logic.bracket_num
         
@@ -523,17 +529,17 @@ class Gui:
         except:print('well fuck')
 
 
-        if type == 0:
+        if type == DisplayTextUpdateType.Replace:
 
             self.display_text = list(string[2])
 
             self.display_text.append('')
 
-        elif type == 1: 
+        elif type == DisplayTextUpdateType.Insert: 
             
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
-        elif type == 2:
+        elif type == DisplayTextUpdateType.InsertCheckEmpty:
 
             self.display_text = list(('').join(c[0:index[2]]) + string[2] + ('').join(c[index[2]:len(c)]))
 
@@ -569,9 +575,9 @@ class Gui:
 
 
     # function to update the history variables
-    def update_history(self, type: HistoryUpdateType):
+    def update_history(self, history_update_type: HistoryUpdateType):
 
-        if type == HistoryUpdateType.Add:
+        if history_update_type == HistoryUpdateType.Add:
             
             # this loads all the variables in 'self' and copies them if possible and puts them in a new object
             temp = dict(self)
@@ -588,18 +594,18 @@ class Gui:
             Gui.history.append(temp)
             Gui.temp_history.append(temp)
         
-        elif type == HistoryUpdateType.Remove:
+        elif history_update_type == HistoryUpdateType.Remove:
             Gui.temp_history.pop()
 
-        elif type == HistoryUpdateType.Clear:
+        elif history_update_type == HistoryUpdateType.Clear:
             Gui.temp_history = []
 
 
 
     # function bound to the clear equation button that clears the variables and display.
-    def clear(self, type: ClearType):
+    def clear_data(self, clear_type: ClearType):
 
-        if type == ClearType.Clear:
+        if clear_type == ClearType.Clear:
 
             # reset variables
             self.logic.equation = ['']
@@ -623,10 +629,10 @@ class Gui:
 
 
 
-        elif type == ClearType.Backspace:
+        elif clear_type == ClearType.Backspace:
 
             if len(Gui.temp_history) <= 1:
-                self.clear(ClearType.Clear)
+                self.clear_data(ClearType.Clear)
                 return
             
             for attr, value in Gui.temp_history[-1].items():
@@ -634,12 +640,12 @@ class Gui:
 
             self.update_history(HistoryUpdateType.Remove)
 
-            self.update_text(type=2)
+            self.update_text(type=DisplayTextUpdateType.InsertCheckEmpty)
 
 
 
     # function bound to the invert button to allow inverse functions to be used.
-    def trig_type(self):
+    def toggle_trig_type(self):
 
         # flip the variable whenever the button is pressed
         self.trig_toggle = not self.trig_toggle
@@ -670,7 +676,7 @@ class Gui:
 
     
 
-    def unit_type(self):
+    def toggle_unit_type(self):
         
         self.is_radians = not self.is_radians
 
@@ -689,7 +695,7 @@ class Gui:
 
 
     # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
-    def handle_operator(self, operation = None):
+    def put_operator(self, operation = None):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
@@ -700,27 +706,27 @@ class Gui:
 
                 if operation == ' _ ': 
                     
-                    self.update_text(string=[operation, ' - ', ''], update=1)
+                    self.update_text(string=(operation, ' - ', ''), update=1)
 
                 
 
                 else:
 
                     # add operator to equation and display strings
-                    self.update_text(string=[operation, operation, ''], update=1)
+                    self.update_text(string=(operation, operation, ''), update=1)
 
         except: # ask ryan which format looks better
 
             if operation == ' _ ':
 
-                self.update_text(string=[operation, ' - ', ''], update=1)
+                self.update_text(string=(operation, ' - ', ''), update=1)
 
             
 
             else:
 
                 # add operator to equation and display strings
-                self.update_text(string=[operation, operation, ''], update=1)
+                self.update_text(string=(operation, operation, ''), update=1)
 
 
 
@@ -733,19 +739,19 @@ class Gui:
         if self.display_text == '':
 
             # put the decimal in the equation and display strings
-            self.update_text(type=1, string=['0.', '0.', '0.'])
+            self.update_text(type=DisplayTextUpdateType.Insert, string=('0.', '0.', '0.'))
 
 
 
         elif '.' not in self.display_text:
 
             # put the decimal in the equation and display strings
-            self.update_text(type=1, string=['.', '.', '.'])
+            self.update_text(type=DisplayTextUpdateType.Insert, string=('.', '.', '.'))
 
 
 
-    # function bound to the integer button to allow the user to toggle a number between positive and negative.
-    def negative(self):
+    # function bound to the integer button to allow the user to toggle a number between positive and toggle_number_sign.
+    def toggle_number_sign(self):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
@@ -756,7 +762,7 @@ class Gui:
             if self.display_text == ['']:
 
                 # add the integer sign to the number if there is nothing else in the equation
-                self.update_text(string=['-', '-', '-'])
+                self.update_text(string=('-', '-', '-'))
 
                 return
 
@@ -764,42 +770,42 @@ class Gui:
 
             # find where display text is within the equation text
             if self.logic.exponent:
-                index = ('').join(self.equation_text).rfind(('').join([get_super(x) for x in self.display_text]))
+                display_text_index = ('').join(self.equation_text).rfind(('').join([get_super(x) for x in self.display_text]))
             else:
-                index = ('').join(self.equation_text).rfind(('').join(self.display_text))
-            index2 = ('').join(self.logic.equation).rfind(('').join(self.display_text))
+                display_text_index = ('').join(self.equation_text).rfind(('').join(self.display_text))
+            equation_text_index = ('').join(self.logic.equation).rfind(('').join(self.display_text))
 
 
 
             if  '-' not in self.display_text:
 
-                if self.equation_text[index] != '-':
+                if self.equation_text[display_text_index] != '-':
 
                     # put an integer sign on the number if it doesn't have one
-                    self.update_text(type=1, string=['-', '-', '-'], index=[index2, index, 0]) 
+                    self.update_text(type=DisplayTextUpdateType.Insert, string=('-', '-', '-'), index=(equation_text_index, display_text_index, 0)) 
 
 
 
             else:
 
                 # remove the integer sign from the number
-                self.logic.equation.pop(index2)
+                self.logic.equation.pop(equation_text_index)
 
-                self.equation_text.pop(index)
+                self.equation_text.pop(display_text_index)
 
                 self.display_text.pop(0)
 
 
 
                 # update display
-                self.update_text(type=2)
+                self.update_text(type=DisplayTextUpdateType.InsertCheckEmpty)
 
 
 
         except:
 
             # add the integer sign to the number if there is nothing else in the equation
-            self.update_text(type=1, string=['-', '-', '-'])
+            self.update_text(type=DisplayTextUpdateType.Insert, string=('-', '-', '-'))
 
     
 
@@ -815,7 +821,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # put the number in the equation and display strings
-        self.update_text(type=1, string=[str(x), str(x), str(x)])
+        self.update_text(type=DisplayTextUpdateType.Insert, string=(str(x), str(x), str(x)))
 
 
 
@@ -829,7 +835,7 @@ class Gui:
         if ctrl_exp != -1:
 
             # put the exponent sign and exponent number in the equation and display strings
-            self.update_text(string=[' ^ ' + str(ctrl_exp), get_super('(' + str(ctrl_exp) + ')'), ''], update=1)
+            self.update_text(string=(' ^ ' + str(ctrl_exp), get_super('(' + str(ctrl_exp) + ')'), ''), update=1)
 
         
 
@@ -838,7 +844,7 @@ class Gui:
             self.logic.exponent = True
 
             # put exponent sign in equation
-            self.update_text(string=[' ^ ()', get_super('()'), ''], update=1)
+            self.update_text(string=(' ^ ()', get_super('()'), ''), update=1)
 
             # increase bracket number counter
             self.logic.bracket_num += 1
@@ -852,7 +858,7 @@ class Gui:
         self.update_history(HistoryUpdateType.Add)
 
         # add the sqrt function indicator to the equation and display strings
-        self.update_text(string=['#()', 'sqrt()', ''], update=1)
+        self.update_text(string=('#()', 'sqrt()', ''), update=1)
 
         # allow for more brackets
         self.logic.bracket_num += 1
@@ -866,7 +872,7 @@ class Gui:
         self.update_history(HistoryUpdateType.Add)
 
         # put the factorial sign in the equation and display strings
-        self.update_text(string=['!', '!', ''], update=1)
+        self.update_text(string=('!', '!', ''), update=1)
 
 
 
@@ -874,7 +880,7 @@ class Gui:
     def memory_recall(self):
 
         # add the number stored in memory to the equation and display strings
-        self.update_text(string=[self.logic.memory, self.logic.memory, self.logic.memory])
+        self.update_text(string=(self.logic.memory, self.logic.memory, self.logic.memory))
 
 
 
@@ -886,7 +892,6 @@ class Gui:
 
         # reset button color
         self.mem_store.configure(bg = 'gainsboro')
-
 
 
 
@@ -910,12 +915,12 @@ class Gui:
 
 
     # function bound to the brackets button to add them to the display.
-    def put_brackets(self, type):
+    def put_brackets(self, bracket_type: BracketType):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        if type:
+        if bracket_type == BracketType.Left:
 
             # allow for bracket multiplication without pressing the multiplication button
             if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
@@ -923,7 +928,7 @@ class Gui:
                 for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
             # add an open bracket to the equation and display strings
-            self.update_text(string=['()', '()', ''], update=1)
+            self.update_text(string=('()', '()', ''), update=1)
 
             # keep track of brackets
             self.logic.bracket_num += 1
@@ -934,7 +939,7 @@ class Gui:
 
 
 
-        else:
+        elif bracket_type == BracketType.Right:
 
             if self.equation_text[-1 - self.logic.bracket_num + 1] in list('1234567890)' + get_super('1234567890)')):
 
@@ -956,12 +961,12 @@ class Gui:
 
 
                     # display numbers within brackets
-                    self.update_text(type=0, update=1)
+                    self.update_text(type=DisplayTextUpdateType.Replace, update=1)
 
 
 
     # function bound to the trigonometry buttons to allow them to be used.
-    def trigonometry(self, trig_function = 0):
+    def put_trig_function(self, trig_function_type: TrigFunctionType):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
@@ -974,53 +979,62 @@ class Gui:
         # add an alternate function for inverse trigonometry functions
         if self.trig_toggle:
 
-            if trig_function == TrigFunction.Sine:
+            if trig_function_type == TrigFunctionType.Sine:
 
                 # add the inverse sine indicator to the equation and display strings
-                self.update_text(string=['S()', 'sin' + get_super('-1') + '()', ''], update=1)
+                self.update_text(string=('S()', 'sin' + get_super('-1') + '()', ''), update=1)
 
 
 
-            elif trig_function == TrigFunction.Cosine:
+            elif trig_function_type == TrigFunctionType.Cosine:
                 
                 # add the inverse cosine indicator to the equation and display strings
-                self.update_text(string=['C()', 'cos' + get_super('-1') + '()', ''], update=1)
+                self.update_text(string=('C()', 'cos' + get_super('-1') + '()', ''), update=1)
 
 
 
-            elif trig_function == TrigFunction.Tangent:
+            elif trig_function_type == TrigFunctionType.Tangent:
                 
                 # add the inverse tangent indicator to the equation and display strings
-                self.update_text(string=['T()', 'tan' + get_super('-1') + '()', ''], update=1)
-
-            # allow for more brackets
-            self.logic.bracket_num += 1
-
-            return
+                self.update_text(string=('T()', 'tan' + get_super('-1') + '()', ''), update=1)
 
 
 
-        if trig_function == TrigFunction.Sine:
+        else:
 
-            # add the sine indicator to the equation and display strings
-            self.update_text(string=['s()', 'sin()', ''], update=1)
+            if trig_function_type == TrigFunctionType.Sine:
 
-
-
-        elif trig_function == TrigFunction.Cosine:
-            
-            # add the cosine indicator to the equation and display strings
-            self.update_text(string=['c()', 'cos()', ''], update=1)
+                # add the sine indicator to the equation and display strings
+                self.update_text(string=('s()', 'sin()', ''), update=1)
 
 
 
-        elif trig_function == TrigFunction.Tangent:
-            
-            # add the tangent indicator to the equation and display strings
-            self.update_text(string=['t()', 'tan()', ''], update=1)
+            elif trig_function_type == TrigFunctionType.Cosine:
+                
+                # add the cosine indicator to the equation and display strings
+                self.update_text(string=('c()', 'cos()', ''), update=1)
 
-        # allow for more brackets
+
+
+            elif trig_function_type == TrigFunctionType.Tangent:
+                
+                # add the tangent indicator to the equation and display strings
+                self.update_text(string=('t()', 'tan()', ''), update=1)
+
+        # update bracket counter
         self.logic.bracket_num += 1
+
+
+
+    def put_absolute(self):
+
+        # update history
+        self.update_history(HistoryUpdateType.Add)
+
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
 
 
@@ -1031,7 +1045,7 @@ class Gui:
         self.update_history(HistoryUpdateType.Add)
 
         # add the pi number to the equation and display strings
-        self.update_text(string=['3.14159265359', 'pi', '3.14159265359'])
+        self.update_text(string=('3.14159265359', 'pi', '3.14159265359'))
 
 
 
@@ -1042,12 +1056,12 @@ class Gui:
         self.update_history(HistoryUpdateType.Add)
 
         # add eulers number to the equation and display strings
-        self.update_text(string=['2.71828182846', 'e', '2.71828182846'])
+        self.update_text(string=('2.71828182846', 'e', '2.71828182846'))
 
 
 
     # function bound to the log button to allow for logarithms to be used.
-    def logarithm(self):
+    def put_log(self):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
@@ -1058,7 +1072,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add the log function indicator to the equation and display strings
-        self.update_text(string=['l()', 'log()', ''], update=1)
+        self.update_text(string=('l()', 'log()', ''), update=1)
 
         # allow for more brackets
         self.logic.bracket_num += 1
@@ -1066,13 +1080,13 @@ class Gui:
 
 
     # function bound to the answer button to allow for the previous answer to be used.
-    def answer(self):
+    def put_previous_answer(self):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
 
         # add the previous answer to the equation and display strings
-        self.update_text(string=[self.logic.output, self.logic.output, self.logic.output])
+        self.update_text(string=(self.logic.output, self.logic.output, self.logic.output))
 
 
 
