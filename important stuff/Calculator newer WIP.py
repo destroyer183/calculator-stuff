@@ -3,6 +3,7 @@ from tkinter import *
 import os
 from gui_classes import Scientific, Factoring, Quadratic, Trigonometry, Variable
 import sys
+from enum import Enum
 
 
 ''' NOTES 
@@ -53,6 +54,13 @@ command to compile:
 pyinstaller --onefile --windowed --add-data=.:"gui_classes" --add-data=.:"parsers" -p gui_classes/ -p parsers/ "Calculator newer WIP.py"
 '''
 
+class GuiOptionChoices(Enum):
+    Scientific   = 'Scientific'
+    Factoring    = 'Factoring'
+    Quadratic    = 'Quadratic'
+    Trigonometry = 'Trigonometry'
+    Variable     = 'Variable'
+
 
 
 # if running from source, update the path to the parent directory
@@ -71,28 +79,41 @@ class Window:
 
     def __init__(self, gui) -> None:
         
-        self.gui = Scientific.Gui(gui)
+        self.gui = Scientific.Gui(gui, Window.instance)
         
     # scientific calculator display configuration
-    def make_gui(self, gui_type):
+    def choose_gui(self):
 
-        if   gui_type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
-        elif gui_type == 'Factoring'   : self.gui = Factoring.Gui(self.gui.parent)
-        elif gui_type == 'Quadratic'   : self.gui = Quadratic.Gui(self.gui.parent)
-        elif gui_type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
-        elif gui_type == 'Variable'    : self.gui = Variable.Gui(self.gui.parent)
+        match self.gui_type:
+            case GuiOptionChoices.Scientific  : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Factoring   : self.gui = Factoring.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Quadratic   : self.gui = Quadratic.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Trigonometry: self.gui = Trigonometry.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Variable    : self.gui = Variable.Gui(self.gui.parent, Window.instance)
 
-        self.gui.initialize_gui()
-
-        # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Factoring', 'Quadratic', 'Trigonometry', 'Variable')
+        # make option menu to switch between calculators
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 
+                                             GuiOptionChoices.Scientific.value, 
+                                             GuiOptionChoices.Factoring.value, 
+                                             GuiOptionChoices.Quadratic.value, 
+                                             GuiOptionChoices.Trigonometry.value, 
+                                             GuiOptionChoices.Variable.value)
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   gui_type == 'Scientific'  : self.gui.parent.options.place(x = 10,  y = self.gui.parent.winfo_height() - 460)
-        elif gui_type == 'Factoring'   : self.gui.parent.options.place(x = 10,  y = 185)
-        elif gui_type == 'Quadratic'   : self.gui.parent.options.place(x = 10,  y = 185)
-        elif gui_type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
-        elif gui_type == 'Variable'    : self.gui.parent.options.place(x = 10,  y = 185)
+        # call function to make the gui
+        self.gui.initialize_gui()
+
+
+
+    # function to place the option menu
+    def place_option_menu(self):
+
+        match self.gui_type:
+            case GuiOptionChoices.Scientific  : self.gui.parent.options.place(x = 10,  rely = 0.318)
+            case GuiOptionChoices.Factoring   : self.gui.parent.options.place(x = 10,  y = 185)
+            case GuiOptionChoices.Quadratic   : self.gui.parent.options.place(x = 10,  y = 185)
+            case GuiOptionChoices.Trigonometry: self.gui.parent.options.place(x = 472, y = 660)
+            case GuiOptionChoices.Variable    : self.gui.parent.options.place(x = 10,  y = 185)
 
         
 
@@ -134,12 +155,22 @@ class Window:
         pass
 
 
-# function to detect optionmenu changes
-def options_callback(var, index, mode):
+    # function to detect optionmenu changes
+    def options_callback(self, var, index, mode):
 
-    print(f"current type: {Window.option_choices.get()}")
+        print(f"current type: {Window.option_choices.get()}")
 
-    Window.instance.make_gui(Window.option_choices.get())
+        # get option choice
+        temp = Window.option_choices.get()
+
+        # iterate over all possible option choices until a match is found
+        for option in GuiOptionChoices:
+            if option.value == temp:
+
+                # set 'self.gui_type' to the matching option choice
+                self.gui_type = option
+
+        Window.instance.choose_gui()
 
 
 
@@ -159,8 +190,8 @@ def main():
         except:pass 
  
     Window.option_choices = StringVar(Window.instance.gui.parent)
-    Window.option_choices.trace('w', options_callback)
-    Window.option_choices.set('Scientific')
+    Window.option_choices.trace('w', Window.instance.options_callback)
+    Window.option_choices.set(GuiOptionChoices.Scientific.value)
 
     # run the gui
     Window.instance.gui.parent.mainloop()

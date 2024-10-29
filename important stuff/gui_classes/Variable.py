@@ -19,16 +19,18 @@ def get_super(x):
 
 class Gui:
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent, master) -> None:
 
         self.parent = parent
+        self.master = master
 
 
 
     def clear_gui(self):
 
         for widget in self.parent.winfo_children():
-            widget.destroy()
+            if type(widget) != OptionMenu:
+                widget.destroy()
     
 
 
@@ -53,6 +55,12 @@ class Gui:
         self.label = tk.Label(self.parent, text='WIP')
         self.label.configure(font=('Arial', 50, 'bold'))
         self.label.place(x = 275, y = 290)
+
+        # prevent user from resizing the gui in both x and y axis
+        self.parent.resizable(False, False)
+
+        # place option menu that allows the user to switch between guis
+        self.master.place_option_menu()
         
 
 

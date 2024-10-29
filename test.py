@@ -1,14 +1,11 @@
-counter = 0
+from enum import Enum
 
-odd = '13579'
-even = '02468'
+class Test(Enum):
+    test1 = 'test1'
+    test2 = 'test2'
+    test3 = 'test3'
 
-for i in range(11):
-    print(f"i: {i}")
-    counter += 1 + 2 * i
 
-print(f"total: {counter}")
 
-# string[0] = 1
-
-# 100
+for test in Test:
+    print(f"value: {test}")

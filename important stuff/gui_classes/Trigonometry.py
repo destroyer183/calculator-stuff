@@ -43,11 +43,12 @@ class Gui:
 
     is_ambiguous = False
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent, master) -> None:
 
         Gui.is_ambiguous = True
 
         self.parent = parent
+        self.master = master
         self.ambiguous_triangle = False
         self.mode_toggle = False 
         self.logic = Logic(False, 'Logic')
@@ -60,7 +61,8 @@ class Gui:
         self.parent.unbind("<Configure>")
 
         for widget in self.parent.winfo_children():
-            widget.destroy()
+            if type(widget) != OptionMenu:
+                widget.destroy()
 
 
 
@@ -149,9 +151,16 @@ class Gui:
 
 
 
+        # reset all information
         self.clear_data()
 
+        # prevent user from resizing the gui in both x and y axis
         self.parent.resizable(False, False)
+
+        # place option menu that allows the user to switch between guis
+        self.master.place_option_menu()
+
+
 
 
 

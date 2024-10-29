@@ -21,6 +21,10 @@ put the brackets into a split button, and add an absolute value button to fill i
 
 make split button placing work universally (make it work no matter how many buttons fill one space) - DONE
 
+instead of having hard limits for width and height, make their limits relative to each other so that the calculator can be expanded and shrunk if needed
+
+(-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
+
 add a history function
 
 show the location where the typing is happening in the equation with something
@@ -106,9 +110,10 @@ class Gui:
     history = []
     temp_history = []
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent, master) -> None:
         
         self.parent = parent
+        self.master = master
         self.trig_toggle = False
         self.is_radians = False
         self.equation_text = ['']
@@ -142,19 +147,22 @@ class Gui:
 
         self.parent.title('Calculator')
 
-        self.min_gui_width = 400
-        self.min_gui_height = 675
+        self.min_gui_size = (400, 675)
+        self.min_gui_aspect_ratio = self.min_gui_size[0] / self.min_gui_size[1]
         self.parent.geometry('700x675')
 
         # update the window
         self.parent.update()
+
+        # create attribute to store the current size of the gui
+        self.current_gui_size = (self.parent.winfo_width(), self.parent.winfo_height())
 
         self.logic = Logic()
 
         self.parent.bind("<KeyRelease>", self.keybindings)
         self.parent.bind("<Configure>", self.on_resize)
 
-        self.parent.resizable(True, False)
+        self.parent.resizable(True, True)
 
         self.create_gui()
 
@@ -274,6 +282,9 @@ class Gui:
 
 
     # function to place every element on the gui
+    '''
+    THIS FUNCTION NEEDS TO BE ADJUSTED TO MAKE THE BUTTON HEIGHT RELATIVE TO THE GUI HEIGHT LIKE HOW THE BUTTON WIDTH WORKS
+    '''
     def build_gui(self):
 
         # determine the column count, with a max of 7
@@ -364,6 +375,9 @@ class Gui:
         # variable to determine whether or not the buttons need to be cleared
         self.previous_column_count = column_count
 
+        # place option menu that allows the user to switch between guis
+        self.master.place_option_menu()
+
 
 
     # function to update the display when the window is resized
@@ -372,15 +386,19 @@ class Gui:
         # check if the parent window is being adjusted
         if event.widget == self.parent:
 
-            if self.parent.winfo_width() < self.min_gui_width or self.parent.winfo_height() < self.min_gui_height:
+            # check if aspect ratio is too small, and revert resize if aspect ratio is too small
+            if self.parent.winfo_width() / self.parent.winfo_height() < self.min_gui_aspect_ratio:
 
-                self.parent.geometry(f"{max(self.parent.winfo_width(), self.min_gui_width)}x{max(self.parent.winfo_height(), self.min_gui_height)}")
+                self.parent.geometry(f"{self.current_gui_size[0]}x{self.current_gui_size[1]}")
 
             # update window
             self.parent.update()
 
+            # update variable to store gui size
+            self.current_gui_size = (self.parent.winfo_width(), self.parent.winfo_height())
+
             # print info
-            print(f"resize detected. new window size: {self.parent.winfo_width()}x{self.parent.winfo_height()}")
+            print(f"resize detected. new window size: {self.current_gui_size[0]}x{self.current_gui_size[1]}")
 
             # rebuild gui
             self.build_gui()
