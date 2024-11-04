@@ -1,8 +1,9 @@
 import tkinter as tk
 from tkinter import *
 import os
-import Scientific
-import Trigonometry
+from gui_classes import Scientific, Trigonometry
+import sys
+from enum import Enum
 
 
 ''' NOTES 
@@ -11,7 +12,14 @@ things to update:
 
 allow the exponent button to be toggled to allow for complex equations to be superscripted
 
-make shift+backspace work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
+make 'backspace' work like regular backspace (bug: if an operator is deleted, the number at the end of the equation text won't be in the display text.)
+perhaps make a class variable list in the 'Gui' class, and every time the user makes an input, 
+create a new class object with the same attribute values, and store it in the class variable.
+when the user presses 'backspace' load the last element in the class variable list, and then pop it out.
+clear this list whenever the user clears the equation
+
+use the above concept to create a way for the user to see the session history, and load the answers for that.
+make a separate class variable list that only stores a new element when the user hits 'calculate'
 
 MAKE IT ONLY WORK IF IT IS ON THE TOP LAYER OF THE SCREEN
 
@@ -41,7 +49,22 @@ create the necessary button functions
 create the necessary variables
 create logic for parser
 link parser & display
+
+command to compile:
+pyinstaller --onefile --windowed --add-data=.:"gui_classes" --add-data=.:"parsers" -p gui_classes/ -p parsers/ "Calculator newer WIP.py"
 '''
+
+class GuiOptionChoices(Enum):
+    Scientific   = 'Scientific'
+    Trigonometry = 'Trigonometry'
+
+
+
+# if running from source, update the path to the parent directory
+if __package__ is None and not hasattr(sys, 'frozen'):
+    import os.path
+    path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.insert(0, os.path.realpath(path))
 
 
 
@@ -53,22 +76,35 @@ class Window:
 
     def __init__(self, gui) -> None:
         
-        self.gui = Scientific.Gui(gui)
+        self.gui = Scientific.Gui(gui, Window.instance)
         
     # scientific calculator display configuration
-    def make_gui(self, type):
+    def choose_gui(self):
 
-        if   type == 'Scientific'  : self.gui = Scientific.Gui(self.gui.parent)
-        elif type == 'Trigonometry': self.gui = Trigonometry.Gui(self.gui.parent)
+        match self.gui_type:
+            case GuiOptionChoices.Scientific  : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Trigonometry: self.gui = Trigonometry.Gui(self.gui.parent, Window.instance)
 
-        self.gui.create_gui()
-
-        # options to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 'Scientific', 'Trigonometry')
+        # make option menu to switch between calculators
+        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 
+                                             GuiOptionChoices.Scientific.value, 
+                                             GuiOptionChoices.Trigonometry.value)
         self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
-        if   type == 'Scientific'  : self.gui.parent.options.place(x = 10, y = 185)
-        elif type == 'Trigonometry': self.gui.parent.options.place(x = 472, y = 660)
+        # call function to make the gui
+        self.gui.initialize_gui()
+
+
+
+    # function to place the option menu
+    def place_option_menu(self):
+
+        '''
+        THIS NEEDS TO BE ADJUSTABLE WITHIN THE GUI FILES FOR SCALING
+        '''
+        match self.gui_type:
+            case GuiOptionChoices.Scientific  : self.gui.parent.options.place(x = 10,  rely = 0.318)
+            case GuiOptionChoices.Trigonometry: self.gui.parent.options.place(x = 472, y = 660)
 
         
 
@@ -110,12 +146,22 @@ class Window:
         pass
 
 
-# function to detect optionmenu changes
-def options_callback(var, index, mode):
+    # function to detect optionmenu changes
+    def options_callback(self, var, index, mode):
 
-    print(f"current type: {Window.option_choices.get()}")
+        print(f"current type: {Window.option_choices.get()}")
 
-    Window.instance.make_gui(Window.option_choices.get())
+        # get option choice
+        temp = Window.option_choices.get()
+
+        # iterate over all possible option choices until a match is found
+        for option in GuiOptionChoices:
+            if option.value == temp:
+
+                # set 'self.gui_type' to the matching option choice
+                self.gui_type = option
+
+        Window.instance.choose_gui()
 
 
 
@@ -133,10 +179,10 @@ def main():
             errorCode = ctypes.windll.shcore.SetProcessDpiAwareness(2)
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
-
+ 
     Window.option_choices = StringVar(Window.instance.gui.parent)
-    Window.option_choices.trace('w', options_callback)
-    Window.option_choices.set('Scientific')
+    Window.option_choices.trace('w', Window.instance.options_callback)
+    Window.option_choices.set(GuiOptionChoices.Scientific.value)
 
     # run the gui
     Window.instance.gui.parent.mainloop()
