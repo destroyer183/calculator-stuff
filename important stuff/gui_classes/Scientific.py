@@ -21,6 +21,8 @@ put the brackets into a split button, and add an absolute value button to fill i
 
 make split button placing work universally (make it work no matter how many buttons fill one space) - DONE
 
+UPDATE HOW THE OPTION MENU IS CONFIGURED AND PLACED IN ALL OF THE GUIS, AND THEN CHECKOUT TO MAIN
+
 instead of having hard limits for width and height, make their limits relative to each other so that the calculator can be expanded and shrunk if needed
 
 (-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
