@@ -147,9 +147,22 @@ class Gui:
 
         self.parent.title('Calculator')
 
-        self.min_gui_size = (400, 675)
-        self.min_gui_aspect_ratio = self.min_gui_size[0] / self.min_gui_size[1]
+        self.min_gui_aspect_ratio = 400 / 675
+        self.max_gui_aspect_ratio = 700 / 675
         self.parent.geometry('700x675')
+
+        # create variable to calculate the current aspect ratio of the gui every time it is called
+        self.current_aspect_ratio = lambda: self.parent.winfo_width() / self.parent.winfo_height()
+
+        # create variable to claculate the relative size of a number by dividing the base gui height by the base number value and dividing the current gui height by that
+        self.relative_size = lambda base_number: math.floor(self.parent.winfo_height() / (675 / base_number))
+
+        self.column_count_aspect_ratios = (
+            (4, 400/675),
+            (5, 500/675),
+            (6, 600/675),
+            (7, 700/675)
+        )
 
         # update the window
         self.parent.update()
@@ -166,6 +179,8 @@ class Gui:
 
         self.create_gui()
 
+        self.configure_gui()
+
         self.build_gui()
 
 
@@ -175,10 +190,8 @@ class Gui:
 
         # create display text labels
         self.equation = tk.Label(self.parent, text = '')
-        self.equation.configure(font=('Arial', 40, ''))
 
         self.display = tk.Label(self.parent, text = '0')
-        self.display.configure(font=('Arial', 75, 'bold'))
 
         # clear column array
         self.gui_columns = []
@@ -254,61 +267,116 @@ class Gui:
 
 
 
+        # frame for the following widgets that make up the decimal changer
+        self.decimal_changer_frame = tk.Frame(self.parent)
+
+        # variable to help attach the round option to the text
+        self.round_label1 = tk.Label(self.decimal_changer_frame, text = 'Round to')
+        self.round_label2 = tk.Label(self.decimal_changer_frame, text = 'decimal points')
+
+        # decimal changer
+        self.round_choice = StringVar(self.parent)
+        self.round_choice.set(10)
+
+        self.round_numbers = tk.Spinbox(self.decimal_changer_frame, from_ = 0, to = 100, textvariable = self.round_choice, wrap = True)
+
+
+
+    def configure_gui(self):
+
+        # set up relative font size variables
+        self.main_font_size = self.relative_size(25)
+        self.small_font_size = self.relative_size(15)
+
+        # configure display text variables
+        self.equation.configure(font=('Arial', self.relative_size(40), ''))
+        self.display.configure(font=('Arial', self.relative_size(75), 'bold'))
+
         # configure button fonts
-        self.equal.configure(font=('Arial', 25, 'bold'))
+        self.equal.configure(font=('Arial', self.main_font_size, 'bold'))
 
         for column in self.gui_columns:
             for button in column:
                 # check for split buttons
                 if type(button) == tuple:
                     for i in range(0, len(button) - 1):
-                        button[i].configure(font=('Arial', 25, 'bold'))
+                        button[i].configure(font=('Arial', self.main_font_size, 'bold'))
                 else:
-                    button.configure(font=('Arial', 25, 'bold'))
+                    button.configure(font=('Arial', self.main_font_size, 'bold'))
 
 
 
         # variable to help attach the round option to the text
-        self.round_label = tk.Label(self.parent, text = 'Round to              decimal points')
-        self.round_label.configure(font=('Arial', 15, 'bold'))
+        self.round_label1.configure(font=('Arial', self.small_font_size, 'bold'))
+        self.round_label2.configure(font=('Arial', self.small_font_size, 'bold'))
 
         # decimal changer
-        self.round_choice = StringVar(self.parent)
-        self.round_choice.set(10)
+        self.round_numbers.configure(font=('Arial', self.small_font_size, 'bold'), width = 3)
 
-        self.round_numbers = tk.Spinbox(self.parent, from_ = 0, to = 100, textvariable = self.round_choice)
-        self.round_numbers.configure(font=('Arial', 15, 'bold'))
+        self.decimal_changer_frame.configure(width = self.round_label1.winfo_width() + self.round_numbers.winfo_width() + self.round_label2.winfo_width(), 
+                                             height = max(self.round_label1.winfo_height(), self.round_numbers.winfo_height(), self.round_label2.winfo_height()))
+        
+        # gui switching option menu
+        self.parent.options.configure(font=('Arial', self.relative_size(15), 'bold'))
+
+
+
+    # function to calculate the amount of columns that should be displayed based on the current aspect ratio
+    def calculate_column_count(self):
+
+        # take current ratio calculation once and put it into a temp variable
+        current_ratio = self.current_aspect_ratio()
+
+        # loop over the column count aspect ratio tuple by index
+        for index in range(len(self.column_count_aspect_ratios)):
+
+            # check if current aspect ratio is less than or equal to the current indexed column count aspect ratio constant
+            if current_ratio <= self.column_count_aspect_ratios[index][1]:
+
+                # if the above condition triggers on the first case, return 4 columns
+                if index == 0:
+                    return 4
+                
+                # figure out which column count aspect ratio constant the current aspect ratio is closest to, and return that column count
+                else:
+                    previous_diff = (self.column_count_aspect_ratios[index - 1][0], current_ratio - self.column_count_aspect_ratios[index - 1][1])
+                    current_diff = (self.column_count_aspect_ratios[index][0], self.column_count_aspect_ratios[index][1] - current_ratio)
+
+                    min_diff = min(previous_diff[1], current_diff[1])
+
+                    return (min_diff == previous_diff[1]) * previous_diff[0] + (min_diff == current_diff[1]) * current_diff[0]
+                
+        # if none of the above return statements trigger, return 7 columns
+        return 7
 
 
 
     # function to place every element on the gui
-    '''
-    THIS FUNCTION NEEDS TO BE ADJUSTED TO MAKE THE BUTTON HEIGHT RELATIVE TO THE GUI HEIGHT LIKE HOW THE BUTTON WIDTH WORKS
-    '''
     def build_gui(self):
 
         # determine the column count, with a max of 7
-        column_count = math.floor(self.parent.winfo_width() / 100) * (self.parent.winfo_width() < 800) + 7 * (self.parent.winfo_width() >= 800)
+        column_count = self.calculate_column_count()
 
         if self.previous_column_count != column_count:
             self.clear_gui()
             self.create_gui()
+            self.configure_gui()
 
 
         # create display text labels
-        display_offset = 10
+        display_offset = self.relative_size(10)
         
-        self.equation.place(x = self.parent.winfo_width() - display_offset, y = 10, anchor = 'ne')
+        self.equation.place(x = self.parent.winfo_width() - display_offset, y = self.relative_size(10), anchor = 'ne')
 
-        self.display.place(x = self.parent.winfo_width() - display_offset, y = 80, anchor = 'ne')
+        self.display.place(x = self.parent.winfo_width() - display_offset, y = self.relative_size(80), anchor = 'ne')
 
 
 
         # place buttons
         self.button_width = lambda gui_width = self.parent.winfo_width(): gui_width / column_count
-        self.button_height = 70
+        self.button_height = lambda: self.parent.winfo_height() / (675 / 70)
 
-        self.equal.place(x = 0, y = self.parent.winfo_height() - self.button_height * 1, width = self.parent.winfo_width(), height = self.button_height)
+        self.equal.place(x = 0, y = self.parent.winfo_height() - self.button_height(), width = self.parent.winfo_width(), height = self.button_height())
 
         for index, column in enumerate(self.gui_columns[7 - column_count:7]):
             row_num = 6
@@ -320,16 +388,16 @@ class Gui:
 
                         # place first button
                         button[0].place(x = self.button_width() * index, 
-                                        y = self.parent.winfo_height() - self.button_height * row_num, 
+                                        y = self.parent.winfo_height() - self.button_height() * row_num, 
                                         width = self.button_width(), 
-                                        height = self.button_height / (len(button) - 1))
+                                        height = self.button_height() / (len(button) - 1))
 
                         # place rest of buttons
                         for i in range(1, len(button) - 1):
                             button[i].place(x = self.button_width() * index, 
-                                            y = self.parent.winfo_height() - self.button_height * row_num + self.button_height / (len(button) - 1) * i, 
+                                            y = self.parent.winfo_height() - self.button_height() * row_num + self.button_height() / (len(button) - 1) * i, 
                                             width = self.button_width(),  
-                                            height = self.button_height / (len(button) - 1))
+                                            height = self.button_height() / (len(button) - 1))
                     
 
 
@@ -337,19 +405,19 @@ class Gui:
 
                         # place first button
                         button[0].place(x = self.button_width() * index, 
-                                        y = self.parent.winfo_height() - self.button_height * row_num, 
+                                        y = self.parent.winfo_height() - self.button_height() * row_num, 
                                         width = self.button_width() / (len(button) - 1), 
-                                        height = self.button_height)
+                                        height = self.button_height())
 
                         # place rest of buttons
                         for i in range(1, len(button) - 1):
                             button[i].place(x = self.button_width() * index + self.button_width() / (len(button) - 1) * i, 
-                                            y = self.parent.winfo_height() - self.button_height * row_num, 
+                                            y = self.parent.winfo_height() - self.button_height() * row_num, 
                                             width = self.button_width() / (len(button) - 1), 
-                                            height = self.button_height)
+                                            height = self.button_height())
 
                 else:
-                    button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height * row_num, width = self.button_width(), height = self.button_height)
+                    button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height() * row_num, width = self.button_width(), height = self.button_height())
                 row_num -= 1
 
 
@@ -360,15 +428,21 @@ class Gui:
         # button to open history
 
 
+
         if column_count >= 5:
 
-            # variable to help attach the round option to the text
-            round_x = self.parent.winfo_width() - 330
-
-            self.round_label.place(x = round_x, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2)
+            # label 1
+            self.round_label1.pack(side = 'left', anchor = 'center')
 
             # decimal changer
-            self.round_numbers.place(x = round_x + 100, y = self.parent.winfo_height() - self.button_height * 6 - self.button_height / 2, width = 65)
+            self.round_numbers.pack(side = 'left', anchor = 'center')
+
+            # label 2
+            self.round_label2.pack(side = 'left', anchor = 'center')
+
+            # decimal changer frame
+            self.decimal_changer_frame.place(x = self.parent.winfo_width() - self.decimal_changer_frame.winfo_width() - self.relative_size(15), 
+                                             y = self.parent.winfo_height() - self.button_height() * 6 - self.button_height() / 2)
 
 
 
@@ -376,7 +450,8 @@ class Gui:
         self.previous_column_count = column_count
 
         # place option menu that allows the user to switch between guis
-        self.master.place_option_menu()
+        # self.master.place_option_menu()
+        self.parent.options.place(x = self.relative_size(10), y = self.relative_size(250), anchor = 'sw')
 
 
 
@@ -386,10 +461,22 @@ class Gui:
         # check if the parent window is being adjusted
         if event.widget == self.parent:
 
-            # check if aspect ratio is too small, and revert resize if aspect ratio is too small
-            if self.parent.winfo_width() / self.parent.winfo_height() < self.min_gui_aspect_ratio:
+            # check if aspect ratio is too small, and revert the resize if aspect ratio is too small
+            if self.current_aspect_ratio() < self.min_gui_aspect_ratio:
 
+                # determine which axis was adjusted, and snap to min aspect ratio if possible
+                if self.parent.winfo_width() != self.current_gui_size[0]:
+
+                    self.current_gui_size = (math.ceil(self.min_gui_aspect_ratio * self.parent.winfo_height()), self.parent.winfo_height())
+
+                else:
+
+                    self.current_gui_size = (self.parent.winfo_width(), math.floor(self.parent.winfo_width() / self.min_gui_aspect_ratio))
+
+                # update window size
                 self.parent.geometry(f"{self.current_gui_size[0]}x{self.current_gui_size[1]}")
+
+
 
             # update window
             self.parent.update()
@@ -400,7 +487,8 @@ class Gui:
             # print info
             print(f"resize detected. new window size: {self.current_gui_size[0]}x{self.current_gui_size[1]}")
 
-            # rebuild gui
+            # configure and rebuild gui
+            self.configure_gui()
             self.build_gui()
 
 
@@ -673,7 +761,7 @@ class Gui:
 
             self.update_history(HistoryUpdateType.Remove)
 
-            self.update_text(display_text_update_type=DisplayTextUpdateType.InsertCheckEmpty)
+            self.update_text(display_text_update_type = DisplayTextUpdateType.InsertCheckEmpty)
 
 
 
@@ -690,9 +778,9 @@ class Gui:
             self.cosine. configure(text='cos' + get_super('-1'))
             self.tangent.configure(text='tan' + get_super('-1'))
 
-            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 4, width = self.button_width(), height = self.button_height)
-            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 3, width = self.button_width(), height = self.button_height)
-            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
+            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 4, width = self.button_width(), height = self.button_height())
+            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
+            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
 
 
 
@@ -703,9 +791,9 @@ class Gui:
             self.cosine. configure(text='cos')
             self.tangent.configure(text='tan')
 
-            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 4, width = self.button_width(), height = self.button_height)
-            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 3, width = self.button_width(), height = self.button_height)
-            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
+            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 4, width = self.button_width(), height = self.button_height())
+            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
+            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
 
     
 
@@ -717,13 +805,13 @@ class Gui:
             
             self.unit_toggle.configure(text='Rad')
 
-            self.unit_toggle.place(x = 0, y = self.parent.winfo_height() - self.button_height * 2, width = self.button_width(), height = self.button_height)
+            self.unit_toggle.place(x = 0, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
         
         else:
             
             self.unit_toggle.configure(text='Deg')
 
-            self.unit_toggle.place(x = 0, y = 525, width = self.button_width(), height = self.button_height)
+            self.unit_toggle.place(x = 0, y = 525, width = self.button_width(), height = self.button_height())
             
 
 

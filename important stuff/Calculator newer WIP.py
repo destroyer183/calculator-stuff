@@ -108,6 +108,9 @@ class Window:
     # function to place the option menu
     def place_option_menu(self):
 
+        '''
+        THIS NEEDS TO BE ADJUSTABLE WITHIN THE GUI FILES FOR SCALING
+        '''
         match self.gui_type:
             case GuiOptionChoices.Scientific  : self.gui.parent.options.place(x = 10,  rely = 0.318)
             case GuiOptionChoices.Factoring   : self.gui.parent.options.place(x = 10,  y = 185)
