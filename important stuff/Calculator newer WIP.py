@@ -98,27 +98,11 @@ class Window:
                                              GuiOptionChoices.Quadratic.value, 
                                              GuiOptionChoices.Trigonometry.value, 
                                              GuiOptionChoices.Variable.value)
-        self.gui.parent.options.configure(font=('Arial', 15, 'bold'))
 
         # call function to make the gui
         self.gui.initialize_gui()
 
 
-
-    # function to place the option menu
-    def place_option_menu(self):
-
-        '''
-        THIS NEEDS TO BE ADJUSTABLE WITHIN THE GUI FILES FOR SCALING
-        '''
-        match self.gui_type:
-            case GuiOptionChoices.Scientific  : self.gui.parent.options.place(x = 10,  rely = 0.318)
-            case GuiOptionChoices.Factoring   : self.gui.parent.options.place(x = 10,  y = 185)
-            case GuiOptionChoices.Quadratic   : self.gui.parent.options.place(x = 10,  y = 185)
-            case GuiOptionChoices.Trigonometry: self.gui.parent.options.place(x = 472, y = 660)
-            case GuiOptionChoices.Variable    : self.gui.parent.options.place(x = 10,  y = 185)
-
-        
 
     # Factoring calculator display configuration
     def factoring(self):

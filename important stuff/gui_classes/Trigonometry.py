@@ -104,6 +104,8 @@ class Gui:
         
         self.calculate = tk.Button(self.parent, text='Calculate', anchor='center', bg='white', command=lambda:self.text_boxes_callback(None))
         self.calculate.configure(font=('Arial', 15, 'bold'))
+
+        self.parent.options.configure(font=('Arial', 15, 'bold'))
         
         self.angle_boxes  = [0, 0, 0]
         self.length_boxes = [0, 0, 0]
@@ -158,9 +160,7 @@ class Gui:
         self.parent.resizable(False, False)
 
         # place option menu that allows the user to switch between guis
-        self.master.place_option_menu()
-
-
+        self.parent.options.place(x = 472, y = 660)
 
 
 

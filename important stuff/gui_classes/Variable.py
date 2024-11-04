@@ -56,11 +56,14 @@ class Gui:
         self.label.configure(font=('Arial', 50, 'bold'))
         self.label.place(x = 275, y = 290)
 
+        # configure option menu that allows the user to switch between guis
+        self.parent.options.configure(font=('Arial', 15, 'bold'))
+        
         # prevent user from resizing the gui in both x and y axis
         self.parent.resizable(False, False)
 
         # place option menu that allows the user to switch between guis
-        self.master.place_option_menu()
+        self.parent.options.place(x = 10, y = 185)
         
 
 
