@@ -36,8 +36,6 @@ class Data(Enum):
 
 
 
-
-
 # find item in a container
 def find(container, value):
 
@@ -476,4 +474,3 @@ class Logic:
 
 
             self.length_labels[key.lower()] = [midpoint[0] + x_offset, midpoint[1] + y_offset]
-            
