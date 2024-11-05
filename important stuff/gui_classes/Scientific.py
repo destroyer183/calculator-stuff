@@ -17,13 +17,11 @@ SWAP MEMORY BUTTONS WITH BRACKET AND MODULUS BUTTONS ON THE DISPLAY TO KEEP FUNC
 
 add buttons to create additional dynamic displays that will show the full equation and current number when they get too big - WORKAROUND
 
-put the brackets into a split button, and add an absolute value button to fill in the gap - MAKE ABSOLUTE VALUE BUTTON WORK SIMILAR TO EXPONENT BUTTON - or make it work by treating it as a function with brackets and just displaying different brackets than what is put into the equation
+put the brackets into a split button, and add an absolute value button to fill in the gap - MAKE ABSOLUTE VALUE BUTTON WORK SIMILAR TO EXPONENT BUTTON - or make it work by treating it as a function with brackets and just displaying different brackets than what is put into the equation - DONE
 
 make split button placing work universally (make it work no matter how many buttons fill one space) - DONE
 
-UPDATE HOW THE OPTION MENU IS CONFIGURED AND PLACED IN ALL OF THE GUIS, AND THEN CHECKOUT TO MAIN
-
-instead of having hard limits for width and height, make their limits relative to each other so that the calculator can be expanded and shrunk if needed
+instead of having hard limits for width and height, make their limits relative to each other so that the calculator can be expanded and shrunk if needed - DONE
 
 (-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
 
@@ -980,6 +978,11 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+
         # add the sqrt function indicator to the equation and display strings
         self.update_text(strings_to_insert=('#()', 'sqrt()', ''), update_type=UpdateType.ClearDisplayText)
 
@@ -1175,6 +1178,11 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+
         # add the pi number to the equation and display strings
         self.update_text(strings_to_insert=('3.14159265359', 'pi', '3.14159265359'))
 
@@ -1185,6 +1193,11 @@ class Gui:
 
         # update history
         self.update_history(HistoryUpdateType.Add)
+
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add eulers number to the equation and display strings
         self.update_text(strings_to_insert=('2.71828182846', 'e', '2.71828182846'))

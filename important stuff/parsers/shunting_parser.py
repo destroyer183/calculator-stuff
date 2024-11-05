@@ -5,7 +5,9 @@ from enum import Enum
 
 ''' NOTES
 
-maybe instead of using lambda for the 'apply' attribute, use a function like the c++ version of this.
+(-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
+
+FACTORIAL FORMAT CONVERTER HAS ALWAYS BEEN BROKEN. SOMETHING LIKE (2 + 3)! DOES NOT WORK PROPERLY AND SOMEHOW EVALUATES TO 8. MAKE SURE THIS WORKS FOR THINGS LIKE (((1 + 2) + 3) + 4)!
 
 '''
 
@@ -43,18 +45,25 @@ class TokenType(Enum):
 
 
 
+# create class for every math operation token
 class Token:
 
+    # initialization function that takes in arguments for the token type, token precedence, token associativity, math operation, and value.
     def __init__(self, token_type: TokenType, precedence: int, associativity: Associativity, math_operation: MathOperation, value: str) -> None:
         
+        # assign function arguments to object attributes
         self.token_type  = token_type
         self.precedence = precedence
         self.associativity = associativity
         self.math_operation = math_operation
         self.value = value
 
+
+
+    # function to perform various math functions depending on the inputs
     def math(self, is_radians, x, y):
 
+        # match case to determine which math operation to use
         match self.math_operation:
 
             case MathOperation.Sine:       return (math.sin(x)  * is_radians) + (math.sin(math.radians(x))  * (not is_radians))
@@ -77,6 +86,7 @@ class Token:
 
 
 
+# create tokens for every math operation available on calculator
 TOKENS = [
 
     Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Sine,       value = 's'),
@@ -104,37 +114,81 @@ TOKENS = [
 
 
 
+# function to return a token based on a string argument
 def get_token(value: str):
 
+    # loop over every math operation token
     for i in TOKENS:
 
+        # check if token value is equal to the string argument inputted
         if i.value == value:
 
+            # return token if match is found
             return i 
         
+    # return string argument if no match is found
     return value
         
 
 
+# function to convert standard equations into reverse polish notation using the shunting yard algorithm
 def shunting_yard_converter(equation):
 
+    # create variables for input stack, operator stack, and output stack
     in_stack = list(equation)
     op_stack = []
     out_stack = []
 
+    # loop over input stack by index and element, this is to find any factorials and change the format of them.
     for index, char, in enumerate(in_stack):
 
         if char == '!':
 
             in_stack[index] = ')'
 
-            for i in range(index, 0, -1):
+            if in_stack[index - 1] == ')':
 
-                if in_stack[i] not in '1234567890.-':
+                bracket_count = 0
+                
+                for i in range(index - 1, -1, -1):
 
-                    in_stack.insert(i - 1, 'f(')
+                    if in_stack[i] == ')':
 
-                    break
+                        bracket_count += 1
+
+
+
+                    elif in_stack[i] == '(':
+
+                        bracket_count -= 1
+
+                        if bracket_count == 0:
+
+                            in_stack.insert(max(0, i - 1), 'f(')
+
+                            break
+
+
+
+            else:
+
+                for i in range(index - 1, -1, -1):
+
+                    if i == 0:
+
+                        in_stack.insert(0, 'f(')
+
+                        break
+
+
+
+                    elif in_stack[i] not in '1234567890.-':
+
+                        print(f"i: {in_stack[i]}")
+
+                        in_stack.insert(i + 1, 'f(')
+
+                        break
 
 
     x = ('').join(in_stack)
@@ -221,7 +275,33 @@ def shunting_yard_converter(equation):
     for index in out_stack:
         print(index)
 
+    
+    print_stacks(in_stack, op_stack, out_stack, print_type = True)
+
     return out_stack
+
+
+
+# print information
+def print_stacks(*stacks, print_type):
+
+    if print_type:
+
+        print('')
+        print(f"input stack: {('').join(stacks[0])}")
+        print(f"operator stack: {[x.value for x in stacks[1]]}")
+
+        temp_stack = []
+
+        for i in stacks[2]:
+
+            if type(i) == Token:
+
+                temp_stack.append(i.value)
+
+            else: temp_stack.append(i)
+
+        print(f"output stack: {temp_stack}")
 
 
 
@@ -265,7 +345,10 @@ if __name__ == '__main__':
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '35.43 _ 36.33'
+    equation = '( _ 2) ^ 2'
+
+    # use the same symbol to denote negatives, but make it apply to a number differently. 
+    # treat the symbol as an operator rather than as a part of the number, that way it can be applied to the number in the appropriate order with other tokens.
 
     is_radians = False
 
