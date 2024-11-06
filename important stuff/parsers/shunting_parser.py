@@ -5,10 +5,6 @@ from enum import Enum
 
 ''' NOTES
 
-(-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
-
-FACTORIAL FORMAT CONVERTER HAS ALWAYS BEEN BROKEN. SOMETHING LIKE (2 + 3)! DOES NOT WORK PROPERLY AND SOMEHOW EVALUATES TO 8. MAKE SURE THIS WORKS FOR THINGS LIKE (((1 + 2) + 3) + 4)!
-
 '''
 
 
@@ -30,18 +26,19 @@ class MathOperation(Enum):
     Multiplication = '*'
     Addition = '+'
     Subtraction = '_'
+    Negative = '-'
     Null = None
 
 class Associativity(Enum):
-    LEFT = False
-    RIGHT = True
+    Left = 'left'
+    Right = 'right'
 
 class TokenType(Enum):
-    NUMBER = 0
-    OPERATOR = 1
-    FUNCTION = 3
-    LEFT_BRACKET = 5
-    RIGHT_BRACKET = 6
+    Number = 0
+    Operator = 1
+    Function = 3
+    LeftBracket = 5
+    RightBracket = 6
 
 
 
@@ -52,7 +49,7 @@ class Token:
     def __init__(self, token_type: TokenType, precedence: int, associativity: Associativity, math_operation: MathOperation, value: str) -> None:
         
         # assign function arguments to object attributes
-        self.token_type  = token_type
+        self.token_type = token_type
         self.precedence = precedence
         self.associativity = associativity
         self.math_operation = math_operation
@@ -61,7 +58,10 @@ class Token:
 
 
     # function to perform various math functions depending on the inputs
-    def math(self, is_radians, x, y):
+    # takes in arguments for:
+    # a boolean representation of whether or not to calculate with radians instead of degrees
+    # two floats, x and y which are the numbers that will be used in the calculation
+    def math(self, is_radians: bool, x: float, y: float):
 
         # match case to determine which math operation to use
         match self.math_operation:
@@ -76,6 +76,7 @@ class Token:
             case MathOperation.Absolute:   return abs(x)
             case MathOperation.Factorial:  return math.factorial(int(x))
             case MathOperation.SquareRoot: return x ** 0.5
+            case MathOperation.Negative:   return -x
 
             case MathOperation.Exponential:    return x ** y
             case MathOperation.Modulo:         return x % y
@@ -89,26 +90,27 @@ class Token:
 # create tokens for every math operation available on calculator
 TOKENS = [
 
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Sine,       value = 's'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Cosine,     value = 'c'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Tangent,    value = 't'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aSine,      value = 'S'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aCosine,    value = 'C'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.aTangent,   value = 'T'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Logarithm,  value = 'l'),
-    Token(token_type = TokenType.FUNCTION, precedence = 5, associativity = Associativity.LEFT,  math_operation = MathOperation.Absolute,   value = 'a'),
-    Token(token_type = TokenType.FUNCTION, precedence = 4, associativity = Associativity.LEFT,  math_operation = MathOperation.Factorial,  value = 'f'),
-    Token(token_type = TokenType.FUNCTION, precedence = 2, associativity = Associativity.LEFT,  math_operation = MathOperation.SquareRoot, value = '#'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Sine,       value = 's'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Cosine,     value = 'c'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Tangent,    value = 't'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.aSine,      value = 'S'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.aCosine,    value = 'C'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.aTangent,   value = 'T'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Logarithm,  value = 'l'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Absolute,   value = 'a'),
+    Token(token_type = TokenType.Function, precedence = 4, associativity = Associativity.Left,  math_operation = MathOperation.Factorial,  value = 'f'),
+    Token(token_type = TokenType.Function, precedence = 2, associativity = Associativity.Left,  math_operation = MathOperation.SquareRoot, value = '#'),
+    Token(token_type = TokenType.Function, precedence = 2, associativity = Associativity.Left,  math_operation = MathOperation.Negative,   value = '-'),
     
-    Token(token_type = TokenType.OPERATOR, precedence = 3, associativity = Associativity.RIGHT, math_operation = MathOperation.Exponential,    value = '^'),
-    Token(token_type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Modulo,         value = '%'),
-    Token(token_type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Division,       value = '/'),
-    Token(token_type = TokenType.OPERATOR, precedence = 1, associativity = Associativity.LEFT,  math_operation = MathOperation.Multiplication, value = '*'),
-    Token(token_type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Addition,       value = '+'),
-    Token(token_type = TokenType.OPERATOR, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Subtraction,    value = '_'),
+    Token(token_type = TokenType.Operator, precedence = 3, associativity = Associativity.Right, math_operation = MathOperation.Exponential,    value = '^'),
+    Token(token_type = TokenType.Operator, precedence = 1, associativity = Associativity.Left,  math_operation = MathOperation.Modulo,         value = '%'),
+    Token(token_type = TokenType.Operator, precedence = 1, associativity = Associativity.Left,  math_operation = MathOperation.Division,       value = '/'),
+    Token(token_type = TokenType.Operator, precedence = 1, associativity = Associativity.Left,  math_operation = MathOperation.Multiplication, value = '*'),
+    Token(token_type = TokenType.Operator, precedence = 0, associativity = Associativity.Left,  math_operation = MathOperation.Addition,       value = '+'),
+    Token(token_type = TokenType.Operator, precedence = 0, associativity = Associativity.Left,  math_operation = MathOperation.Subtraction,    value = '_'),
 
-    Token(token_type = TokenType.LEFT_BRACKET,  precedence = 0, associativity = Associativity.RIGHT, math_operation = MathOperation.Null, value = '('),
-    Token(token_type = TokenType.RIGHT_BRACKET, precedence = 0, associativity = Associativity.LEFT,  math_operation = MathOperation.Null, value = ')')
+    Token(token_type = TokenType.LeftBracket,  precedence = 0, associativity = Associativity.Right, math_operation = MathOperation.Null, value = '('),
+    Token(token_type = TokenType.RightBracket, precedence = 0, associativity = Associativity.Left,  math_operation = MathOperation.Null, value = ')')
 
     ]
 
@@ -131,8 +133,8 @@ def get_token(value: str):
         
 
 
-# function to convert standard equations into reverse polish notation using the shunting yard algorithm
-def shunting_yard_converter(equation):
+# function to convert standard equation strings into reverse polish notation using the shunting yard algorithm
+def shunting_yard_converter(equation: str):
 
     # create variables for input stack, operator stack, and output stack
     in_stack = list(equation)
@@ -142,213 +144,259 @@ def shunting_yard_converter(equation):
     # loop over input stack by index and element, this is to find any factorials and change the format of them.
     for index, char, in enumerate(in_stack):
 
+        # check for factorial symbol
         if char == '!':
 
+            # replace factorial symbol with right bracket
             in_stack[index] = ')'
 
+            # check if previous character was a right bracket
+            # this case will allow factorials to work on brackets of any depth, allowing something like (((1 + 2) + 3) + 4)! to work properly
             if in_stack[index - 1] == ')':
 
+                # create bracket counter
                 bracket_count = 0
                 
+                # loop backwards starting at one character before the factorial symbol was found
                 for i in range(index - 1, -1, -1):
 
+                    # check if current character is right bracket
                     if in_stack[i] == ')':
 
+                        # incrament bracket counter
                         bracket_count += 1
 
 
 
+                    # check if current character is left bracket
                     elif in_stack[i] == '(':
 
+                        # decrament bracket counter
                         bracket_count -= 1
 
+                        # check if the number of left brackets has cancelled out the number of right brackets
                         if bracket_count == 0:
 
+                            # insert the proper factorial format symbol at the position before the last left bracket, or at index 0 in case the last left bracket was at index 0
                             in_stack.insert(max(0, i - 1), 'f(')
 
+                            # exit loop
                             break
 
 
 
+            # triggers if the character before the factorial symbol was not a right bracket
             else:
 
+                # loop backwards starting at one character before the factorial symbol was found
                 for i in range(index - 1, -1, -1):
 
+                    # check if the current index is 0
                     if i == 0:
 
+                        # insert the proper factorial format symbol at the start of the stack
                         in_stack.insert(0, 'f(')
 
+                        # exit loop
                         break
 
 
 
-                    elif in_stack[i] not in '1234567890.-':
+                    # check if the current character is not part of a number
+                    elif in_stack[i] not in '1234567890.':
 
-                        print(f"i: {in_stack[i]}")
-
+                        # insert the proper factorial format symbol at one index higher than where a non-number character was found
                         in_stack.insert(i + 1, 'f(')
 
+                        # exit loop
                         break
 
 
+    # join and then split list to make sure it is a list with only single-character elements
     x = ('').join(in_stack)
     in_stack = list(x)
 
 
+    # loop while the 'in_stack' has items in it
     while in_stack:
 
+        # create temporary stack
+        # this will store numbers character by character when they are found
         temp_stack = []
 
-        try: 
+        # # try/except to prevent unnecessary crashes
+        # try: 
 
-            if type(token) != str and token.value != ')': token = get_token(in_stack.pop(0))
+        #     # get token from 'in_stack' at index 0 if the previous token was not a string and was not a right bracket
+        #     if type(token) != str and token.value != ')':
+        #         token = get_token(in_stack.pop(0))
                 
-            else: token = get_token(in_stack.pop(0))
+        #     # triggers if the above condidtion evaluated to false
+        #     else:
+        #         token = get_token(in_stack.pop(0))
         
-        except: token = get_token(in_stack.pop(0))
+        # # except in case the code above crashes
+        # except:
+        #     token = get_token(in_stack.pop(0))
+        token = get_token(in_stack.pop(0))
 
+        # if token is whitespace, skip current iteration and start next iteration
         if token == ' ':
 
             continue
 
+        # check if the current token is a string
         elif type(token) == str:
 
-            if token in '1234567890.-':
+            # check if current token is part of a number
+            if token in '1234567890.':
 
+                # try/except to prevent unnecessary crashes
                 try:
 
-                    while token in '1234567890.-':
+                    # keep looping while the current token is part of a number
+                    # this takes each character of a number and puts it into a temporary stack to then be added to the output stack
+                    while token in '1234567890.':
 
+                        # add current token to temp stack
                         temp_stack.append(token)
 
+                        # get new token
                         token = get_token(in_stack.pop(0))
 
+                # except in case the above code crashes
                 except:pass
 
+                # join the temp stack into one whole number and append it to the output stack
                 out_stack.append(('').join(temp_stack))
 
                 
 
+        # try/except to avoid unnecessary crashes
         try:
 
-            if token.token_type == TokenType.FUNCTION:
+            # check if the current token type is 'Function'
+            if token.token_type == TokenType.Function:
 
+                # append token to operator stack
                 op_stack.append(token)
 
 
-
-            elif token.token_type == TokenType.OPERATOR:
-
+            # check if the current token type is 'Operator'
+            elif token.token_type == TokenType.Operator:
+                
+                # keep looping while:
+                # operator stack is not empty and the last element in the operator stack is not a left bracket, and (
+                # the precedence of the last token in the operator stack is greater than the precedence of the current token, or (
+                # the precedence of the last token in the operator stack is equal to the precedence of the current token and the associativity of the current token is left))
                 while op_stack and op_stack[-1].value != '(' and (
                         op_stack[-1].precedence > token.precedence or (
                         op_stack[-1].precedence == token.precedence and 
-                        token.associativity == Associativity.LEFT)):
+                        token.associativity == Associativity.Left)):
 
+                    # pop element from operator stack and append it to the output stack
                     out_stack.append(op_stack.pop())
 
+                # append current token to the operator stack
                 op_stack.append(token)
 
 
 
-            elif token.token_type == TokenType.LEFT_BRACKET:
+            # check if the current token type is 'LeftBracket'
+            elif token.token_type == TokenType.LeftBracket:
 
+                # append the current token to the operator stack
                 op_stack.append(token)
 
 
 
-            elif token.token_type == TokenType.RIGHT_BRACKET:
+            # check if the current token type is 'RightBracket'
+            elif token.token_type == TokenType.RightBracket:
 
-                while op_stack and op_stack[-1].token_type != TokenType.LEFT_BRACKET:
+                # keep looping while the operator stack is not empty and the token type of the last token in the operator stack is not 'LeftBracket'
+                while op_stack and op_stack[-1].token_type != TokenType.LeftBracket:
 
+                    # pop element from operator stack and append it to the output stack
                     out_stack.append(op_stack.pop())
 
+                # pop last element from operator stack
                 op_stack.pop()
 
+        # except to prevent any unnecessary crashes
         except:pass
 
 
-        
+    # keep looping while the operator stack is not empty
     while op_stack:
 
+        # po element from operator stack and append it to the output stack
         out_stack.append(op_stack.pop())
 
+    # print out every element in the output stack
     for index in out_stack:
         print(index)
 
     
-    print_stacks(in_stack, op_stack, out_stack, print_type = True)
 
+    # return the output stack
     return out_stack
 
 
 
-# print information
-def print_stacks(*stacks, print_type):
+# main function to evaluate an equation, takes in arguments for the string equation and a boolean representation of whether or not to use radians or not 
+def shunting_yard_evaluator(equation: str, is_radians: bool):
 
-    if print_type:
-
-        print('')
-        print(f"input stack: {('').join(stacks[0])}")
-        print(f"operator stack: {[x.value for x in stacks[1]]}")
-
-        temp_stack = []
-
-        for i in stacks[2]:
-
-            if type(i) == Token:
-
-                temp_stack.append(i.value)
-
-            else: temp_stack.append(i)
-
-        print(f"output stack: {temp_stack}")
-
-
-
-def shunting_yard_evaluator(equation, is_radians):
-
+    # conver the equation to reverse polish notation and store it in a variable
     stack = shunting_yard_converter(equation)
 
+    # create list for number history
     hist = []
 
+    # keep looping while 'stack' is not empty
     while stack:
 
-        i = stack.pop(0)
+        # remove first element from 'stack' and store it in a variable
+        item = stack.pop(0)
 
-        if type(i) == str:
+        # check if the type of 'item' is a string
+        if type(item) == str:
 
-            hist.append(i)
+            # append 'item' to number history
+            hist.append(item)
 
+        # only triggers if 'item' is not a string
         else:
 
-            a, b, hist = find_numbers(i.token_type, hist)
+            # call 'find_numbers' to get the necessary numbers for a calculation, and to get the updated history
+            a, b, hist = find_numbers(item.token_type, hist)
 
-            hist.append(str(i.math(is_radians, float(a), float(b))))
+            # perform calculation, then convert the output to a string and append it to the history
+            hist.append(str(item.math(is_radians, float(a), float(b))))
 
-    x = ('').join(hist)
+    # join history into a single string and strip any whitespace
+    hist = ('').join(hist).strip()
 
-    hist = x.strip()
-
+    # return history
     return hist
 
 
 
-def find_numbers(token_type, hist):
+# function to find the numbers necessary for a calculation, takes in arguments for the token type as a 'TokenType', and the history as a 'list'
+def find_numbers(token_type: TokenType, hist: list):
 
-    if token_type == TokenType.FUNCTION: return hist.pop(-1), 0, hist
+    # return only one number from the history if the token type is 'Function' and also return the updated history
+    if token_type == TokenType.Function: return hist.pop(-1), 0, hist
 
+    # if the token type is not 'Function' return two numbers from the history and also return the updated history
     else: return hist.pop(-2), hist.pop(-1), hist
     
 
 
-if __name__ == '__main__':
+def main():
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '( _ 2) ^ 2'
-
-    # use the same symbol to denote negatives, but make it apply to a number differently. 
-    # treat the symbol as an operator rather than as a part of the number, that way it can be applied to the number in the appropriate order with other tokens.
+    equation = '-2 ^ 2'
 
     is_radians = False
 
@@ -360,3 +408,9 @@ if __name__ == '__main__':
         output = float(output)
         print(f"output: {output:f}") 
     except: print(f"output: {output}")
+
+
+
+if __name__ == '__main__':
+
+    main()
