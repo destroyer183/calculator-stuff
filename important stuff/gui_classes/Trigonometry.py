@@ -15,6 +15,30 @@ allow the user to input angles over 180* by using modulus
 
 there's still a problem with the impossible triangle detection, as part of it is based in the 'solve_triangle()' function, which means that unnecesary stuff gets calculated.
 
+
+
+notes for unit circle mode:
+
+put the gui switching option menu in the top right
+
+if triangle trig and unit circle trig are made together, make an option menu to switch between them and put it in the top left
+
+put a button for deg/rad in the top middle
+
+put an automatic/manual button in the bottom left
+put the 'calculate' button in the bottom middle
+put the clear button in the bottom right
+
+data that should be controllable: alpha, theta, x, y, r, deg/rad, ratios for sin, cos, tan, csc, sec, cot, and arc length. 12 total things.
+
+make two columns
+column on the left will be theta, alpha, arc length, x, y, r
+column on the right will be sin, cos, tan, csc, sec, cot
+
+
+
+ask friends if they think the unit circle trig calculator should be separate from the triangle trig calculator or not
+
 '''
 
 # function to convert text to superscript.
@@ -59,7 +83,9 @@ class Gui:
     def clear_gui(self):
 
         self.parent.unbind("<Configure>")
+        self.parent.unbind("<KeyRelease>")
 
+        # this will delete every widget except for the one that lets the user switch the calculator type
         for widget in self.parent.winfo_children():
             if type(widget) != OptionMenu:
                 widget.destroy()
@@ -68,51 +94,70 @@ class Gui:
 
     def initialize_gui(self):
 
-        self.clear_gui()
-
         self.parent.title('Trigonometry Calculator')
 
-        self.parent.geometry('650x850')
-
-        self.parent.bind("<KeyRelease>", self.keybindings)
-
-        self.create_gui()
+        # self.create_triangle_gui()
+        self.create_unit_circle_gui()
 
     
 
-    def create_gui(self):
+    def create_triangle_gui(self):
 
+        # clear gui
+        self.clear_gui()
+
+        # set gui size
+        self.parent.geometry('650x850')
+
+        # update the window
+        self.parent.update()
+
+        # bind keypresses to trigger the keybinding handler function
+        self.parent.bind("<KeyRelease>", self.keybindings)
+
+        # create canvas object
         self.canvas = Canvas(self.parent, width = 650, height = 654)
 
+        # put canvas on gui
         self.canvas.pack(fill = BOTH)
 
-        self.canvas.create_rectangle(0, 650, 650, 654, fill='black')
+        # create divider bar by making a rectangle on the canvas
+        self.canvas.create_rectangle(0, 650, 650, 654, fill = 'black')
 
-        self.reset_button = tk.Button(self.parent, text='Clear', anchor='center', bg='white', command=lambda:self.clear_data())
-        self.reset_button.configure(font=('Arial', 15, 'bold'))
+        # triangle reset button
+        self.reset_button = tk.Button(self.parent, text = 'Clear', anchor = 'center', bg = 'white', command = lambda: self.clear_data())
+        self.reset_button.configure(font = ('Arial', 15, 'bold'))
         self.reset_button.place(x = 5, y = 660)
 
-        self.mode_button = tk.Button(self.parent, text='Automatic', anchor='center', bg='white', command=lambda:self.swap_modes())
-        self.mode_button.configure(font=('Arial', 15, 'bold'))
+        # input mode button
+        self.mode_button = tk.Button(self.parent, text = 'Automatic', anchor = 'center', bg = 'white', command = lambda: self.swap_modes())
+        self.mode_button.configure(font = ('Arial', 15, 'bold'))
         self.mode_button.place(x = 325, y = 660, anchor='n')
 
-        self.ambiguous_button = tk.Button(self.parent, text='case 1', anchor='center', bg='white', command=lambda:self.ambiguous_toggle())
-        self.ambiguous_button.configure(font=('Arial', 15, 'bold'))
+        # ambiguous case switcher button
+        self.ambiguous_button = tk.Button(self.parent, text = 'case 1', anchor = 'center', bg = 'white', command = lambda: self.ambiguous_toggle())
+        self.ambiguous_button.configure(font = ('Arial', 15, 'bold'))
 
-        self.error_text = tk.Label(self.parent, text='')
-        self.error_text.configure(font=('Arial', 25, 'bold'))
+        # error text label
+        self.error_text = tk.Label(self.parent, text = '')
+        self.error_text.configure(font = ('Arial', 25, 'bold'))
         
-        self.calculate = tk.Button(self.parent, text='Calculate', anchor='center', bg='white', command=lambda:self.text_boxes_callback(None))
-        self.calculate.configure(font=('Arial', 15, 'bold'))
+        # calculate button for manual mode
+        self.calculate = tk.Button(self.parent, text = 'Calculate', anchor = 'center', bg = 'white', command = lambda: self.text_boxes_callback(None))
+        self.calculate.configure(font = ('Arial', 15, 'bold'))
 
-        self.parent.options.configure(font=('Arial', 15, 'bold'))
+        # configure option menu for switching guis
+        self.parent.options.configure(font = ('Arial', 15, 'bold'))
         
+        # make lists to store the angle and side length input boxes
         self.angle_boxes  = [0, 0, 0]
         self.length_boxes = [0, 0, 0]
 
+        # make labels for the angle and side length input boxes
         self.angle_text  = tk.Label(self.parent, text = 'A = \nB = \nC = ')
         self.length_text = tk.Label(self.parent, text = 'a = \nb = \nc = ')
 
+        # make input boxes for angles and side lengths
         self.angle_boxes[0]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
         self.angle_boxes[1]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
         self.angle_boxes[2]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
@@ -120,33 +165,40 @@ class Gui:
         self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
         self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
 
-        self.angle_text. configure(font=('Arial', 26, 'bold'))
-        self.length_text.configure(font=('Arial', 26, 'bold'))
+        # configure input box labels
+        self.angle_text. configure(font = ('Arial', 26, 'bold'))
+        self.length_text.configure(font = ('Arial', 26, 'bold'))
 
-        self.angle_boxes[0]. configure(font=('Arial', 20))
-        self.angle_boxes[1]. configure(font=('Arial', 20))
-        self.angle_boxes[2]. configure(font=('Arial', 20))
-        self.length_boxes[0].configure(font=('Arial', 20))
-        self.length_boxes[1].configure(font=('Arial', 20))
-        self.length_boxes[2].configure(font=('Arial', 20))
+        # configure input boxes
+        self.angle_boxes[0]. configure(font = ('Arial', 20))
+        self.angle_boxes[1]. configure(font = ('Arial', 20))
+        self.angle_boxes[2]. configure(font = ('Arial', 20))
+        self.length_boxes[0].configure(font = ('Arial', 20))
+        self.length_boxes[1].configure(font = ('Arial', 20))
+        self.length_boxes[2].configure(font = ('Arial', 20))
 
-        self.angle_text. place(x = ANGLE_TEXT_REFX, y = 705)
+        # place ange and side length labels
+        self.angle_text. place(x = ANGLE_TEXT_REFX,  y = 705)
         self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
 
-        self.angle_boxes[0]. place(x = ANGLE_BOX_REFX, y = 709)
-        self.angle_boxes[1]. place(x = ANGLE_BOX_REFX, y = 751)
-        self.angle_boxes[2]. place(x = ANGLE_BOX_REFX, y = 792)
+        # place input boxes
+        self.angle_boxes[0]. place(x = ANGLE_BOX_REFX,  y = 709)
+        self.angle_boxes[1]. place(x = ANGLE_BOX_REFX,  y = 751)
+        self.angle_boxes[2]. place(x = ANGLE_BOX_REFX,  y = 792)
         self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
         self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
         self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
 
+        # make dictionary to hold triangle information labels
         self.labels = {'A': '', 'B': '', 'C': '', 'a': '', 'b': '', 'c': ''}
 
+        # make labels for each triangle label value
         for key in self.labels.keys():
 
-            self.labels[key] = tk.Label(self.parent, text=key, anchor='center', width=1, height=1)
-            self.labels[key].configure(font=('Arial', 24, 'bold'))
+            self.labels[key] = tk.Label(self.parent, text = key, anchor = 'center', width = 1, height = 1)
+            self.labels[key].configure(font = ('Arial', 24, 'bold'))
 
+        # update boxes to show that they have not been edited
         for box in self.angle_boxes + self.length_boxes:
 
             box.edit_modified(False)
@@ -161,6 +213,74 @@ class Gui:
 
         # place option menu that allows the user to switch between guis
         self.parent.options.place(x = 472, y = 660)
+
+
+
+    def create_unit_circle_gui(self):
+        
+        # clear gui
+        self.clear_gui()
+
+        # set gui size
+        self.parent.geometry('1111x553')
+
+        # update the window
+        self.parent.update()
+
+        # configure option menu for switching guis
+        self.parent.options.configure(font = ('Arial', 15, 'bold'))
+
+        # create canvas to draw shapes on the gui
+        self.canvas = Canvas(self.parent, width = 558, height = 557)
+
+        # put canvas on the gui
+        self.canvas.place(x = -2, y = -2)
+
+        # call function to create the coordinate plane and the unit circle
+        self.create_unit_circle()
+
+        # create dictionary to hold coordinate labels
+        self.coordinate_labels = {'(1,0)': '', '(0,1)': '', '(-1,0)': '', '(0,-1)': ''}
+        self.coordinate_labels['(1,0)']  = tk.Label(self.parent, text = '0\u00b0, 360\u00b0')
+        self.coordinate_labels['(0,1)']  = tk.Label(self.parent, text = '90\u00b0')
+        self.coordinate_labels['(-1,0)'] = tk.Label(self.parent, text = '180\u00b0')
+        self.coordinate_labels['(0,-1)'] = tk.Label(self.parent, text = '270\u00b0')
+
+        for label in self.coordinate_labels.values():
+
+            label.configure(font = ('Arial', 10, 'bold'))
+
+        self.coordinate_labels['(1,0)']. place(x = 483, y = 273, anchor = 'sw')
+        self.coordinate_labels['(0,1)']. place(x = 283, y = 73,  anchor = 'sw')
+        self.coordinate_labels['(-1,0)'].place(x = 73,  y = 273, anchor = 'se')
+        self.coordinate_labels['(0,-1)'].place(x = 283, y = 483, anchor = 'nw')
+
+        # prevent user from resizing the gui in both the x and y axis
+        self.parent.resizable(False, False)
+        
+        # place option menu that allows the user to switch between guis
+        self.parent.options.place(x = self.parent.winfo_width() - 5, y = 5, anchor = 'ne')
+
+
+
+    # function to create the x and y axis, and the unit circle
+    def create_unit_circle(self):
+
+        # create x and y axis lines
+        self.canvas.create_line(0, 278, 555, 278, fill = 'grey')
+        self.canvas.create_line(278, 0, 278, 555, fill = 'grey')
+
+        # create divider bar by putting a rectangle on the canvas
+        self.canvas.create_rectangle(555, 0, 559, 558, fill = 'black')
+
+        # create points for coordinate labels
+        self.canvas.create_oval(474, 274, 482, 282, fill = 'black') # (1,0)
+        self.canvas.create_oval(274, 74,  282, 82,  fill = 'black') # (0,1)
+        self.canvas.create_oval(74,  274, 82,  282, fill = 'black') # (-1,0)
+        self.canvas.create_oval(274, 474, 282, 482, fill = 'black') # (0,-1)
+
+        # create unit circle
+        self.canvas.create_oval(78, 78, 478, 478, fill = None, outline = 'black')
 
 
 
@@ -246,8 +366,8 @@ class Gui:
 
         if self.mode_toggle:
             
-            self.mode_button.configure(text='Manual')
-            self.calculate.place(x = 550, y = 750, anchor='n')
+            self.mode_button.configure(text = 'Manual')
+            self.calculate.place(x = 550, y = 750, anchor = 'n')
 
             self.angle_text. place(x = ANGLE_TEXT_REFX  - 75, y = 705)
             self.length_text.place(x = LENGTH_TEXT_REFX - 75, y = 705)
@@ -261,7 +381,7 @@ class Gui:
 
         else:
 
-            self.mode_button.configure(text='Automatic')
+            self.mode_button.configure(text = 'Automatic')
             self.calculate.place_forget()
 
             self.angle_text. place(x = ANGLE_TEXT_REFX,  y = 705)
@@ -290,7 +410,7 @@ class Gui:
 
         self.ambiguous_toggle(Data.DELETE)
 
-        self.place_triangle(self.logic.calculate_triangle(False), no=True)
+        self.place_triangle(self.logic.calculate_triangle(False), no = True)
 
         self.text_boxes_callback(-2147483648)
 
@@ -305,10 +425,10 @@ class Gui:
             return
 
         elif type == Data.UNSOLVABLE:
-            self.error_text.configure(text='not enough information')
+            self.error_text.configure(text = 'not enough information')
 
         elif type == Data.IMPOSSIBLE:
-            self.error_text.configure(text='triangle does not exist')
+            self.error_text.configure(text = 'triangle does not exist')
 
         elif type == Data.CLEAR_DATA:
             self.clear_data()
@@ -319,7 +439,7 @@ class Gui:
         try:self.canvas.delete(self.triangle)
         except:pass
 
-        self.place_labels(type=Data.DELETE)
+        self.place_labels(type = Data.DELETE)
         self.error_text.place(x = 125, y = 325)
         return 1
 
@@ -358,7 +478,7 @@ class Gui:
         try: self.edit_triangle(Data.DELETE)
         except:pass
 
-        self.triangle = self.canvas.create_polygon(points, outline='black', fill='white', width=3)
+        self.triangle = self.canvas.create_polygon(points, outline = 'black', fill = 'white', width = 3)
 
         if no: return
         self.update_text_boxes(data)
@@ -376,14 +496,14 @@ class Gui:
         if Gui.is_ambiguous:
 
             self.ambiguous_triangle = True
-            self.ambiguous_button.configure(text='case 2')
+            self.ambiguous_button.configure(text = 'case 2')
             self.ambiguous_button.place(x = 5, y = 600)
             self.place_triangle(self.ambiguous)
 
         elif not Gui.is_ambiguous:
 
             self.ambiguous_triangle = True
-            self.ambiguous_button.configure(text='case 1')
+            self.ambiguous_button.configure(text = 'case 1')
             self.ambiguous_button.place(x = 5, y = 600)
             self.place_triangle(self.logic)
         
@@ -412,7 +532,9 @@ class Gui:
 
 
 def main():
+
     pass
 
 if __name__ == '__main__':
+    
     main()

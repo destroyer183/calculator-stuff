@@ -178,7 +178,7 @@ def main():
  
     Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', Window.instance.options_callback)
-    Window.option_choices.set(GuiOptionChoices.Scientific.value)
+    Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
 
     # run the gui
     Window.instance.gui.parent.mainloop()

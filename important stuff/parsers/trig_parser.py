@@ -228,7 +228,6 @@ class Logic:
                 return Data.IMPOSSIBLE, 0
 
 
-        
 
         # if nothing else triggers, return identifier that tells the calculator the triangle is solvable.
         return 'yes', False
