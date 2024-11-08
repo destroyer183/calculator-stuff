@@ -208,11 +208,11 @@ class Gui:
         # column 1
         self.absolute_left  = tk.Button(self.parent, text = '|',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_absolute())
         self.absolute_right = tk.Button(self.parent, text = '|',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_brackets(BracketType.Right))
-        self.pie            = tk.Button(self.parent, text = '\u03C0',             anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_pi())
+        self.pi             = tk.Button(self.parent, text = '\u03C0',             anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_pi())
         self.ee             = tk.Button(self.parent, text = 'e',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_e())
         self.log            = tk.Button(self.parent, text = 'log',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_log())
         self.unit_toggle    = tk.Button(self.parent, text = 'Deg',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.toggle_unit_type())
-        self.gui_column_1   = [(self.absolute_left, self.absolute_right, SplitType.Vertical), self.pie, self.ee, self.log, self.unit_toggle]
+        self.gui_column_1   = [(self.absolute_left, self.absolute_right, SplitType.Vertical), self.pi, self.ee, self.log, self.unit_toggle]
         self.gui_columns.append(self.gui_column_1)
 
         # column 2

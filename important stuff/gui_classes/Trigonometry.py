@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import *
+from enum import Enum
+import math
 from parsers.trig_parser import Logic, Data
 
 
@@ -23,7 +25,7 @@ put the gui switching option menu in the top right
 
 if triangle trig and unit circle trig are made together, make an option menu to switch between them and put it in the top left
 
-put a button for deg/rad in the top middle
+put a button for deg/rad in the top middle, only if top left is occupied
 
 put an automatic/manual button in the bottom left
 put the 'calculate' button in the bottom middle
@@ -37,7 +39,7 @@ column on the right will be sin, cos, tan, csc, sec, cot
 
 
 
-ask friends if they think the unit circle trig calculator should be separate from the triangle trig calculator or not
+make a new file for the unit circle trig calculator, but make it accessible only from the triangle trig calculator
 
 '''
 
@@ -55,11 +57,15 @@ def get_super(x):
 
 
 # reference x positions to make it easier to move boxes around when the mode is changed
-ANGLE_TEXT_REFX = 100
-ANGLE_BOX_REFX  = 170
+class ReferenceCoordinates(Enum):
+   ANGLE_TEXT_REFX  = 100
+   ANGLE_BOX_REFX   = 170
+   LENGTH_TEXT_REFX = 350
+   LENGTH_BOX_REFX  = 420
 
-LENGTH_TEXT_REFX = 350
-LENGTH_BOX_REFX = 420
+class AngleUnits(Enum):
+    Degrees = 'degrees'
+    Radians = 'radians'
 
 
 
@@ -96,8 +102,8 @@ class Gui:
 
         self.parent.title('Trigonometry Calculator')
 
-        # self.create_triangle_gui()
-        self.create_unit_circle_gui()
+        self.create_triangle_gui()
+        # self.create_unit_circle_gui()
 
     
 
@@ -178,16 +184,16 @@ class Gui:
         self.length_boxes[2].configure(font = ('Arial', 20))
 
         # place ange and side length labels
-        self.angle_text. place(x = ANGLE_TEXT_REFX,  y = 705)
-        self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
+        self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
+        self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
 
         # place input boxes
-        self.angle_boxes[0]. place(x = ANGLE_BOX_REFX,  y = 709)
-        self.angle_boxes[1]. place(x = ANGLE_BOX_REFX,  y = 751)
-        self.angle_boxes[2]. place(x = ANGLE_BOX_REFX,  y = 792)
-        self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
-        self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
-        self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
+        self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 709)
+        self.angle_boxes[1]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 751)
+        self.angle_boxes[2]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 792)
+        self.length_boxes[0].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 709)
+        self.length_boxes[1].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 751)
+        self.length_boxes[2].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 792)
 
         # make dictionary to hold triangle information labels
         self.labels = {'A': '', 'B': '', 'C': '', 'a': '', 'b': '', 'c': ''}
@@ -239,27 +245,19 @@ class Gui:
         # call function to create the coordinate plane and the unit circle
         self.create_unit_circle()
 
-        # create dictionary to hold coordinate labels
-        self.coordinate_labels = {'(1,0)': '', '(0,1)': '', '(-1,0)': '', '(0,-1)': ''}
-        self.coordinate_labels['(1,0)']  = tk.Label(self.parent, text = '0\u00b0, 360\u00b0')
-        self.coordinate_labels['(0,1)']  = tk.Label(self.parent, text = '90\u00b0')
-        self.coordinate_labels['(-1,0)'] = tk.Label(self.parent, text = '180\u00b0')
-        self.coordinate_labels['(0,-1)'] = tk.Label(self.parent, text = '270\u00b0')
+        # call function to put the labels on the unit circle
+        self.create_unit_circle_labels(AngleUnits.Degrees)
 
-        for label in self.coordinate_labels.values():
-
-            label.configure(font = ('Arial', 10, 'bold'))
-
-        self.coordinate_labels['(1,0)']. place(x = 483, y = 273, anchor = 'sw')
-        self.coordinate_labels['(0,1)']. place(x = 283, y = 73,  anchor = 'sw')
-        self.coordinate_labels['(-1,0)'].place(x = 73,  y = 273, anchor = 'se')
-        self.coordinate_labels['(0,-1)'].place(x = 283, y = 483, anchor = 'nw')
+        # make button to toggle units
+        self.unit_toggle = tk.Button(self.parent, text = 'Deg', anchor = 'center', bg = 'white', command = lambda: None)
+        self.unit_toggle.configure(font = ('Arial', 15, 'bold'))
+        self.unit_toggle.place(x = math.ceil(self.parent.winfo_width() / 2) + 7, y = 5)
 
         # prevent user from resizing the gui in both the x and y axis
         self.parent.resizable(False, False)
         
         # place option menu that allows the user to switch between guis
-        self.parent.options.place(x = self.parent.winfo_width() - 5, y = 5, anchor = 'ne')
+        self.parent.options.place(x = self.parent.winfo_width() - 3, y = 3, anchor = 'ne')
 
 
 
@@ -281,6 +279,37 @@ class Gui:
 
         # create unit circle
         self.canvas.create_oval(78, 78, 478, 478, fill = None, outline = 'black')
+
+
+
+    # function to create the unit circle labels
+    def create_unit_circle_labels(self, unit_type: AngleUnits):
+
+        # create dictionary to hold coordinate labels
+        self.coordinate_labels = {'(1,0)': '', '(0,1)': '', '(-1,0)': '', '(0,-1)': ''}
+
+        # create coordinate labels in degrees
+        if unit_type == AngleUnits.Degrees:
+            self.coordinate_labels['(1,0)']  = tk.Label(self.parent, text = '0\u00b0, 360\u00b0')
+            self.coordinate_labels['(0,1)']  = tk.Label(self.parent, text = '90\u00b0')
+            self.coordinate_labels['(-1,0)'] = tk.Label(self.parent, text = '180\u00b0')
+            self.coordinate_labels['(0,-1)'] = tk.Label(self.parent, text = '270\u00b0')
+
+        # create coordinate labels in radians
+        elif unit_type == AngleUnits.Radians:
+            self.coordinate_labels['(1,0)']  = tk.Label(self.parent, text = '0, 2\u03C0')
+            self.coordinate_labels['(0,1)']  = tk.Label(self.parent, text = '\u03C0/2')
+            self.coordinate_labels['(-1,0)'] = tk.Label(self.parent, text = '\u03C0')
+            self.coordinate_labels['(0,-1)'] = tk.Label(self.parent, text = '3\u03C0/2')
+
+        for label in self.coordinate_labels.values():
+
+            label.configure(font = ('Arial', 10, 'bold'))
+
+        self.coordinate_labels['(1,0)']. place(x = 483, y = 273, anchor = 'sw')
+        self.coordinate_labels['(0,1)']. place(x = 283, y = 73,  anchor = 'sw')
+        self.coordinate_labels['(-1,0)'].place(x = 73,  y = 273, anchor = 'se')
+        self.coordinate_labels['(0,-1)'].place(x = 283, y = 483, anchor = 'nw')
 
 
 
@@ -369,30 +398,30 @@ class Gui:
             self.mode_button.configure(text = 'Manual')
             self.calculate.place(x = 550, y = 750, anchor = 'n')
 
-            self.angle_text. place(x = ANGLE_TEXT_REFX  - 75, y = 705)
-            self.length_text.place(x = LENGTH_TEXT_REFX - 75, y = 705)
+            self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value  - 75, y = 705)
+            self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value - 75, y = 705)
 
-            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX  - 75, y = 709)
-            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX  - 75, y = 751)
-            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX  - 75, y = 792)
-            self.length_boxes[0].place(x = LENGTH_BOX_REFX - 75, y = 709)
-            self.length_boxes[1].place(x = LENGTH_BOX_REFX - 75, y = 751)
-            self.length_boxes[2].place(x = LENGTH_BOX_REFX - 75, y = 792)
+            self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value  - 75, y = 709)
+            self.angle_boxes[1]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value  - 75, y = 751)
+            self.angle_boxes[2]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value  - 75, y = 792)
+            self.length_boxes[0].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value - 75, y = 709)
+            self.length_boxes[1].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value - 75, y = 751)
+            self.length_boxes[2].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value - 75, y = 792)
 
         else:
 
             self.mode_button.configure(text = 'Automatic')
             self.calculate.place_forget()
 
-            self.angle_text. place(x = ANGLE_TEXT_REFX,  y = 705)
-            self.length_text.place(x = LENGTH_TEXT_REFX, y = 705)
+            self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
+            self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
     
-            self.angle_boxes[0]. place(x = ANGLE_BOX_REFX,  y = 709)
-            self.angle_boxes[1]. place(x = ANGLE_BOX_REFX,  y = 751)
-            self.angle_boxes[2]. place(x = ANGLE_BOX_REFX,  y = 792)
-            self.length_boxes[0].place(x = LENGTH_BOX_REFX, y = 709)
-            self.length_boxes[1].place(x = LENGTH_BOX_REFX, y = 751)
-            self.length_boxes[2].place(x = LENGTH_BOX_REFX, y = 792)
+            self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 709)
+            self.angle_boxes[1]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 751)
+            self.angle_boxes[2]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 792)
+            self.length_boxes[0].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 709)
+            self.length_boxes[1].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 751)
+            self.length_boxes[2].place(x = ReferenceCoordinates.LENGTH_BOX_REFX.value, y = 792)
 
 
 
