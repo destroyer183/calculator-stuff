@@ -59,7 +59,7 @@ class Logic:
 
     def __init__(self, is_ambiguous = False, name = '') -> None:
 
-        from gui_classes.Trigonometry import Gui
+        from gui_classes.TriangleTrig import Gui
 
         print(f"gui ambiguous: {Gui.is_ambiguous}")
 

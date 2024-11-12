@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import *
 import os
-from gui_classes import Scientific, Factoring, Quadratic, Trigonometry, Variable
+from gui_classes import Scientific, Factoring, Quadratic, TriangleTrig, UnitCircleTrig, Variable
 import sys
 from enum import Enum
 
@@ -55,11 +55,13 @@ pyinstaller --onefile --windowed --add-data=.:"gui_classes" --add-data=.:"parser
 '''
 
 class GuiOptionChoices(Enum):
-    Scientific   = 'Scientific'
-    Factoring    = 'Factoring'
-    Quadratic    = 'Quadratic'
-    Trigonometry = 'Trigonometry'
-    Variable     = 'Variable'
+    Scientific     = 'Scientific'
+    Factoring      = 'Factoring'
+    Quadratic      = 'Quadratic'
+    Trigonometry   = 'Trigonometry'
+    TriangleTrig   = 'Triangle Trig'
+    UnitCircleTrig = 'Unit Circle Trig'
+    Variable       = 'Variable'
 
 
 
@@ -76,20 +78,28 @@ class Window:
 
     instance: "Window" = None
     option_choices = None
+    trig_option_choices = None
 
     def __init__(self, gui) -> None:
         
-        self.gui = Scientific.Gui(gui, Window.instance)
+        self.gui = Scientific.Gui(gui, Window)
+
+
+
+    def full_clear_gui(self):
+
+        self.gui.parent.unbind("<KeyRelease>")
+        self.gui.parent.unbind("<Configure>")
+
+        for widget in self.gui.parent.winfo_children():
+            widget.destroy()
         
-    # scientific calculator display configuration
+
+
+    # gui selection function
     def choose_gui(self):
 
-        match self.gui_type:
-            case GuiOptionChoices.Scientific  : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Factoring   : self.gui = Factoring.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Quadratic   : self.gui = Quadratic.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Trigonometry: self.gui = Trigonometry.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Variable    : self.gui = Variable.Gui(self.gui.parent, Window.instance)
+        self.full_clear_gui()
 
         # make option menu to switch between calculators
         self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 
@@ -98,6 +108,31 @@ class Window:
                                              GuiOptionChoices.Quadratic.value, 
                                              GuiOptionChoices.Trigonometry.value, 
                                              GuiOptionChoices.Variable.value)
+
+        match self.gui_type:
+            case GuiOptionChoices.Scientific    : self.gui = Scientific.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Factoring     : self.gui = Factoring.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Quadratic     : self.gui = Quadratic.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Trigonometry  : self.choose_trig_gui()
+            case GuiOptionChoices.Variable      : self.gui = Variable.Gui(self.gui.parent, Window)
+
+        # call function to make the gui
+        self.gui.initialize_gui()
+
+
+
+    # gui selection function for trig calculator types
+    def choose_trig_gui(self):
+
+        match self.gui_type:
+            case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
+
+        # make trig option menu to switch between trig calculator types
+        self.gui.parent.trig_options = OptionMenu(self.gui.parent, Window.trig_option_choices,
+                                                  GuiOptionChoices.TriangleTrig.value,
+                                                  GuiOptionChoices.UnitCircleTrig.value)
 
         # call function to make the gui
         self.gui.initialize_gui()
@@ -160,6 +195,25 @@ class Window:
         Window.instance.choose_gui()
 
 
+    
+    # function to detect trig optionmenu changes
+    def trig_options_callback(self, var, index, mode):
+
+        print(f"current trig type: {Window.trig_option_choices.get()}")
+
+        # get trig option choice
+        temp = Window.trig_option_choices.get()
+
+        # iterate over all possible trig option choices until a match is found
+        for option in GuiOptionChoices:
+            if option.value == temp:
+
+                # set 'self.gui_type' to the matching option choice
+                self.gui_type = option
+
+        Window.instance.choose_trig_gui()
+
+
 
 def main():
 
@@ -175,10 +229,15 @@ def main():
             errorCode = ctypes.windll.shcore.SetProcessDpiAwareness(2)
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
- 
+    Window.trig_option_choices = StringVar(Window.instance.gui.parent)
+    Window.trig_option_choices.set(GuiOptionChoices.TriangleTrig.value)
+    Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
+
     Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', Window.instance.options_callback)
     Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
+
+
 
     # run the gui
     Window.instance.gui.parent.mainloop()
