@@ -142,20 +142,20 @@ class Gui:
         self.length_boxes = ['', '', '']
 
         # make labels for the angle and side length input boxes
-        self.angle_text  = tk.Label(self.parent, text = 'A = \nB = \nC = ')
-        self.length_text = tk.Label(self.parent, text = 'a = \nb = \nc = ')
+        self.angle_text1  = tk.Label(self.parent, text = 'A = \nB = \nC = ', justify = RIGHT)
+        self.length_text1 = tk.Label(self.parent, text = 'a = \nb = \nc = ', justify = RIGHT)
 
         # make input boxes for angles and side lengths
-        self.angle_boxes[0]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[1]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.angle_boxes[2]  = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[0] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[1] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
-        self.length_boxes[2] = tk.Text(self.parent, height = 1, width = 8, bg = 'white')
+        self.angle_boxes[0]  = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
+        self.angle_boxes[1]  = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
+        self.angle_boxes[2]  = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
+        self.length_boxes[0] = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
+        self.length_boxes[1] = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
+        self.length_boxes[2] = tk.Text(self.parent, width = 8, height = 1, bg = 'white')
 
         # configure input box labels
-        self.angle_text. configure(font = ('Arial', 26, 'bold'))
-        self.length_text.configure(font = ('Arial', 26, 'bold'))
+        self.angle_text1. configure(font = ('Arial', 26, 'bold'))
+        self.length_text1.configure(font = ('Arial', 26, 'bold'))
 
         # configure input boxes
         self.angle_boxes[0]. configure(font = ('Arial', 20))
@@ -166,8 +166,8 @@ class Gui:
         self.length_boxes[2].configure(font = ('Arial', 20))
 
         # place ange and side length labels
-        self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
-        self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
+        self.angle_text1. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
+        self.length_text1.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
 
         # place input boxes
         self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 709)
@@ -232,10 +232,13 @@ class Gui:
 
             if box.edit_modified():
 
-                try: temp = float(box.get(1.0, tk.END))
-                except: box.delete(len(box.get(1.0, tk.END)) - 1.0, tk.END); return
+                if box.get(1.0, tk.END).strip() == '': 
+                    box.delete(1.0, tk.END)
+                    box.edit_modified(False)
+                    continue
 
-                print('yes')
+                temp = float(box.get(1.0, tk.END))
+                print(f"yes: {temp}")
 
                 if self.mode_toggle and x is not None: return
 
@@ -294,8 +297,8 @@ class Gui:
             self.mode_button.configure(text = 'Manual')
             self.calculate.place(x = 550, y = 750, anchor = 'n')
 
-            self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value  - 75, y = 705)
-            self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value - 75, y = 705)
+            self.angle_text1. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value  - 75, y = 705)
+            self.length_text1.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value - 75, y = 705)
 
             self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value  - 75, y = 709)
             self.angle_boxes[1]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value  - 75, y = 751)
@@ -309,8 +312,8 @@ class Gui:
             self.mode_button.configure(text = 'Automatic')
             self.calculate.place_forget()
 
-            self.angle_text. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
-            self.length_text.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
+            self.angle_text1. place(x = ReferenceCoordinates.ANGLE_TEXT_REFX.value,  y = 705)
+            self.length_text1.place(x = ReferenceCoordinates.LENGTH_TEXT_REFX.value, y = 705)
     
             self.angle_boxes[0]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 709)
             self.angle_boxes[1]. place(x = ReferenceCoordinates.ANGLE_BOX_REFX.value,  y = 751)

@@ -23,7 +23,9 @@ make split button placing work universally (make it work no matter how many butt
 
 instead of having hard limits for width and height, make their limits relative to each other so that the calculator can be expanded and shrunk if needed - DONE
 
-(-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE
+(-2)^4 = 16, but -2^4 = 16, and this is wrong because exponents come before negatives, this may require a lot of work to fix sadly. IT ALWAYS TREATS IT AS IF IT IS THE FIRST EXAMPLE - DONE
+
+for the memory buttons, instead of having just MS, make the M button toggleable, allowing the user to apply the current number to the memory number with any math OPERATION. no functions.
 
 add a history function
 
@@ -101,7 +103,7 @@ class Logic:
         self.exponent = False
         self.bracket_exponent_depth = 0
         self.output = ''
-        self.memory = []
+        self.memory = 0
 
 
 # main class to handle all the gui stuff
@@ -235,21 +237,21 @@ class Gui:
         self.gui_columns.append(self.gui_column_3)
 
         # column 4
-        self.mem_clear      = tk.Button(self.parent, text = 'MC',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_clear())
+        self.mem_minus      = tk.Button(self.parent, text = 'M-',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_minus())
         self.num7           = tk.Button(self.parent, text = '7',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(7))
         self.num4           = tk.Button(self.parent, text = '4',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(4))
         self.num1           = tk.Button(self.parent, text = '1',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(1))
         self.integer        = tk.Button(self.parent, text = '+/-',                anchor = 'center', bg = 'white',          command = lambda: self.toggle_number_sign())
-        self.gui_column_4   = [self.mem_clear, self.num7, self.num4, self.num1, self.integer]
+        self.gui_column_4   = [self.mem_minus, self.num7, self.num4, self.num1, self.integer]
         self.gui_columns.append(self.gui_column_4)
         
         # column 5
-        self.mem_store      = tk.Button(self.parent, text = 'MS',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_store())
+        self.mem_add        = tk.Button(self.parent, text = 'M+',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_add())
         self.num8           = tk.Button(self.parent, text = '8',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(8))
         self.num5           = tk.Button(self.parent, text = '5',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(5))
         self.num2           = tk.Button(self.parent, text = '2',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(2))
         self.num0           = tk.Button(self.parent, text = '0',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(0))
-        self.gui_column_5   = [self.mem_store, self.num8, self.num5, self.num2, self.num0]
+        self.gui_column_5   = [self.mem_add, self.num8, self.num5, self.num2, self.num0]
         self.gui_columns.append(self.gui_column_5)
         
         # column 6
@@ -438,13 +440,13 @@ class Gui:
         if column_count >= 5:
 
             # label 1
-            self.round_label1.pack(side = 'left', anchor = 'center')
+            self.round_label1.pack(side = 'left')
 
             # decimal changer
-            self.round_numbers.pack(side = 'left', anchor = 'center')
+            self.round_numbers.pack(side = 'left')
 
             # label 2
-            self.round_label2.pack(side = 'left', anchor = 'center')
+            self.round_label2.pack(side = 'left')
 
             # decimal changer frame
             self.decimal_changer_frame.place(x = self.parent.winfo_width() - self.decimal_changer_frame.winfo_width() - self.relative_size(15), 
@@ -524,7 +526,7 @@ class Gui:
                     case 'underscore': self.toggle_number_sign()
                     case 'plus': self.put_operator(' + ')
                     case 'BackSpace': self.clear_data(ClearType.Clear)
-                    case 'M': self.memory_store()
+                    case 'M': self.memory_add()
 
                 return
             
@@ -543,7 +545,7 @@ class Gui:
                     case 'e': self.put_e()
                     case 'l': self.put_log()
                     case 'p': self.put_pi()
-                    case 'm': self.memory_clear()
+                    case 'm': self.memory_minus()
 
                 return
         except: print('exception triggered')
@@ -990,7 +992,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add the sqrt function indicator to the equation and display strings
-        self.update_text(strings_to_insert = ('#()', '\u221A1()', ''), update_type = UpdateType.ClearDisplayText)
+        self.update_text(strings_to_insert = ('#()', '\u221A()', ''), update_type = UpdateType.ClearDisplayText)
 
         # allow for more brackets
         self.logic.bracket_num += 1
@@ -1011,38 +1013,35 @@ class Gui:
     # function bound to the memory recall button to display the number stored in memory.
     def memory_recall(self):
 
+        # do nothing if memory is empty
+        if self.logic.memory == 0.0: return
+
         # add the number stored in memory to the equation and display strings
-        self.update_text(strings_to_insert = (self.logic.memory, self.logic.memory, self.logic.memory))
+        self.update_text(strings_to_insert = (str(self.logic.memory), str(self.logic.memory), str(self.logic.memory)))
 
 
 
     # function bound to the memory clear button that will clear the number stored in the memory.
-    def memory_clear(self):
+    def memory_minus(self):
 
-        # clear the memory variable
-        self.logic.memory = []
+        try:
+            # subtract from the memory variable
+            self.logic.memory -= float(('').join(self.display_text))
 
-        # reset button color
-        self.mem_store.configure(bg = 'gainsboro')
+            print(f"memory: {self.logic.memory}")
+        except:pass
 
 
 
     # function bound to the memory add button to set the memory number to the number displayed.
-    def memory_store(self):
+    def memory_add(self):
 
         try: 
-            memory = float(('').join(self.display_text))
-            print(f"memory: {memory:f}")
-        except: 
-            memory = ('').join(self.display_text)
-            print(f"memory: {memory}")
+            # add to the memory variable
+            self.logic.memory += float(('').join(self.display_text))
 
-
-        # assign a number to the memory variable
-        self.logic.memory = ('').join(self.display_text)
-
-        # update button color to show that memory is being used
-        self.mem_store.configure(bg = 'pale green')
+            print(f"memory: {self.logic.memory}")
+        except:pass
 
 
 

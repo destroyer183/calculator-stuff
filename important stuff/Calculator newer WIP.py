@@ -125,7 +125,7 @@ class Window:
     def choose_trig_gui(self):
 
         match self.gui_type:
-            case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Trigonometry  : self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
             case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
             case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
 
