@@ -228,6 +228,8 @@ class Gui:
 
         print(f"x: {x}")
 
+        if self.mode_toggle and x is not None: return
+
         for box in self.angle_boxes + self.length_boxes:
 
             if box.edit_modified():
@@ -239,8 +241,6 @@ class Gui:
 
                 temp = float(box.get(1.0, tk.END))
                 print(f"yes: {temp}")
-
-                if self.mode_toggle and x is not None: return
 
                 try: 
                     if box != self.last_modified:
@@ -283,9 +283,6 @@ class Gui:
 
                 self.place_triangle(self.logic.calculate_triangle(ambiguous))
 
-
-
-    
 
 
     def swap_modes(self):

@@ -13,15 +13,28 @@ put the trig calculator switching option menu in the top left - DONE
 
 put a button for deg/rad in the top middle, only if top left is occupied - DONE
 
-put an automatic/manual button in the bottom left
-put the 'calculate' button in the bottom middle
-put the clear button in the bottom right
+put an automatic/manual button in the bottom left - DONE
+put the 'calculate' button in the bottom middle - DONE
+put the clear button in the bottom right - DONE
 
 data that should be controllable: alpha, theta, x, y, r, deg/rad, ratios for sin, cos, tan, csc, sec, cot, and arc length. 12 total things.
 
 make two columns
-column on the left will be r, x, y, theta, alpha, arc
-column on the right will be sin, cos, tan, csc, sec, cot
+column on the left will be: 
+    r - 'yellow' (255, 255, 0) '#ffff00'
+    x - (255, 210, 0) '#ffd200'
+    y - 'orange' (255, 165, 0) '#ffa500'
+    theta - (255, 83, 0) '#ff5300'
+    alpha - 'red' (255, 0, 0) '#ff0000'
+    arc - (255, 0, 128) '#ff0080'
+
+column on the right will be: 
+    sin - 'purple' (255, 0, 255) '#ff00ff'
+    cos - (128, 0, 255) '#8000ff'
+    tan - 'blue' (0, 0, 255) '#0000ff'
+    csc - (0, 255, 255) '#00ffff'
+    sec - 'green' (0, 255, 0) '#00ff00'
+    cot - (128, 255, 0) '#80ff00'
 
 '''
 
@@ -30,6 +43,11 @@ column on the right will be sin, cos, tan, csc, sec, cot
 class AngleUnits(Enum):
     Degrees = 'degrees'
     Radians = 'radians'
+
+
+
+deg_to_rad = lambda degrees: degrees * (math.pi / 180)
+rad_to_deg = lambda radians: radians * (180 / math.pi)
 
 
 
@@ -48,15 +66,26 @@ def get_super(x):
 
 class Gui:
 
-
     def __init__(self, parent, master) -> None:
 
         self.parent = parent
         self.master = master
+
         self.is_radians = False
+        self.mode_toggle = False
+
         self.coordinate_labels = {'(1,0)': '', '(0,1)': '', '(-1,0)': '', '(0,-1)': ''}
+
         self.left_data_column  = {'r': {}, 'x': {}, 'y': {}, 'theta': {}, 'alpha': {}, 'arc': {}}
         self.right_data_column = {'sin': {}, 'cos': {}, 'tan': {}, 'csc': {}, 'sec': {}, 'cot': {}}
+
+        # text/symbol for each data label
+        self.left_data_symbols  = {'r': 'r', 'x': 'x', 'y': 'y', 'theta': '\u03B8', 'alpha': '\u03B1', 'arc': 'arc'}
+        self.right_data_symbols = {'sin': 'sin\u03B8', 'cos': 'cos\u03B8', 'tan': 'tan\u03B8', 'csc': 'csc\u03B8', 'sec': 'sec\u03B8', 'cot': 'cot\u03B8'}
+
+        # RGB color codes for each label
+        self.left_data_colors  = {'r': '#ffff00', 'x': '#ffd200', 'y': '#ffa500', 'theta': '#ff5300', 'alpha': '#ff0000', 'arc': '#ff0080'}
+        self.right_data_colors = {'sin': '#ff00ff', 'cos': '#8000ff', 'tan': '#0000ff', 'csc': '#00ffff', 'sec': '#00ff00', 'cot': '#80ff00'}
 
         # initialize the necessary keys for each nested dictionary
         for key in self.left_data_column:  self.left_data_column[key]  = {'frame': '', 'label': '', 'box': ''}
@@ -143,26 +172,26 @@ class Gui:
         # call function to adjust the input field frames
         self.adjust_input_fields()
 
-        
-        
-        # # create labels for the two columns of inputs
-        # self.left_column_labels  = tk.Label(self.parent, text = 'r = \nx = \ny = \n\u03B8 = \n\u03B1 = \narc = ', justify = RIGHT)
-        # self.right_column_labels = tk.Label(self.parent, text = 'sin\u03B8 = \ncos\u03B8 = \ntan\u03B8 = \ncsc\u03B8 = \nsec\u03B8 = \ncot\u03B8 = ', justify = RIGHT)
+        # input mode button to switch between automatic calculation and manual calculation
+        self.calculation_mode_button = tk.Button(self.parent, text = 'Automatic', anchor = 'center', bg = 'white', command = lambda: self.swap_calculation_mode())
+        self.calculation_mode_button.configure(font = ('Arial', 15, 'bold'))
+        self.calculation_mode_button.place(x = math.ceil(self.parent.winfo_width() / 2) + 7, y = self.parent.winfo_height() - 5, anchor = 'sw')       
 
-        # # configure labels for the two columns of inputs
-        # self.left_column_labels.configure(font = ('Arial', 20, 'bold'), bg = 'grey')
-        # self.right_column_labels.configure(font = ('Arial', 20, 'bold'), bg = 'grey')
+        # calculate button for manual mode
+        self.calculate_button = tk.Button(self.parent, text = 'Calculate', anchor = 'center', bg = 'white', command = lambda: self.text_boxes_callback(None))
+        self.calculate_button.configure(font = ('Arial', 15, 'bold'))
 
-        # # place labels for the two columns of inputs
-        # self.left_column_labels. place(x = self.parent.winfo_width() / 8 * 5 - 4, y = 50, anchor = 'n')
-        # self.right_column_labels.place(x = self.parent.winfo_width() / 8 * 7 - 4, y = 50, anchor = 'n')
+        # button to reset the inputted data
+        self.reset_button = tk.Button(self.parent, text = 'Clear', anchor = 'center', bg = 'white', command = lambda: self.clear_data())
+        self.reset_button.configure(font = ('Arial', 15, 'bold'))
+        self.reset_button.place(x = self.parent.winfo_width() - 5, y = self.parent.winfo_height() - 5, anchor = 'se')
 
-        # prevent user from resizing the gui in both the x and y axis
+        # prevent gui from being resized in both the x and y axis
         self.parent.resizable(False, False)
         
         # place the option menus that allow the user to switch between guis and trig calculators
-        self.parent.options.place(x = self.parent.winfo_width() - 3, y = 3, anchor = 'ne')
         self.parent.trig_options.place(x = math.ceil(self.parent.winfo_width() / 2) + 5, y = 3)
+        self.parent.options.place(x = self.parent.winfo_width() - 3, y = 3, anchor = 'ne')
 
 
 
@@ -172,12 +201,12 @@ class Gui:
         # make frames, labels, and input boxes for each data input field
         for key in self.left_data_column:
             self.left_data_column[key]['frame'] = tk.Frame(self.parent, width = 202)
-            self.left_data_column[key]['label'] = tk.Label(self.left_data_column[key]['frame'], text = f"{key} = ", justify = RIGHT)
+            self.left_data_column[key]['label'] = tk.Label(self.left_data_column[key]['frame'], text = f"{self.left_data_symbols[key]} = ", fg = self.left_data_colors[key], justify = RIGHT)
             self.left_data_column[key]['box']   = tk.Text(self.left_data_column[key]['frame'], width = 8, height = 1, bg = 'white')
 
         for key in self.right_data_column:
             self.right_data_column[key]['frame'] = tk.Frame(self.parent)
-            self.right_data_column[key]['label'] = tk.Label(self.right_data_column[key]['frame'], text = f"{key}\u03B8 = ", justify = RIGHT)
+            self.right_data_column[key]['label'] = tk.Label(self.right_data_column[key]['frame'], text = f"{self.right_data_symbols[key]} = ", fg = self.right_data_colors[key], justify = RIGHT)
             self.right_data_column[key]['box']   = tk.Text(self.right_data_column[key]['frame'], width = 8, height = 1, bg = 'white')
 
         # configure the labels and boxes for data inputs
@@ -195,7 +224,7 @@ class Gui:
         vertical_offset = 60
 
         # variable to hold the vertical offset of the next input field to be placed
-        current_offset = 75
+        current_offset = 80
 
         # loop through all of the input fields in the left column
         for group in self.left_data_column.values():
@@ -203,13 +232,13 @@ class Gui:
             # pack the label and box into the frame, and then place the frame on the gui
             group['box'].pack(side = RIGHT)
             group['label'].pack(side = RIGHT)
-            group['frame'].place(x = self.parent.winfo_width() / 8 * 5 + 3, y = current_offset, anchor = 'n')
+            group['frame'].place(x = self.parent.winfo_width() / 8 * 5 - 10, y = current_offset, anchor = 'n')
 
             # incrament the currrent vertical offset
             current_offset += vertical_offset
 
         # reset vertical offset
-        current_offset = 75
+        current_offset = 80
 
         # loop through all of the input fields in the right column
         for group in self.right_data_column.values():
@@ -217,7 +246,7 @@ class Gui:
             # pack the label and box into the frame, and then place the frame on the gui
             group['box'].pack(side = RIGHT)
             group['label'].pack(side = RIGHT)
-            group['frame'].place(x = self.parent.winfo_width() / 8 * 7, y = current_offset, anchor = 'n')
+            group['frame'].place(x = self.parent.winfo_width() / 8 * 7 - 35, y = current_offset, anchor = 'n')
 
             # incrament the current vertical offset
             current_offset += vertical_offset
@@ -230,29 +259,43 @@ class Gui:
     # function to adjust the input field frames to all be the same size
     def adjust_input_fields(self):
 
-        # variable to store the width of the widest input field frame
-        largest_frame = 0
+        # variable to store the width of the widest input field frame in the left column
+        largest_frame_left = 0
 
-        # loop through every input frame in both the left and right columns
-        for group in [x for x in self.left_data_column.values()] + [x for x in self.right_data_column.values()]:
+        # loop through every input frame in the left column
+        for group in self.left_data_column.values():
             
             # configure the width and height of the current input field frame
             group['frame'].configure(width = group['label'].winfo_width() + group['box'].winfo_width(), height = max(group['label'].winfo_height(), group['box'].winfo_height()))
 
-            print(f"label width: {group['label'].winfo_width()}")
             # check if the current frame is wider than the widest recorded frame
-            if group['frame'].winfo_width() > largest_frame:
+            if group['frame'].winfo_width() > largest_frame_left:
 
                 # update the widest recorded frame to be the current frame
-                largest_frame = group['frame'].winfo_width()
+                largest_frame_left = group['frame'].winfo_width()
 
-        print(f"largest frame: {largest_frame}")
+        # variable to store the width of the widest input field frame in the right column
+        largest_frame_right = 0
+
+        # loop through every input frame in both the left and right columns
+        for group in self.right_data_column.values():
+            
+            # configure the width and height of the current input field frame
+            group['frame'].configure(width = group['label'].winfo_width() + group['box'].winfo_width(), height = max(group['label'].winfo_height(), group['box'].winfo_height()))
+
+            # check if the current frame is wider than the widest recorded frame
+            if group['frame'].winfo_width() > largest_frame_right:
+
+                # update the widest recorded frame to be the current frame
+                largest_frame_right = group['frame'].winfo_width()
 
         # variable to incrament the vertical offset of each input field
         vertical_offset = 60
 
         # variable to hold the vertical offset of the next input field to be placed
-        current_offset = 75
+        current_offset = 80
+
+        
 
         # loop through all of the input fields in the left column
         for group in self.left_data_column.values():
@@ -260,13 +303,16 @@ class Gui:
             # pack the label and box into the frame, and then place the frame on the gui
             group['box'].pack(side = RIGHT)
             group['label'].pack(side = RIGHT)
-            group['frame'].place(x = self.parent.winfo_width() / 8 * 5 + 3, y = current_offset, width = largest_frame, anchor = 'n')
+
+            # print(group['frame'].winfo_width() / 2)
+
+            group['frame'].place(x = self.parent.winfo_width() / 8 * 5 - 10, y = current_offset, width = largest_frame_left, anchor = 'n')
 
             # incrament the currrent vertical offset
             current_offset += vertical_offset
 
         # reset vertical offset
-        current_offset = 75
+        current_offset = 80
 
         # loop through all of the input fields in the right column
         for group in self.right_data_column.values():
@@ -274,7 +320,7 @@ class Gui:
             # pack the label and box into the frame, and then place the frame on the gui
             group['box'].pack(side = RIGHT)
             group['label'].pack(side = RIGHT)
-            group['frame'].place(x = self.parent.winfo_width() / 8 * 7, y = current_offset, width = largest_frame, anchor = 'n')
+            group['frame'].place(x = self.parent.winfo_width() / 8 * 7 - 35, y = current_offset, width = largest_frame_right, anchor = 'n')
 
             # incrament the current vertical offset
             current_offset += vertical_offset
@@ -347,3 +393,20 @@ class Gui:
             self.unit_toggle.configure(text = 'Deg')
             
             self.create_unit_circle_labels(AngleUnits.Degrees)
+
+
+
+    # function to switch between automatic and manual calculation modes
+    def swap_calculation_mode(self):
+        
+        self.mode_toggle = not self.mode_toggle
+
+        if self.mode_toggle:
+
+            self.calculation_mode_button.configure(text = 'Manual')
+            self.calculate_button.place(x = math.ceil(self.parent.winfo_width() / 4) * 3, y = self.parent.winfo_height() - 50, anchor = 's')
+
+        if not self.mode_toggle:
+
+            self.calculation_mode_button.configure(text = 'Automatic')
+            self.calculate_button.place_forget()

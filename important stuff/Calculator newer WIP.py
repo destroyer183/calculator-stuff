@@ -230,7 +230,7 @@ def main():
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
     Window.trig_option_choices = StringVar(Window.instance.gui.parent)
-    Window.trig_option_choices.set(GuiOptionChoices.TriangleTrig.value)
+    Window.trig_option_choices.set(GuiOptionChoices.UnitCircleTrig.value)
     Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
 
     Window.option_choices = StringVar(Window.instance.gui.parent)
