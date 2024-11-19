@@ -36,6 +36,12 @@ column on the right will be:
     sec - 'green' (0, 255, 0) '#00ff00'
     cot - (128, 255, 0) '#80ff00'
 
+have a 'case' button to toggle between cases when partial information is given and the angle could be in multiple quadrants
+
+make buttons to put things like pi, square roots, fractions, undefined, in the text boxes.
+alternatively, detect what the user is typing, and if they type 'pi' replace it with the symbol for pi, and do the same with square root.
+fractions and 'undefined' can be represented with '/' and 'u' and don't need to be replaced with anything.
+
 '''
 
 
@@ -43,11 +49,6 @@ column on the right will be:
 class AngleUnits(Enum):
     Degrees = 'degrees'
     Radians = 'radians'
-
-
-
-deg_to_rad = lambda degrees: degrees * (math.pi / 180)
-rad_to_deg = lambda radians: radians * (180 / math.pi)
 
 
 
@@ -124,6 +125,9 @@ class Gui:
         # refresh the window
         self.parent.update()
 
+        # bind keypresses to trigger the keybinding handler function
+        self.parent.bind("<KeyRelease>", self.keybindings)
+
         # configure option menu for switching guis
         self.parent.options.configure(font = ('Arial', 15, 'bold'))
         self.parent.trig_options.configure(font = ('Arial', 15, 'bold'))
@@ -172,6 +176,8 @@ class Gui:
         # call function to adjust the input field frames
         self.adjust_input_fields()
 
+
+
         # input mode button to switch between automatic calculation and manual calculation
         self.calculation_mode_button = tk.Button(self.parent, text = 'Automatic', anchor = 'center', bg = 'white', command = lambda: self.swap_calculation_mode())
         self.calculation_mode_button.configure(font = ('Arial', 15, 'bold'))
@@ -185,6 +191,8 @@ class Gui:
         self.reset_button = tk.Button(self.parent, text = 'Clear', anchor = 'center', bg = 'white', command = lambda: self.clear_data())
         self.reset_button.configure(font = ('Arial', 15, 'bold'))
         self.reset_button.place(x = self.parent.winfo_width() - 5, y = self.parent.winfo_height() - 5, anchor = 'se')
+
+
 
         # prevent gui from being resized in both the x and y axis
         self.parent.resizable(False, False)
@@ -234,6 +242,8 @@ class Gui:
             group['label'].pack(side = RIGHT)
             group['frame'].place(x = self.parent.winfo_width() / 8 * 5 - 10, y = current_offset, anchor = 'n')
 
+            group['box'].edit_modified(False)
+
             # incrament the currrent vertical offset
             current_offset += vertical_offset
 
@@ -247,6 +257,8 @@ class Gui:
             group['box'].pack(side = RIGHT)
             group['label'].pack(side = RIGHT)
             group['frame'].place(x = self.parent.winfo_width() / 8 * 7 - 35, y = current_offset, anchor = 'n')
+
+            group['box'].edit_modified(False)
 
             # incrament the current vertical offset
             current_offset += vertical_offset
@@ -372,9 +384,39 @@ class Gui:
 
     def keybindings(self, input = None):
 
-        pass
+        try: temp = input.keysym
+        except:return
+
+        print(f"keysm type: {type(input.keysym)}")
+
+        if input.char == "\r": self.text_boxes_callback(None)
+        else: self.text_boxes_callback(input)
 
 
+
+    # function to tell the parser to calculate the triangle when information in the text boxes is updated or when the 'calculate' button is pressed
+    def text_boxes_callback(self, x = None):
+
+        print(f"x: {x}")
+
+        # if the mode is set to manual, and if x is not none (a key was pressed) exit the function
+        if self.mode_toggle and x is not None: return
+
+
+
+    # function to clear all of the data
+    def clear_data(self):
+
+        # delete the data in all of the boxes
+        for box in [x for x in self.left_data_column.values()] + [x for x in self.right_data_column.values()]:
+            box.delete(1.0, tk.END)
+            box.edit_modified(False)
+
+        # put a '1' in the 'r' box since that generally doesn't change.
+        self.left_data_column['r']['box'].insert(tk.END, '1')
+        self.left_data_column['r']['box'].edit_modified(False)
+
+        
 
     # function to toggle the units between degrees and radians
     def toggle_units(self):

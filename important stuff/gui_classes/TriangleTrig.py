@@ -223,7 +223,7 @@ class Gui:
         else: self.text_boxes_callback(input)
 
 
-    # function to detect optionmenu changes
+    # function to tell the parser to calculate the triangle when information in the text boxes is updated or when the 'calculate' button is pressed
     def text_boxes_callback(self, x = None):
 
         print(f"x: {x}")
