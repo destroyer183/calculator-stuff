@@ -19,7 +19,7 @@ put the clear button in the bottom right - DONE
 
 data that should be controllable: alpha, theta, x, y, r, deg/rad, ratios for sin, cos, tan, csc, sec, cot, and arc length. 12 total things.
 
-make two columns
+make two columns - DONE
 column on the left will be: 
     r - 'yellow' (255, 255, 0) '#ffff00'
     x - (255, 210, 0) '#ffd200'
@@ -41,6 +41,8 @@ have a 'case' button to toggle between cases when partial information is given a
 make buttons to put things like pi, square roots, fractions, undefined, in the text boxes.
 alternatively, detect what the user is typing, and if they type 'pi' replace it with the symbol for pi, and do the same with square root.
 fractions and 'undefined' can be represented with '/' and 'u' and don't need to be replaced with anything.
+
+https://youtu.be/dUkCgTOOpQ0?t=116 - vid for visualizing the 6 trig ratios
 
 '''
 
@@ -99,7 +101,7 @@ class Gui:
         self.parent.unbind("<Configure>")
         self.parent.unbind("<KeyRelease>")
 
-        # this will delete every widget except for the one that lets the user switch the calculator type
+        # this will delete every widget except for the ones that let the user switch the calculator and trig type
         for widget in self.parent.winfo_children():
             if type(widget) != OptionMenu:
                 widget.destroy()
@@ -152,10 +154,10 @@ class Gui:
             label.configure(font = ('Arial', 10, 'bold'))
 
         # place labels
-        self.coordinate_labels['(1,0)']. place(x = 483, y = 273, anchor = 'sw')
-        self.coordinate_labels['(0,1)']. place(x = 283, y = 73,  anchor = 'sw')
-        self.coordinate_labels['(-1,0)'].place(x = 73,  y = 273, anchor = 'se')
-        self.coordinate_labels['(0,-1)'].place(x = 283, y = 483, anchor = 'nw')
+        self.coordinate_labels['(1,0)']. place(x = 408, y = 273, anchor = 'sw')
+        self.coordinate_labels['(0,1)']. place(x = 283, y = 148, anchor = 'sw')
+        self.coordinate_labels['(-1,0)'].place(x = 148, y = 273, anchor = 'se')
+        self.coordinate_labels['(0,-1)'].place(x = 283, y = 408, anchor = 'nw')
 
         # call function to put the labels on the unit circle
         self.create_unit_circle_labels(AngleUnits.Degrees)
@@ -353,13 +355,13 @@ class Gui:
         self.canvas.create_rectangle(555, 0, 559, 558, fill = 'black')
 
         # create points for coordinate labels
-        self.canvas.create_oval(474, 274, 482, 282, fill = 'black') # (1,0)
-        self.canvas.create_oval(274, 74,  282, 82,  fill = 'black') # (0,1)
-        self.canvas.create_oval(74,  274, 82,  282, fill = 'black') # (-1,0)
-        self.canvas.create_oval(274, 474, 282, 482, fill = 'black') # (0,-1)
+        self.canvas.create_oval(399, 274, 407, 282, fill = 'black')
+        self.canvas.create_oval(274, 149, 282, 157, fill = 'black')
+        self.canvas.create_oval(149, 274, 157, 282, fill = 'black')
+        self.canvas.create_oval(274, 399, 282, 407, fill = 'black')
 
-        # create unit circle
-        self.canvas.create_oval(78, 78, 478, 478, fill = None, outline = 'black')
+        # create unit circle, radius of 125px
+        self.canvas.create_oval(153, 153, 403, 403, fill = None, outline = 'black')
 
 
 

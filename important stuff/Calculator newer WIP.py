@@ -229,6 +229,7 @@ def main():
             errorCode = ctypes.windll.shcore.SetProcessDpiAwareness(2)
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
+        
     Window.trig_option_choices = StringVar(Window.instance.gui.parent)
     Window.trig_option_choices.set(GuiOptionChoices.UnitCircleTrig.value)
     Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
