@@ -396,7 +396,7 @@ def main():
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '-2 ^ 2'
+    equation = '-(3.141259265359)'
 
     is_radians = False
 
