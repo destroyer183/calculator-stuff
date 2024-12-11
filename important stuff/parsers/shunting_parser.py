@@ -9,6 +9,7 @@ from enum import Enum
 
 
 
+# enums
 class MathOperation(Enum):
     Sine = 's'
     Cosine = 'c'
@@ -72,7 +73,7 @@ class Token:
             case MathOperation.aSine:      return (math.asin(x) * is_radians) + (math.asin(math.radians(x)) * (not is_radians))
             case MathOperation.aCosine:    return (math.acos(x) * is_radians) + (math.acos(math.radians(x)) * (not is_radians))
             case MathOperation.aTangent:   return (math.atan(x) * is_radians) + (math.atan(math.radians(x)) * (not is_radians))
-            case MathOperation.Logarithm:  return math.log(x)
+            case MathOperation.Logarithm:  return math.log(x, 10)
             case MathOperation.Absolute:   return abs(x)
             case MathOperation.Factorial:  return math.factorial(int(x))
             case MathOperation.SquareRoot: return x ** 0.5
