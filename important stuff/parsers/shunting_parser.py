@@ -397,7 +397,7 @@ def main():
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '-(3.141259265359)'
+    equation = '6 / (l(5) / l(3))'
 
     is_radians = False
 

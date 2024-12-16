@@ -1189,7 +1189,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add the pi number to the equation and display strings
-        self.update_text(strings_to_insert = ('3.14159265359', '\u03C0', '(3.14159265359)'))
+        self.update_text(strings_to_insert = ('(3.14159265359)', '\u03C0', '3.14159265359'))
 
 
 
@@ -1205,7 +1205,7 @@ class Gui:
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add eulers number to the equation and display strings
-        self.update_text(strings_to_insert = ('2.71828182846', 'e', '(2.71828182846)'))
+        self.update_text(strings_to_insert = ('(2.71828182846)', 'e', '2.71828182846'))
 
 
 
@@ -1216,8 +1216,9 @@ class Gui:
         self.update_history(HistoryUpdateType.Add)
 
         # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1] in list('1234567890)' + get_super('1234567890)')):
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
 
+            print('here')
             for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # add the log function indicator to the equation and display strings
