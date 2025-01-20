@@ -565,7 +565,7 @@ class Gui:
     # the function bound to the 'equals' button to output a result for an equation.
     def calculate_equation(self):
 
-        print(f"equation: {('').join(self.logic.equation)}")
+        print(f"equation: {('').join(self.logic.equation)}, unit: {('Deg' * (not self.is_radians)) + ('Rad' * self.is_radians)}")
 
         # assemble equation list into a string
         equation_str = ('').join(self.logic.equation)

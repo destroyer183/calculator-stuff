@@ -70,9 +70,9 @@ class Token:
             case MathOperation.Sine:       return (math.sin(x)  * is_radians) + (math.sin(math.radians(x))  * (not is_radians))
             case MathOperation.Cosine:     return (math.cos(x)  * is_radians) + (math.cos(math.radians(x))  * (not is_radians))
             case MathOperation.Tangent:    return (math.tan(x)  * is_radians) + (math.tan(math.radians(x))  * (not is_radians))
-            case MathOperation.aSine:      return (math.asin(x) * is_radians) + (math.asin(math.radians(x)) * (not is_radians))
-            case MathOperation.aCosine:    return (math.acos(x) * is_radians) + (math.acos(math.radians(x)) * (not is_radians))
-            case MathOperation.aTangent:   return (math.atan(x) * is_radians) + (math.atan(math.radians(x)) * (not is_radians))
+            case MathOperation.aSine:      return (math.asin(x) * is_radians) + (math.degrees(math.asin(x)) * (not is_radians))
+            case MathOperation.aCosine:    return (math.acos(x) * is_radians) + (math.degrees(math.acos(x)) * (not is_radians))
+            case MathOperation.aTangent:   return (math.atan(x) * is_radians) + (math.degrees(math.atan(x)) * (not is_radians))
             case MathOperation.Logarithm:  return math.log(x, 10)
             case MathOperation.Absolute:   return abs(x)
             case MathOperation.Factorial:  return math.factorial(int(x))
@@ -398,6 +398,8 @@ def main():
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
     equation = '6 / (l(5) / l(3))'
+
+    equation = 'S(0.8667)'
 
     is_radians = False
 
