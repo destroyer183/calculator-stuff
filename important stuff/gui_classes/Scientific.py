@@ -819,7 +819,7 @@ class Gui:
             
             self.unit_toggle.configure(text = 'Deg')
 
-            self.unit_toggle.place(x = 0, y = 525, width = self.button_width(), height = self.button_height())
+            self.unit_toggle.place(x = 0, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
             
 
 
