@@ -286,7 +286,7 @@ class Gui:
         self.round_choice = StringVar(self.parent)
         self.round_choice.set(10)
 
-        self.round_numbers = tk.Spinbox(self.decimal_changer_frame, from_ = 0, to = 100, textvariable = self.round_choice, wrap = True)
+        self.round_numbers = tk.Spinbox(self.decimal_changer_frame, from_ = 0, to = 100, state = 'readonly', textvariable = self.round_choice, wrap = True)
 
 
 

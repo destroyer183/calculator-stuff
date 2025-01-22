@@ -1,11 +1,13 @@
-from enum import Enum
-
-class Test(Enum):
-    test1 = 'test1'
-    test2 = 'test2'
-    test3 = 'test3'
+import math
 
 
+def f(x):
+    return 2*x - 3
 
-for test in Test:
-    print(f"value: {test}")
+
+def g(x):
+    return 1 - x**2
+
+x = 1
+
+print(f"answer: {g(g(0.5))}")
