@@ -1,13 +1,10 @@
-import math
+def nuke(n):
+    a = []
+    for i in range(10):
+        if (n > 1):
+            a.append(nuke(n-1))
+        else:
+            a.append(i)
+    return a
 
-
-def f(x):
-    return 2*x - 3
-
-
-def g(x):
-    return 1 - x**2
-
-x = 1
-
-print(f"answer: {g(g(0.5))}")
+print(nuke(8))

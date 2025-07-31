@@ -741,7 +741,7 @@ class Gui:
 
             self.equation_text = ['']
 
-            self.display_text = ['', '']
+            self.display_text = ['', ''] # WHY IS THIS AN ARRAY???
 
             self.logic.bracket_num = 0
 
@@ -865,7 +865,7 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        if self.display_text == '':
+        if self.display_text == ['', '']:
 
             # put the decimal in the equation and display strings
             self.update_text(display_text_update_type = DisplayTextUpdateType.Insert, strings_to_insert = ('0.', '0.', '0.'))
@@ -1072,7 +1072,7 @@ class Gui:
 
         elif bracket_type == BracketType.Right:
 
-            if self.equation_text[-1 - self.logic.bracket_num + 1] in list('1234567890)' + get_super('1234567890)')):
+            if self.equation_text[-1 - self.logic.bracket_num + 1] in list('1234567890)|' + get_super('1234567890)|')):
 
                 # start typing outside one more layer of brackets
                 if self.logic.bracket_num > 0:
