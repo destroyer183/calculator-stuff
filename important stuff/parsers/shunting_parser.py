@@ -113,7 +113,7 @@ TOKENS = [
     Token(token_type = TokenType.LeftBracket,  precedence = 0, associativity = Associativity.Right, math_operation = MathOperation.Null, value = '('),
     Token(token_type = TokenType.RightBracket, precedence = 0, associativity = Associativity.Left,  math_operation = MathOperation.Null, value = ')')
 
-    ]
+]
 
 
 
