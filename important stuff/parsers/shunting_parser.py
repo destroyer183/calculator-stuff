@@ -120,6 +120,12 @@ TOKENS = [
 # function to return a token based on a string argument
 def get_token(value: str):
 
+    '''
+    
+    maybe change TOKENS to a dict with each key being the value of a token?
+
+    '''
+
     # loop over every math operation token
     for i in TOKENS:
 
@@ -131,29 +137,24 @@ def get_token(value: str):
         
     # return string argument if no match is found
     return value
-        
 
 
-# function to convert standard equation strings into reverse polish notation using the shunting yard algorithm
-def shunting_yard_converter(equation: str):
 
-    # create variables for input stack, operator stack, and output stack
-    in_stack = list(equation)
-    op_stack = []
-    out_stack = []
-
-    # loop over input stack by index and element, this is to find any factorials and change the format of them.
-    for index, char, in enumerate(in_stack):
+# function to adjust the notation of factorial to allow the parser to evaluate it properly
+def factorial_adjuster(equation: str):
+    
+    # loop over input equation by index and element, this is to find any factorials and change the format of them.
+    for index, char, in enumerate(equation):
 
         # check for factorial symbol
         if char == '!':
 
             # replace factorial symbol with right bracket
-            in_stack[index] = ')'
+            equation[index] = ')'
 
             # check if previous character was a right bracket
             # this case will allow factorials to work on brackets of any depth, allowing something like (((1 + 2) + 3) + 4)! to work properly
-            if in_stack[index - 1] == ')':
+            if equation[index - 1] == ')':
 
                 # create bracket counter
                 bracket_count = 0
@@ -162,7 +163,7 @@ def shunting_yard_converter(equation: str):
                 for i in range(index - 1, -1, -1):
 
                     # check if current character is right bracket
-                    if in_stack[i] == ')':
+                    if equation[i] == ')':
 
                         # incrament bracket counter
                         bracket_count += 1
@@ -170,7 +171,7 @@ def shunting_yard_converter(equation: str):
 
 
                     # check if current character is left bracket
-                    elif in_stack[i] == '(':
+                    elif equation[i] == '(':
 
                         # decrament bracket counter
                         bracket_count -= 1
@@ -179,7 +180,7 @@ def shunting_yard_converter(equation: str):
                         if bracket_count == 0:
 
                             # insert the proper factorial format symbol at the position before the last left bracket, or at index 0 in case the last left bracket was at index 0
-                            in_stack.insert(max(0, i - 1), 'f(')
+                            equation.insert(max(0, i - 1), 'f(')
 
                             # exit loop
                             break
@@ -195,8 +196,8 @@ def shunting_yard_converter(equation: str):
                     # check if the current index is 0
                     if i == 0:
 
-                        # insert the proper factorial format symbol at the start of the stack
-                        in_stack.insert(0, 'f(')
+                        # insert the proper factorial format symbol at the start of the equation
+                        equation.insert(0, 'f(')
 
                         # exit loop
                         break
@@ -204,13 +205,26 @@ def shunting_yard_converter(equation: str):
 
 
                     # check if the current character is not part of a number
-                    elif in_stack[i] not in '1234567890.':
+                    elif equation[i] not in '1234567890.':
 
                         # insert the proper factorial format symbol at one index higher than where a non-number character was found
-                        in_stack.insert(i + 1, 'f(')
+                        equation.insert(i + 1, 'f(')
 
                         # exit loop
                         break
+
+    # return adjusted equation
+    return equation
+
+        
+
+# function to convert standard equation strings into reverse polish notation using the shunting yard algorithm
+def shunting_yard_converter(equation: str):
+
+    # create variables for input stack, operator stack, output stack, and call function to fix factorial notation
+    in_stack = factorial_adjuster(list(equation))
+    op_stack = []
+    out_stack = []
 
 
     # join and then split list to make sure it is a list with only single-character elements
@@ -225,20 +239,7 @@ def shunting_yard_converter(equation: str):
         # this will store numbers character by character when they are found
         temp_stack = []
 
-        # # try/except to prevent unnecessary crashes
-        # try: 
-
-        #     # get token from 'in_stack' at index 0 if the previous token was not a string and was not a right bracket
-        #     if type(token) != str and token.value != ')':
-        #         token = get_token(in_stack.pop(0))
-                
-        #     # triggers if the above condidtion evaluated to false
-        #     else:
-        #         token = get_token(in_stack.pop(0))
-        
-        # # except in case the code above crashes
-        # except:
-        #     token = get_token(in_stack.pop(0))
+        # get next token
         token = get_token(in_stack.pop(0))
 
         # if token is whitespace, skip current iteration and start next iteration
@@ -357,7 +358,7 @@ def shunting_yard_evaluator(equation: str, is_radians: bool):
     while stack:
 
         # remove first element from 'stack' and store it in a variable
-        item = stack.pop(0)
+        item: Token = stack.pop(0)
 
         # check if the type of 'item' is a string
         if type(item) == str:

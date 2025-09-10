@@ -7,4 +7,11 @@ def nuke(n):
             a.append(i)
     return a
 
-print(nuke(8))
+
+x = {}
+
+x['y'] = 'z'
+
+y = x['1']
+
+print(y)
