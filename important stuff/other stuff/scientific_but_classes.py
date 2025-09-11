@@ -114,8 +114,8 @@ TOKENS = [
     Token(token_type = TokenType.Operator, precedence = 0, math_operation = MathOperation.Addition,       value = '+'),
     Token(token_type = TokenType.Operator, precedence = 0, math_operation = MathOperation.Subtraction,    value = '_'),
 
-    Token(token_type = TokenType.LeftBracket,  precedence = 0, math_operation = MathOperation.Null, value = '('),
-    Token(token_type = TokenType.RightBracket, precedence = 0, math_operation = MathOperation.Null, value = ')')
+    # Token(token_type = TokenType.LeftBracket,  precedence = 0, math_operation = MathOperation.Null, value = '('),
+    # Token(token_type = TokenType.RightBracket, precedence = 0, math_operation = MathOperation.Null, value = ')')
 
 ]
 
@@ -149,7 +149,7 @@ class ScientificParser:
         
         # assign function arguments to object attributes
         self.is_radians: bool = is_radians
-        self.equation: list = [get_token(x) for x in equation]
+        self.equation: list = [x for x in equation]
         self.bracket_equation: list = []
         self.algebra_equation: list = []
         self.brackets_done = False
@@ -232,19 +232,22 @@ class ScientificParser:
                             # exit loop
                             break
 
+        # convert operators in equation to tokens
+        self.equation = [get_token(x) for x in ('').join(self.equation)]
+
 
 
     # main function that solves equations
     def evaluate(self):
 
-        # call function to adjust factorial format
-        self.factorial_adjuster()
+        # call function to adjust factorial format if unconverted factorial is found in equation
+        if '!' in self.equation: self.factorial_adjuster()
 
         # create attribute to store a bracket subset of the input equation
         self.bracket_equation = self.equation
 
         # if there aren't any brackets, change variable to confirm this
-        if '(' not in self.equation: 
+        if '(' not in self.equation:
 
             self.brackets_done = True
 
@@ -254,13 +257,13 @@ class ScientificParser:
         else:
 
             # loop through each character in the whole equation
-            for i in range(len(self.equation)):
+            for i in range(len(self.bracket_equation)):
 
                 # check if current character is a token
-                if type(self.equation[i]) == Token:
+                if type(self.bracket_equation[i]) != Token:
 
                     # look for closed bracket symbol
-                    if self.equation[i].value == ')':
+                    if self.bracket_equation[i] == ')':
 
                         # save a variable with the index of where the bracket ends
                         self.bracket_end = i
@@ -269,15 +272,20 @@ class ScientificParser:
                         break
                     
 
+
+            # remove equation past the end bracket
+            self.bracket_equation = self.bracket_equation[:self.bracket_end]
             
+
+
             # loop through each character in the whole equation
-            for i in range(len(bracket_equation)):
+            for i in range(len(self.bracket_equation)):
 
                 # check if current character is a token
-                if type(self.equation[i]) == Token:
-
+                if type(self.bracket_equation[i]) != Token:
+            
                     # look for open bracket symbol
-                    if bracket_equation[i].value == '(':
+                    if self.bracket_equation[i] == '(':
 
                         # save a variable with the index of where the last open bracket is
                         self.bracket_start = i
@@ -285,17 +293,22 @@ class ScientificParser:
 
 
             # make separate variable only contain the inner-most brackets of the main equation
-            bracket_equation = bracket_equation[self.bracket_start + 1:self.bracket_end]
+            self.bracket_equation = self.bracket_equation[self.bracket_start + 1:]
 
 
-        # print bracket equation
-        print(bracket_equation)
+
+        # print equation
+        print_equation(self.bracket_equation, 'equation: ')
 
         # evaluate what is within the brackets
-        self.bedmas(bracket_equation)
+        self.bedmas(self.bracket_equation)
 
         # remove the brackets with what they evaluated to
         self.replace_brackets()
+
+        # convert finished equation to a float and return it
+        return float(('').join(self.equation))
+
 
 
     # function to remove any solved brackets
@@ -307,20 +320,14 @@ class ScientificParser:
             # clear input equation
             self.equation = []
 
-
+        # print equation
+        print_equation(self.equation, 'next equation: ')
 
         # insert evaluation of brackets where the brackets were
         self.equation[self.bracket_start:self.bracket_end + 1] = self.algebra_equation
 
-        # print current equation
-        print(f"next equation: {self.equation}")
-
-        # RECURSIVE LOOP EXIT CONDITION
-        # try to convert main equation to a single number, if it works, the entire equation has been solved
-        try: self.equation = float(self.equation)
-
-        # if conversion errors, loop through equation again to evaluate the rest of it
-        except: self.evaluate(self.equation)
+        # check if there is more than one element in the equation, and continue solving if there is.
+        if len(self.equation) != 1: self.evaluate()
 
 
 
@@ -330,69 +337,70 @@ class ScientificParser:
         # set variable to inputted equation
         self.algebra_equation = algebra_equation
 
-        try:
+        # create variables
+        precedence = -1
 
-            # create variables
-            precedence = -1
+        location = None
 
-            location = None
+        item: Token = None
 
-            item: Token = None
+        # loop through the equation
+        for index, char in enumerate(self.algebra_equation):
 
-            # loop through the equation
-            for index, char in enumerate(self.algebra_equation):
+            # check if an operator has been found
+            if type(char) == Token:
 
-                # check if an operator has been found
-                # if char in dict['precedence']:
-                if type(char) == Token:
+                char: Token = char
 
-                    char: Token = char
+                # if a negative number is the first thing in the list, it can cause issues. this prevents that.
+                if not index and char == '-':
 
-                    # if a negative number is the first thing in the list, it can cause issues. this prevents that.
-                    if not index and char == '-':
+                    continue
 
-                        continue
+                # check if the precedence of the char is higher than the last one found
+                if char.precedence > precedence:
 
-                    # check if the precedence of the char is higher than the last one found
-                    if char.precedence > precedence:
+                    # change precedence to newly found char
+                    precedence = char.precedence
 
-                        # change precedence to newly found char
-                        precedence = char.precedence
+                    # set location of char
+                    location = index
 
-                        # set location of char
-                        location = index
-
+                    # set item to token
+                    item = char
 
 
-            if location != None:
 
-                # if an operator is found, run find_numbers() and give it the location of the operator(index), and how it should look for it
-                num1, num2 = self.find_numbers(location, item.token_type)
+        if location != None:
 
-                output = item.math(self.is_radians, float(num1), float(num2))
+            print_equation(self.algebra_equation, '\ncurrent equation: ')
 
-                # once the number(s) next to the operator have been identified, run solve() and give it the location of the operator in the equation
-                self.replace_algebra(output)
+            # if an operator is found, run find_numbers() and give it the location of the operator(index), and how it should look for it
+            num1, num2 = self.find_numbers(location, item.token_type)
 
-        except:pass
+            output = item.math(self.is_radians, float(num1), float(num2))
+
+            # once the number(s) next to the operator have been identified, run solve() and give it the location of the operator in the equation
+            self.replace_algebra(output)
+
 
 
 
     # function to find numbers that corespond to nearby operators
-    def find_numbers(self, index, type):
+    def find_numbers(self, index, token_type):
 
         # set variables
         num1 = ''
         num2 = ''
 
         # check for method of location
-        if type == TokenType.Operator:
+        if token_type == TokenType.Operator:
 
             # look for a number to the left of the operator
-            for i in range(index - 2, -1, -1):
+            for i in range(index - 1, -1, -1):
 
                 # locate the end of the number
-                if self.algebra_equation[i] != ' ':
+                if type(self.algebra_equation[i]) != Token:
 
                     # save the index of the left-most digit found at this time
                     self.algebra_start = i
@@ -406,9 +414,9 @@ class ScientificParser:
 
 
             # look for a number to the right of the operator
-            for j in range(index + 2, len(self.algebra_equation), 1):
+            for j in range(index + 1, len(self.algebra_equation), 1):
 
-                if self.algebra_equation[j] != ' ':
+                if type(self.algebra_equation[j]) != Token:
 
                     self.algebra_end = j
 
@@ -416,20 +424,21 @@ class ScientificParser:
 
                 else:break
 
-
-            
             # print numbers
-
+            print(f"number 1: {num1}")
+            print(f"number 2: {num2}")
+            
+            # return numbers found
             return num1, num2
 
 
         
-        if type == TokenType.Function:
+        if token_type == TokenType.Function:
 
             # only look for number to the right of the operator
             for i in range(index + 1, len(self.algebra_equation), 1):
 
-                if self.algebra_equation[i] != ' ':
+                if type(self.algebra_equation[i]) != Token:
 
                     # save the start of the number
                     self.algebra_start = index
@@ -441,8 +450,10 @@ class ScientificParser:
 
                 else:break
 
+            # print number
+            print(f"number 1: {num1}")
 
-
+            # return numbers found
             return num1, 0
 
 
@@ -468,6 +479,8 @@ class ScientificParser:
 # main function that is called when an equation needs to be solved
 def scientific_parser(input_equation, is_radians):
 
+    print(f"input equation: {input_equation}")
+
     # create parser object and pass in input equation
     parser = ScientificParser(input_equation, is_radians)
 
@@ -481,7 +494,24 @@ def scientific_parser(input_equation, is_radians):
 
 
 
+# function to print out the equation
+def print_equation(equation: list, prefix: str = ''):
+
+    output = ''
+
+    for item in equation:
+        if type(item) == Token:
+            output += item.value
+        else:
+            output += item
+    
+    print(prefix + output)
+
+
+
 def main():
+
+    print('')
 
     input_equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 

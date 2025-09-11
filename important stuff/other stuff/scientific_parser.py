@@ -112,6 +112,8 @@ def evaluate(bracket_equation):
     # print bracket equation
     print(dict['bracket equation']['equation'])
 
+    return
+
     # evaluate what is within the brackets
     bedmas(dict['bracket equation']['equation'])
 
