@@ -1,21 +1,6 @@
 import math
 from enum import Enum
 
-# stuff to do:
-
-# LEARN CLASSES
-
-
-# implement this: https://en.m.wikipedia.org/wiki/Shunting_yard_algorithm
-    # how to evaluate RPN notation: https://www.youtube.com/watch?v=qN8LPIcY6K4&t
-
-# put the converter and the solver in separate files
-
-# formatting
-# use math operators for everything (don't just put numbers next to brackets for multiplying brackets)
-# put spaces in between every number and every operator
-# exponents will be represented by ^ instead of **
-# square root will be represented by #
 
 
 # enums
@@ -292,7 +277,7 @@ class ScientificParser:
 
 
 
-            # make separate variable only contain the inner-most brackets of the main equation
+            # make bracket equation only contain the content of the inner-most brackets in the main equation
             self.bracket_equation = self.bracket_equation[self.bracket_start + 1:]
 
 
@@ -337,11 +322,9 @@ class ScientificParser:
         # set variable to inputted equation
         self.algebra_equation = algebra_equation
 
-        # create variables
+        # create variables for the current token precedence, index, and its value
         precedence = -1
-
         location = None
-
         item: Token = None
 
         # loop through the equation
@@ -350,9 +333,10 @@ class ScientificParser:
             # check if an operator has been found
             if type(char) == Token:
 
+                # imply that char is a Token to make variable coloring work properly
                 char: Token = char
 
-                # if a negative number is the first thing in the list, it can cause issues. this prevents that.
+                # if a negative number is the first thing in the list, it can cause issues. this prevents that by skipping the iteration.
                 if not index and char == '-':
 
                     continue
@@ -371,16 +355,19 @@ class ScientificParser:
 
 
 
+        # check if a token was found
         if location != None:
 
+            # print equation
             print_equation(self.algebra_equation, '\ncurrent equation: ')
 
-            # if an operator is found, run find_numbers() and give it the location of the operator(index), and how it should look for it
+            # if an operator is found, run find_numbers() and give it the index of the token, and the token type
             num1, num2 = self.find_numbers(location, item.token_type)
 
+            # solve sub-equation based on the numbers found and whether or not radians are being used, and save the output
             output = item.math(self.is_radians, float(num1), float(num2))
 
-            # once the number(s) next to the operator have been identified, run solve() and give it the location of the operator in the equation
+            # once the sub-equation has been solved, replace it in the equation with its solution.
             self.replace_algebra(output)
 
 
@@ -389,17 +376,17 @@ class ScientificParser:
     # function to find numbers that corespond to nearby operators
     def find_numbers(self, index, token_type):
 
-        # set variables
+        # define variables for the numbers
         num1 = ''
         num2 = ''
 
-        # check for method of location
+        # check if the inputted token is an operator
         if token_type == TokenType.Operator:
 
             # look for a number to the left of the operator
             for i in range(index - 1, -1, -1):
 
-                # locate the end of the number
+                # check if the item at the current index is not a Token
                 if type(self.algebra_equation[i]) != Token:
 
                     # save the index of the left-most digit found at this time
@@ -409,20 +396,24 @@ class ScientificParser:
                     num1 = self.algebra_equation[i] + num1
                     
                 # exit loop once entire number has been found
-                else:break
+                else: break
 
 
 
             # look for a number to the right of the operator
             for j in range(index + 1, len(self.algebra_equation), 1):
 
+                # check if the item at the current index is not a token
                 if type(self.algebra_equation[j]) != Token:
 
+                    # save the index of the right-most digit found at this time
                     self.algebra_end = j
 
+                    # add the most recently found digit to the entire number
                     num2 += self.algebra_equation[j]
 
-                else:break
+                # exit loop once entire number has been found
+                else: break
 
             # print numbers
             print(f"number 1: {num1}")
@@ -433,22 +424,26 @@ class ScientificParser:
 
 
         
+        # check if the inputted token is an operator
         if token_type == TokenType.Function:
 
             # only look for number to the right of the operator
             for i in range(index + 1, len(self.algebra_equation), 1):
 
+                # check if the item at the current index is not a token
                 if type(self.algebra_equation[i]) != Token:
 
-                    # save the start of the number
+                    # save the index of the start of the number
                     self.algebra_start = index
 
                     # save the index of the right-most digit found
                     self.algebra_end = i
 
+                    # add the most recently found digit to the entire number
                     num1 += self.algebra_equation[i]
 
-                else:break
+                # exit loop once entire number has been found
+                else: break
 
             # print number
             print(f"number 1: {num1}")
@@ -465,7 +460,7 @@ class ScientificParser:
         # loop through the start and end indexs of previously solved equation
         for i in range(self.algebra_start, self.algebra_end + 1, 1):
 
-            # remove two/one numbers and an operator from the equation
+            # remove number(s) and operator from the equation
             self.algebra_equation.pop(self.algebra_start)
 
         # insert solved number where equation was
@@ -478,7 +473,8 @@ class ScientificParser:
 
 # main function that is called when an equation needs to be solved
 def scientific_parser(input_equation, is_radians):
-
+ 
+    # print inputted equation
     print(f"input equation: {input_equation}")
 
     # create parser object and pass in input equation
@@ -487,6 +483,7 @@ def scientific_parser(input_equation, is_radians):
     # begin evaluating the equation
     output = parser.evaluate()
 
+    # print solution to the equation
     print(output)
 
     # return solved equation
@@ -494,17 +491,27 @@ def scientific_parser(input_equation, is_radians):
 
 
 
-# function to print out the equation
+# function to print out the equation, takes in arguments for the equation, and prefix text
 def print_equation(equation: list, prefix: str = ''):
 
+    # define variable to keep track of the output
     output = ''
 
+    # loop over every element in the inputted equation
     for item in equation:
+
+        # check if the current element is a token
         if type(item) == Token:
+
+            # add the token value to the output string
             output += item.value
+
         else:
+
+            # add the current element to the output string if it isn't a token
             output += item
     
+    # print prefix and output
     print(prefix + output)
 
 
