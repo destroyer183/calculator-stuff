@@ -95,7 +95,7 @@ class Logic:
         if type == Trig.SIDE_SIDE_SIDE:
 
             # calculate the numerator of the equation, left side squared plus right side squared minus opposite side squared
-            numerator = self.info(Info.LEFT_SIDE, index) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2 - self.lengths[index] ** 2
+            numerator = self.info(Info.LEFT_SIDE, index) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2 - self.info(Info.OPPOSITE_SIDE, index) ** 2
 
             # calculate the denominator of the equation, two times the left side times the right side
             denominator = 2 * self.info(Info.LEFT_SIDE, index) * self.info(Info.RIGHT_SIDE, index)
@@ -139,44 +139,52 @@ class Logic:
             return self.angles[index]
 
         elif request == Info.ADJACENT_SIDE_LEFT:
-            if index == 0: array, i = self.lengths, 2
-            if index == 1: array, i = self.lengths, 0
-            if index == 2: array, i = self.lengths, 1
+            if index == 0: i = 2
+            if index == 1: i = 0
+            if index == 2: i = 1
+            array = self.lengths
 
         elif request == Info.ADJACENT_SIDE_RIGHT:
-            if index == 0: array, i = self.lengths, 1
-            if index == 1: array, i = self.lengths, 2
-            if index == 2: array, i = self.lengths, 0
+            if index == 0: i = 1
+            if index == 1: i = 2
+            if index == 2: i = 0
+            array = self.lengths
 
         elif request == Info.ADJACENT_ANGLE_LEFT:
-            if index == 0: array, i = self.angles, 2
-            if index == 1: array, i = self.angles, 0
-            if index == 2: array, i = self.angles, 1
+            if index == 0: i = 2
+            if index == 1: i = 0
+            if index == 2: i = 1
+            array = self.angles
 
         elif request == Info.ADJACENT_ANGLE_RIGHT:
-            if index == 0: array, i = self.angles, 1
-            if index == 1: array, i = self.angles, 2
-            if index == 2: array, i = self.angles, 0
+            if index == 0: i = 1
+            if index == 1: i = 2
+            if index == 2: i = 0
+            array = self.angles
 
         elif request == Info.LEFT_SIDE:
-            if index == 0: array, i = self.lengths, 1
-            if index == 1: array, i = self.lengths, 2
-            if index == 2: array, i = self.lengths, 0
+            if index == 0: i = 1
+            if index == 1: i = 2
+            if index == 2: i = 0
+            array = self.lengths
 
         elif request == Info.RIGHT_SIDE:
-            if index == 0: array, i = self.lengths, 2
-            if index == 1: array, i = self.lengths, 0
-            if index == 2: array, i = self.lengths, 1
+            if index == 0: i = 2
+            if index == 1: i = 0
+            if index == 2: i = 1
+            array = self.lengths
 
         elif request == Info.LEFT_ANGLE:
-            if index == 0: array, i = self.angles, 1
-            if index == 1: array, i = self.angles, 2
-            if index == 2: array, i = self.angles, 0
+            if index == 0: i = 1
+            if index == 1: i = 2
+            if index == 2: i = 0
+            array = self.angles
 
         elif request == Info.RIGHT_ANGLE:
-            if index == 0: array, i = self.angles, 2
-            if index == 1: array, i = self.angles, 0
-            if index == 2: array, i = self.angles, 1
+            if index == 0: i = 2
+            if index == 1: i = 0
+            if index == 2: i = 1
+            array = self.angles
 
         # return just the index of the requested information
         if return_type: return i

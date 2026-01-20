@@ -117,7 +117,8 @@ class Window:
             case GuiOptionChoices.Variable      : self.gui = Variable.Gui(self.gui.parent, Window)
 
         # call function to make the gui
-        self.gui.initialize_gui()
+        if self.gui_type != GuiOptionChoices.Trigonometry:
+            self.gui.initialize_gui()
 
 
 
@@ -125,7 +126,7 @@ class Window:
     def choose_trig_gui(self):
 
         match self.gui_type:
-            case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Trigonometry  : self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
             case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
             case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
 
@@ -231,12 +232,12 @@ def main():
         except:pass 
         
     Window.trig_option_choices = StringVar(Window.instance.gui.parent)
-    Window.trig_option_choices.set(GuiOptionChoices.TriangleTrig.value)
+    Window.trig_option_choices.set(GuiOptionChoices.UnitCircleTrig.value)
     Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
 
     Window.option_choices = StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', Window.instance.options_callback)
-    Window.option_choices.set(GuiOptionChoices.Scientific.value)
+    Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
 
 
 

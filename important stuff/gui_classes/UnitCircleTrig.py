@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import *
 from enum import Enum
 import math
+from parsers.unit_trig_parser import Logic, Data
 
 
 
@@ -74,21 +75,24 @@ class Gui:
         self.parent = parent
         self.master = master
 
-        self.is_radians = False
+        self.is_radians = True
         self.mode_toggle = False
+
+        self.logic = Logic()
 
         self.coordinate_labels = {'(1,0)': '', '(0,1)': '', '(-1,0)': '', '(0,-1)': ''}
 
-        self.left_data_column  = {'r': {}, 'x': {}, 'y': {}, 'theta': {}, 'alpha': {}, 'arc': {}}
-        self.right_data_column = {'sin': {}, 'cos': {}, 'tan': {}, 'csc': {}, 'sec': {}, 'cot': {}}
+        # input field boxes
+        self.left_data_column  = {Data.R: {}, Data.X: {}, Data.Y: {}, Data.Theta: {}, Data.Alpha: {}, Data.S: {}}
+        self.right_data_column = {Data.Sin: {}, Data.Cos: {}, Data.Tan: {}, Data.Csc: {}, Data.Sec: {}, Data.Cot: {}}
 
         # text/symbol for each data label
-        self.left_data_symbols  = {'r': 'r', 'x': 'x', 'y': 'y', 'theta': '\u03B8', 'alpha': '\u03B1', 'arc': 'arc'}
-        self.right_data_symbols = {'sin': 'sin\u03B8', 'cos': 'cos\u03B8', 'tan': 'tan\u03B8', 'csc': 'csc\u03B8', 'sec': 'sec\u03B8', 'cot': 'cot\u03B8'}
+        self.left_data_symbols  = {Data.R: 'r', Data.X: 'x', Data.Y: 'y', Data.Theta: '\u03B8', Data.Alpha: '\u03B1', Data.S: 's'}
+        self.right_data_symbols = {Data.Sin: 'sin\u03B8', Data.Cos: 'cos\u03B8', Data.Tan: 'tan\u03B8', Data.Csc: 'csc\u03B8', Data.Sec: 'sec\u03B8', Data.Cot: 'cot\u03B8'}
 
         # RGB color codes for each label
-        self.left_data_colors  = {'r': '#ffff00', 'x': '#ffd200', 'y': '#ffa500', 'theta': '#ff5300', 'alpha': '#ff0000', 'arc': '#ff0080'}
-        self.right_data_colors = {'sin': '#ff00ff', 'cos': '#8000ff', 'tan': '#0000ff', 'csc': '#00ffff', 'sec': '#00ff00', 'cot': '#80ff00'}
+        self.left_data_colors  = {Data.R: '#ffff00', Data.X: '#ffd200', Data.Y: '#ffa500', Data.Theta: '#ff5300', Data.Alpha: '#ff0000', Data.S: '#ff0080'}
+        self.right_data_colors = {Data.Sin: '#ff00ff', Data.Cos: '#8000ff', Data.Tan: '#0000ff', Data.Csc: '#00ffff', Data.Sec: '#00ff00', Data.Cot: '#80ff00'}
 
         # initialize the necessary keys for each nested dictionary
         for key in self.left_data_column:  self.left_data_column[key]  = {'frame': '', 'label': '', 'box': ''}
@@ -160,10 +164,10 @@ class Gui:
         self.coordinate_labels['(0,-1)'].place(x = 283, y = 408, anchor = 'nw')
 
         # call function to put the labels on the unit circle
-        self.create_unit_circle_labels(AngleUnits.Degrees)
+        self.create_unit_circle_labels(AngleUnits.Radians)
 
         # make button to toggle units
-        self.unit_toggle = tk.Button(self.parent, text = 'Deg', anchor = 'center', bg = 'white', command = lambda: self.toggle_units())
+        self.unit_toggle = tk.Button(self.parent, text = 'Rad', anchor = 'center', bg = 'white', command = lambda: self.toggle_units())
         self.unit_toggle.configure(font = ('Arial', 15, 'bold'))
         self.unit_toggle.place(x = math.ceil(self.parent.winfo_width() / 4) * 3, y = 5, anchor = 'n')
 
@@ -404,6 +408,23 @@ class Gui:
         # if the mode is set to manual, and if x is not none (a key was pressed) exit the function
         if self.mode_toggle and x is not None: return
 
+        for box in self.left_data_column + self.right_data_column:
+
+            if box.edit_modified():
+
+                if box.get(1.0, tk.END).strip() == '': 
+                    box.delete(1.0, tk.END)
+                    box.edit_modified(False)
+                    continue
+
+                temp = float(box.get(1.0, tk.END))
+                print(f"yes: {temp}")
+
+                box.edit_modified(False)
+
+
+
+
 
 
     # function to clear all of the data
@@ -413,10 +434,6 @@ class Gui:
         for box in [x for x in self.left_data_column.values()] + [x for x in self.right_data_column.values()]:
             box.delete(1.0, tk.END)
             box.edit_modified(False)
-
-        # put a '1' in the 'r' box since that generally doesn't change.
-        self.left_data_column['r']['box'].insert(tk.END, '1')
-        self.left_data_column['r']['box'].edit_modified(False)
 
         
 

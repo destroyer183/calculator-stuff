@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import *
 from enum import Enum
 import math
-from parsers.trig_parser import Logic, Data
+from parsers.triangle_trig_parser import Logic, Data
 
 
 
@@ -242,7 +242,8 @@ class Gui:
                 temp = float(box.get(1.0, tk.END))
                 print(f"yes: {temp}")
 
-                try: 
+                # idk why this is here but it is probably needed so I'm leaving it
+                try:
                     if box != self.last_modified:
 
                         # loop through all boxes, and reset the previous last modified box
@@ -337,7 +338,7 @@ class Gui:
 
         self.place_triangle(self.logic.calculate_triangle(False), no = True)
 
-        self.text_boxes_callback(-2147483648)
+        self.text_boxes_callback(1)
 
         Gui.is_ambiguous = False
         
