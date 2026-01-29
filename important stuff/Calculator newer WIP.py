@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import *
+# from tkinter import *
 import os
 from gui_classes import Scientific, Factoring, Quadratic, TriangleTrig, UnitCircleTrig, Variable
 import sys
@@ -76,13 +76,13 @@ if __package__ is None and not hasattr(sys, 'frozen'):
 # main class to handle all the gui stuff
 class Window:
 
-    instance: "Window" = None
-    option_choices = None
-    trig_option_choices = None
+    instance: "Window"
+    option_choices: tk.StringVar
+    trig_option_choices: tk.StringVar
 
     def __init__(self, gui) -> None:
         
-        self.gui = Scientific.Gui(gui, Window)
+        self.gui = Scientific.Gui(gui, Window.instance)
 
 
 
@@ -102,7 +102,7 @@ class Window:
         self.full_clear_gui()
 
         # make option menu to switch between calculators
-        self.gui.parent.options = OptionMenu(self.gui.parent, Window.option_choices, 
+        self.options: tk.OptionMenu = tk.OptionMenu(self.gui.parent, Window.option_choices, 
                                              GuiOptionChoices.Scientific.value, 
                                              GuiOptionChoices.Factoring.value, 
                                              GuiOptionChoices.Quadratic.value, 
@@ -110,11 +110,11 @@ class Window:
                                              GuiOptionChoices.Variable.value)
 
         match self.gui_type:
-            case GuiOptionChoices.Scientific    : self.gui = Scientific.Gui(self.gui.parent, Window)
-            case GuiOptionChoices.Factoring     : self.gui = Factoring.Gui(self.gui.parent, Window)
-            case GuiOptionChoices.Quadratic     : self.gui = Quadratic.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Scientific    : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Factoring     : self.gui = Factoring.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Quadratic     : self.gui = Quadratic.Gui(self.gui.parent, Window.instance)
             case GuiOptionChoices.Trigonometry  : self.choose_trig_gui()
-            case GuiOptionChoices.Variable      : self.gui = Variable.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Variable      : self.gui = Variable.Gui(self.gui.parent, Window.instance)
 
         # call function to make the gui
         if self.gui_type != GuiOptionChoices.Trigonometry:
@@ -126,12 +126,12 @@ class Window:
     def choose_trig_gui(self):
 
         match self.gui_type:
-            case GuiOptionChoices.Trigonometry  : self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
-            case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window)
-            case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window)
+            case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window.instance)
 
         # make trig option menu to switch between trig calculator types
-        self.gui.parent.trig_options = OptionMenu(self.gui.parent, Window.trig_option_choices,
+        self.trig_options = tk.OptionMenu(self.gui.parent, Window.trig_option_choices,
                                                   GuiOptionChoices.TriangleTrig.value,
                                                   GuiOptionChoices.UnitCircleTrig.value)
 
@@ -231,11 +231,11 @@ def main():
             success   = ctypes.windll.user32.SetProcessDPIAware()
         except:pass 
         
-    Window.trig_option_choices = StringVar(Window.instance.gui.parent)
-    Window.trig_option_choices.set(GuiOptionChoices.UnitCircleTrig.value)
+    Window.trig_option_choices = tk.StringVar(Window.instance.gui.parent)
+    Window.trig_option_choices.set(GuiOptionChoices.TriangleTrig.value)
     Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
 
-    Window.option_choices = StringVar(Window.instance.gui.parent)
+    Window.option_choices = tk.StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', Window.instance.options_callback)
     Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
 

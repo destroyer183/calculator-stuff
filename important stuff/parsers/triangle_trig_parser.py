@@ -33,6 +33,10 @@ class Data(Enum):
     UNSOLVABLE = 'unsolvable'
     IMPOSSIBLE = 'impossible'
     CLEAR_DATA = 'clear data'
+    NONE = 'none'
+
+    def __float__(self) -> float:
+        return 0.0
 
 
 
@@ -68,22 +72,22 @@ class Logic:
         self.is_ambiguous = is_ambiguous
 
         # data for the triangle
-        self.angles  = [60, 60, 60]
-        self.lengths = [1, 1, 1]
-        self.coordinates   = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
-        self.angle_labels  = {"A": [0, 0], "B": [0, 0], "C": [0, 0]}
-        self.length_labels = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
+        self.angles:  list[float] = [60, 60, 60]
+        self.lengths: list[float] = [1, 1, 1]
+        self.coordinates:   dict[str, list[float]] = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
+        self.angle_labels:  dict[str, list[float]] = {"A": [0, 0], "B": [0, 0], "C": [0, 0]}
+        self.length_labels: dict[str, list[float]] = {"a": [0, 0], "b": [0, 0], "c": [0, 0]}
 
 
 
     # calculations for cosine law
-    def cos_law(self, type, index):
+    def cos_law(self, type, index) -> float:
 
         # check if the side-angle-side cosine law is being used
         if type == Trig.SIDE_ANGLE_SIDE:
             
             # sum the squares of the two given sides
-            part_1 = self.info(Info.LEFT_SIDE, index) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2
+            part_1 = int(self.info(Info.LEFT_SIDE, index)) ** 2 + self.info(Info.RIGHT_SIDE, index) ** 2
 
             # multiply the two given sides together and then multiply by two and then multiply by the cosine of the given angle
             part_2 = 2 * self.info(Info.LEFT_SIDE, index) * self.info(Info.RIGHT_SIDE, index) * math.cos(math.radians(self.info(Info.OPPOSITE_ANGLE, index)))
@@ -102,11 +106,13 @@ class Logic:
 
             # return the inverse sine of the numerator divided by the denominator
             return math.degrees(math.acos(numerator / denominator))
+    
+        return 0.0
         
 
  
     # function to calculate sine law
-    def sin_law(self, type, index, angle_index):
+    def sin_law(self, type, index, angle_index) -> float | Data:
 
         try:
 
@@ -127,10 +133,15 @@ class Logic:
             print(f"\nVALUE ERROR ENCOUNTERED:\nerror type: {err_type}\nvalue: {value}\ntraceback: {traceback}\n")
             return Data.IMPOSSIBLE
 
+        return 0.0
+
 
 
     # function to return information about the current triangle
     def info(self, request, index, return_type = 0):
+
+        i = 0
+        array = [0]
 
         if request == Info.OPPOSITE_SIDE:
             return self.lengths[index]
@@ -252,7 +263,8 @@ class Logic:
             for index in range(len(self.angles)):
 
                 # if the angle value isn't given, solve the angle value.
-                if not self.angles[index]: self.angles[index] = self.cos_law(Trig.SIDE_SIDE_SIDE, index)
+                if not self.angles[index]: 
+                    self.angles[index] = self.cos_law(Trig.SIDE_SIDE_SIDE, index)
 
             # return to avoid extra calculations that will create incorrect values
             return 'solved'
@@ -275,7 +287,7 @@ class Logic:
 
                         if output == Data.IMPOSSIBLE: return output
 
-                        self.angles[index] = 180 - output
+                        self.angles[index] = 180 - float(output)
 
                     else:
 
@@ -284,7 +296,7 @@ class Logic:
 
                         if output == Data.IMPOSSIBLE: return output
 
-                        self.angles[index] = output
+                        self.angles[index] = float(output)
 
 
 
@@ -306,7 +318,7 @@ class Logic:
 
                         if output == Data.IMPOSSIBLE: return output
 
-                        self.lengths[index] = output
+                        self.lengths[index] = float(output)
 
                 return 'solved'
 
@@ -338,7 +350,7 @@ class Logic:
 
             if output == Data.IMPOSSIBLE: return output
 
-            self.angles[opposite_side] = output
+            self.angles[opposite_side] = float(output)
 
  
         
@@ -358,7 +370,7 @@ class Logic:
 
             if output == Data.IMPOSSIBLE: return output
 
-            self.lengths[opposite_angle] = output
+            self.lengths[opposite_angle] = float(output)
 
 
 

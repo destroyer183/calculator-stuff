@@ -1,5 +1,4 @@
 import tkinter as tk
-from tkinter import *
 from enum import Enum
 import copy
 import math
@@ -98,12 +97,12 @@ class Logic:
 
     def __init__(self) -> None:
 
-        self.equation = ['']
+        self.equation: list[str] = ['']
         self.bracket_num = 0
         self.exponent = False
         self.bracket_exponent_depth = 0
         self.output = ''
-        self.memory = 0
+        self.memory = 0.0
 
 
 # main class to handle all the gui stuff
@@ -112,16 +111,16 @@ class Gui:
     history = []
     temp_history = []
 
-    def __init__(self, parent, master) -> None:
+    def __init__(self, parent: tk.Tk, master) -> None:
         
-        self.parent = parent
+        self.parent: tk.Tk = parent
         self.master = master
         self.trig_toggle = False
         self.is_radians = False
-        self.equation_text = ['']
-        self.display_text  = ['', '']
-        self.logic = None
-        self.gui_columns = []
+        self.equation_text: list[str] = ['']
+        self.display_text:list[str] = ['', '']
+        self.logic: Logic
+        self.gui_columns: list[list[tuple[tk.Button] | tk.Button] | list[tk.Button]] = []
         self.previous_column_count = 0
 
 
@@ -141,7 +140,7 @@ class Gui:
 
         # this will delete every widget except for the one that lets the user switch the calculator type
         for widget in self.parent.winfo_children():
-            if type(widget) != OptionMenu:
+            if type(widget) != tk.OptionMenu:
                 widget.destroy()
 
 
@@ -177,7 +176,7 @@ class Gui:
         self.current_gui_size = (self.parent.winfo_width(), self.parent.winfo_height())
 
         # make a 'Logic' object and assign it to a class attribute
-        self.logic = Logic()
+        self.logic: Logic = Logic()
 
         self.parent.resizable(True, True)
 
@@ -283,7 +282,7 @@ class Gui:
         self.round_label2 = tk.Label(self.decimal_changer_frame, text = 'decimal points')
 
         # decimal changer
-        self.round_choice = StringVar(self.parent)
+        self.round_choice = tk.IntVar(self.parent)
         self.round_choice.set(10)
 
         self.round_numbers = tk.Spinbox(self.decimal_changer_frame, from_ = 0, to = 100, state = 'readonly', textvariable = self.round_choice, wrap = True)
@@ -310,6 +309,7 @@ class Gui:
                     for i in range(0, len(button) - 1):
                         button[i].configure(font = ('Arial', self.main_font_size, 'bold'))
                 else:
+                    button = tk.Button(**button)
                     button.configure(font = ('Arial', self.main_font_size, 'bold'))
 
 
@@ -325,7 +325,7 @@ class Gui:
                                              height = max(self.round_label1.winfo_height(), self.round_numbers.winfo_height(), self.round_label2.winfo_height()))
         
         # gui switching option menu
-        self.parent.options.configure(font = ('Arial', self.relative_size(15), 'bold'))
+        self.master.options.configure(font = ('Arial', self.relative_size(15), 'bold'))
 
 
 
@@ -425,6 +425,7 @@ class Gui:
                                             height = self.button_height())
 
                 else:
+                    button = tk.Button(**button)
                     button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height() * row_num, width = self.button_width(), height = self.button_height())
                 row_num -= 1
 
@@ -437,6 +438,7 @@ class Gui:
 
 
 
+        # only add rounding control if there are at least 5 rows so that there's room for it
         if column_count >= 5:
 
             # label 1
@@ -458,8 +460,7 @@ class Gui:
         self.previous_column_count = column_count
 
         # place option menu that allows the user to switch between guis
-        # self.master.place_option_menu()
-        self.parent.options.place(x = self.relative_size(10), y = self.relative_size(250), anchor = 'sw')
+        self.master.options.place(x = self.relative_size(10), y = self.relative_size(250), anchor = 'sw')
 
 
 
@@ -502,7 +503,7 @@ class Gui:
 
 
     # a function to handle all key inputs
-    def keybindings(self, input):
+    def keybindings(self, input: tk.Event):
 
         print(f"key: {input}")
 
@@ -548,6 +549,7 @@ class Gui:
                     case 'm': self.memory_minus()
 
                 return
+
         except: print('exception triggered')
 
         if input.keysym in '1234567890': self.put_number(int(input.keysym))
@@ -595,9 +597,10 @@ class Gui:
 
 
         # edit display strings
-        self.equation_text += ' = ' + self.logic.output
+        # self.equation_text += ' = ' + self.logic.output
+        self.equation_text.extend(list(' = ' + self.logic.output))
 
-        self.display_text = self.logic.output
+        self.display_text = list(self.logic.output)
 
         self.logic.bracket_num = 0
 
@@ -614,9 +617,9 @@ class Gui:
 
 
         # reset variables
-        self.equation_text = self.logic.output
+        self.equation_text = list(self.logic.output)
 
-        self.logic.equation = self.logic.output
+        self.logic.equation = list(self.logic.output)
 
     
 
@@ -947,7 +950,7 @@ class Gui:
         # allow for bracket multiplication without pressing the multiplication button
         if self.logic.equation[-1 - self.logic.bracket_num] in list(')' + get_super(')')):
 
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+            for i in list(' * '): list(self.logic.equation).insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # put the number in the equation and display strings
         self.update_text(display_text_update_type = DisplayTextUpdateType.Insert, strings_to_insert = (str(x), str(x), str(x)))

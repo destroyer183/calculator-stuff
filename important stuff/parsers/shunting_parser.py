@@ -141,7 +141,7 @@ def get_token(value: str):
 
 
 # function to adjust the notation of factorial to allow the parser to evaluate it properly
-def factorial_adjuster(equation: str):
+def factorial_adjuster(equation: list[str]):
     
     # loop over input equation by index and element, this is to find any factorials and change the format of them.
     for index, char, in enumerate(equation):
@@ -223,7 +223,7 @@ def shunting_yard_converter(equation: str):
 
     # create variables for input stack, operator stack, output stack, and call function to fix factorial notation
     in_stack = factorial_adjuster(list(equation))
-    op_stack = []
+    op_stack: list[Token] = []
     out_stack = []
 
 
@@ -258,7 +258,7 @@ def shunting_yard_converter(equation: str):
 
                     # keep looping while the current token is part of a number
                     # this takes each character of a number and puts it into a temporary stack to then be added to the output stack
-                    while token in '1234567890.':
+                    while str(token) in '1234567890.':
 
                         # add current token to temp stack
                         temp_stack.append(token)
@@ -276,6 +276,8 @@ def shunting_yard_converter(equation: str):
 
         # try/except to avoid unnecessary crashes
         try:
+
+            token = Token(**token)           
 
             # check if the current token type is 'Function'
             if token.token_type == TokenType.Function:
@@ -398,9 +400,11 @@ def main():
 
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
-    equation = '6 / (l(5) / l(3))'
+    equation = '4+(3!*(52+73*#(64)/2_220)_2^(5_2))/15'
 
-    equation = 'S(0.8667)'
+    # equation = '6 / (l(5) / l(3))'
+
+    # equation = 'S(0.8667)'
 
     is_radians = False
 
