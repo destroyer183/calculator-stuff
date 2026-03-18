@@ -76,7 +76,7 @@ if __package__ is None and not hasattr(sys, 'frozen'):
 # main class to handle all the gui stuff
 class Window:
 
-    instance: "Window"
+    instance: "Window" = None
     option_choices: tk.StringVar
     trig_option_choices: tk.StringVar
 
@@ -110,11 +110,11 @@ class Window:
                                              GuiOptionChoices.Variable.value)
 
         match self.gui_type:
-            case GuiOptionChoices.Scientific    : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Factoring     : self.gui = Factoring.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Quadratic     : self.gui = Quadratic.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.Trigonometry  : self.choose_trig_gui()
-            case GuiOptionChoices.Variable      : self.gui = Variable.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Scientific  : self.gui = Scientific.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Factoring   : self.gui = Factoring.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Quadratic   : self.gui = Quadratic.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Trigonometry: self.choose_trig_gui()
+            case GuiOptionChoices.Variable    : self.gui = Variable.Gui(self.gui.parent, Window.instance)
 
         # call function to make the gui
         if self.gui_type != GuiOptionChoices.Trigonometry:
@@ -237,7 +237,7 @@ def main():
 
     Window.option_choices = tk.StringVar(Window.instance.gui.parent)
     Window.option_choices.trace('w', Window.instance.options_callback)
-    Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
+    Window.option_choices.set(GuiOptionChoices.Scientific.value)
 
 
 

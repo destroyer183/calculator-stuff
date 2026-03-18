@@ -41,7 +41,18 @@ clear this list whenever the user clears the equation or presses 'calculate'
 use the above concept to create a way for the user to see the session history, and load the answers for that.
 make a separate class variable list that only stores a new element when the user hits 'calculate'
 
+
+
+BUG: can begin with an operator instead of a number.
+
 '''
+
+class OperatorType(Enum):
+    Modulus = " % "
+    Division = " / "
+    Multiplication = " * "
+    Subtraction = " _ "
+    Addition = " + "
 
 class TrigFunctionType(Enum):
     Sine = 'sine'
@@ -173,10 +184,10 @@ class Gui:
         self.parent.update()
 
         # create attribute to store the current size of the gui
-        self.current_gui_size = (self.parent.winfo_width(), self.parent.winfo_height())
+        self.current_gui_size = (0, 0)
 
         # make a 'Logic' object and assign it to a class attribute
-        self.logic: Logic = Logic()
+        self.logic = Logic()
 
         self.parent.resizable(True, True)
 
@@ -227,7 +238,7 @@ class Gui:
         self.gui_columns.append(self.gui_column_2)
 
         # column 3
-        self.modulus        = tk.Button(self.parent, text = '%',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(' % '))
+        self.modulus        = tk.Button(self.parent, text = '%',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(OperatorType.Modulus))
         self.factorial      = tk.Button(self.parent, text = 'x!',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_factorial())
         self.exponent       = tk.Button(self.parent, text = 'x' + get_super('y'), anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_exponential())
         self.squared        = tk.Button(self.parent, text = 'x' + get_super('2'), anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_exponential(2))
@@ -265,10 +276,10 @@ class Gui:
         # column 7
         self.clear          = tk.Button(self.parent, text = 'CLR',                anchor = 'center', bg = 'lightcoral',     command = lambda: self.clear_data(ClearType.Clear))
         self.backspace      = tk.Button(self.parent, text = 'DEL',                anchor = 'center', bg = 'lightcoral',     command = lambda: self.clear_data(ClearType.Backspace))
-        self.divide         = tk.Button(self.parent, text = '/',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(' / '))
-        self.multiply       = tk.Button(self.parent, text = 'x',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(' * '))
-        self.minus          = tk.Button(self.parent, text = '-',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(' _ '))
-        self.plus           = tk.Button(self.parent, text = '+',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(' + '))
+        self.divide         = tk.Button(self.parent, text = '/',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(OperatorType.Division))
+        self.multiply       = tk.Button(self.parent, text = 'x',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(OperatorType.Multiplication))
+        self.minus          = tk.Button(self.parent, text = '-',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(OperatorType.Subtraction))
+        self.plus           = tk.Button(self.parent, text = '+',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_operator(OperatorType.Addition))
         self.gui_column_7   = [(self.clear, self.backspace, SplitType.Horizontal), self.divide, self.multiply, self.minus, self.plus]
         self.gui_columns.append(self.gui_column_7)
 
@@ -309,7 +320,7 @@ class Gui:
                     for i in range(0, len(button) - 1):
                         button[i].configure(font = ('Arial', self.main_font_size, 'bold'))
                 else:
-                    button = tk.Button(**button)
+                    # button = tk.Button(**button)
                     button.configure(font = ('Arial', self.main_font_size, 'bold'))
 
 
@@ -426,7 +437,9 @@ class Gui:
 
                 else:
                     button = tk.Button(**button)
-                    button.place(x = self.button_width() * index, y = self.parent.winfo_height() - self.button_height() * row_num, width = self.button_width(), height = self.button_height())
+                    button.place(x = self.button_width() * index, 
+                                 y = self.parent.winfo_height() - self.button_height() * row_num, width = self.button_width(), 
+                                 height = self.button_height())
                 row_num -= 1
 
 
@@ -465,7 +478,12 @@ class Gui:
 
 
     # function to update the display when the window is resized
-    def on_resize(self, event):
+    def on_resize(self, event: tk.Event):
+
+        # since this function triggers even when the window is moved around,
+        # this check prevents the rest of the function from executing when the window is moved.
+        if self.current_gui_size == (self.parent.winfo_width(), self.parent.winfo_height()):
+            return
 
         # check if the parent window is being adjusted
         if event.widget == self.parent:
@@ -519,13 +537,13 @@ class Gui:
 
                     case 'exclam': self.put_factorial()
                     case 'numbersign': self.put_square_root()
-                    case 'percent': self.put_operator(' % ')
+                    case 'percent': self.put_operator(OperatorType.Modulus)
                     case 'asciicircum': self.put_exponential()
-                    case 'asterisk': self.put_operator(' * ')
+                    case 'asterisk': self.put_operator(OperatorType.Multiplication)
                     case 'parenleft': self.put_brackets(BracketType.Left)
                     case 'parenright': self.put_brackets(BracketType.Right)
                     case 'underscore': self.toggle_number_sign()
-                    case 'plus': self.put_operator(' + ')
+                    case 'plus': self.put_operator(OperatorType.Addition)
                     case 'BackSpace': self.clear_data(ClearType.Clear)
                     case 'M': self.memory_add()
 
@@ -556,9 +574,9 @@ class Gui:
 
         match input.keysym:
             case 'BackSpace': self.clear_data(ClearType.Backspace)
-            case 'minus':     self.put_operator(' _ ')
+            case 'minus':     self.put_operator(OperatorType.Subtraction)
             case 'Return':    self.calculate_equation()
-            case 'slash':     self.put_operator(' / ')
+            case 'slash':     self.put_operator(OperatorType.Division)
             case 'period':    self.put_decimal()
             case 'm':         self.memory_recall()
 
@@ -652,7 +670,7 @@ class Gui:
 
             else: self.equation_text = list(('').join(b[0:string_index[1] - d]) + strings_to_insert[1] + ('').join(b[string_index[1] - d:len(b)]))
 
-        except:print('well fuck')
+        except: print('well fuck')
 
 
         if display_text_update_type == DisplayTextUpdateType.Replace:
@@ -829,6 +847,10 @@ class Gui:
     # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
     def put_operator(self, operation = None):
 
+        # prevent the use of an operator when there is nothing in the current equation string
+        if self.logic.equation == ['']:
+            return
+
         # update history
         self.update_history(HistoryUpdateType.Add)
 
@@ -838,13 +860,13 @@ class Gui:
 
                 if operation == ' _ ': 
                     
+                    # add operator to equation and display strings
                     self.update_text(strings_to_insert = (operation, ' - ', ''), update_type = UpdateType.ClearDisplayText)
 
                 
 
                 else:
 
-                    # add operator to equation and display strings
                     self.update_text(strings_to_insert = (operation, operation, ''), update_type = UpdateType.ClearDisplayText)
 
         except: # ask ryan which format looks better
@@ -905,6 +927,7 @@ class Gui:
                 display_text_index = ('').join(self.equation_text).rfind(('').join([get_super(x) for x in self.display_text]))
             else:
                 display_text_index = ('').join(self.equation_text).rfind(('').join(self.display_text))
+
             equation_text_index = ('').join(self.logic.equation).rfind(('').join(self.display_text))
 
 
@@ -950,7 +973,7 @@ class Gui:
         # allow for bracket multiplication without pressing the multiplication button
         if self.logic.equation[-1 - self.logic.bracket_num] in list(')' + get_super(')')):
 
-            for i in list(' * '): list(self.logic.equation).insert(len(self.logic.equation) - self.logic.bracket_num, i)
+            for i in list(OperatorType.Multiplication.value): list(self.logic.equation).insert(len(self.logic.equation) - self.logic.bracket_num, i)
 
         # put the number in the equation and display strings
         self.update_text(display_text_update_type = DisplayTextUpdateType.Insert, strings_to_insert = (str(x), str(x), str(x)))
@@ -983,16 +1006,25 @@ class Gui:
 
 
 
+    # function to insert a hidden multiplication operator into the equation string 
+    # allows for a neat display of bracket multiplication and similar formats
+    def insert_mult_operator(self):
+
+        # allow for bracket multiplication without pressing the multiplication button
+        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
+
+            for i in list(OperatorType.Multiplication.value): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+
+
+
     # function bound to the sqrt button that adds square root
     def put_square_root(self):
 
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add the sqrt function indicator to the equation and display strings
         self.update_text(strings_to_insert = ('#()', '\u221A()', ''), update_type = UpdateType.ClearDisplayText)
@@ -1032,7 +1064,8 @@ class Gui:
             self.logic.memory -= float(('').join(self.display_text))
 
             print(f"memory: {self.logic.memory}")
-        except:pass
+
+        except: pass
 
 
 
@@ -1044,7 +1077,8 @@ class Gui:
             self.logic.memory += float(('').join(self.display_text))
 
             print(f"memory: {self.logic.memory}")
-        except:pass
+
+        except: pass
 
 
 
@@ -1056,10 +1090,8 @@ class Gui:
 
         if bracket_type == BracketType.Left:
 
-            # allow for bracket multiplication without pressing the multiplication button
-            if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-                for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+            # add multiplication operator to allow for bracket multiplication
+            self.insert_mult_operator()
 
             # add an open bracket to the equation and display strings
             self.update_text(strings_to_insert = ('()', '()', ''), update_type = UpdateType.ClearDisplayText)
@@ -1105,10 +1137,8 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add an alternate function for inverse trigonometry functions
         if self.trig_toggle:
@@ -1165,12 +1195,8 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
-
-        
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add data to equation and display strings
         self.update_text(strings_to_insert = ('a()', '||', ''), update_type = UpdateType.ClearDisplayText)
@@ -1186,10 +1212,8 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add the pi number to the equation and display strings
         self.update_text(strings_to_insert = ('(3.14159265359)', '\u03C0', '3.14159265359'))
@@ -1202,10 +1226,8 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add eulers number to the equation and display strings
         self.update_text(strings_to_insert = ('(2.71828182846)', 'e', '2.71828182846'))
@@ -1218,11 +1240,8 @@ class Gui:
         # update history
         self.update_history(HistoryUpdateType.Add)
 
-        # allow for bracket multiplication without pressing the multiplication button
-        if self.logic.equation[-1 - self.logic.bracket_num] in list('1234567890)' + get_super('1234567890)')):
-
-            print('here')
-            for i in list(' * '): self.logic.equation.insert(len(self.logic.equation) - self.logic.bracket_num, i)
+        # add multiplication operator to allow for bracket multiplication
+        self.insert_mult_operator()
 
         # add the log function indicator to the equation and display strings
         self.update_text(strings_to_insert = ('l()', 'log()', ''), update_type = UpdateType.ClearDisplayText)
