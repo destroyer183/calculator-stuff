@@ -277,7 +277,7 @@ def shunting_yard_converter(equation: str):
         # try/except to avoid unnecessary crashes
         try:
 
-            token = Token(**token)           
+            assert isinstance(token, Token)
 
             # check if the current token type is 'Function'
             if token.token_type == TokenType.Function:
@@ -401,6 +401,8 @@ def main():
     equation = '4 + (3! * (52 + 73 * #(64) / 2 _ 220) _ 2 ^ (5 _ 2)) / 15'
 
     equation = '4+(3!*(52+73*#(64)/2_220)_2^(5_2))/15'
+
+    equation = '(15) * (22) * (89) _ (3) * (17) * (35)'
 
     # equation = '6 / (l(5) / l(3))'
 

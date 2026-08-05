@@ -320,7 +320,7 @@ class Gui:
                     for i in range(0, len(button) - 1):
                         button[i].configure(font = ('Arial', self.main_font_size, 'bold'))
                 else:
-                    # button = tk.Button(**button)
+                    assert isinstance(button, tk.Button)
                     button.configure(font = ('Arial', self.main_font_size, 'bold'))
 
 
@@ -436,7 +436,7 @@ class Gui:
                                             height = self.button_height())
 
                 else:
-                    button = tk.Button(**button)
+                    assert isinstance(button, tk.Button)
                     button.place(x = self.button_width() * index, 
                                  y = self.parent.winfo_height() - self.button_height() * row_num, width = self.button_width(), 
                                  height = self.button_height())
@@ -858,7 +858,7 @@ class Gui:
 
             if self.equation_text[-2 - self.logic.bracket_num] not in list('sctSCTlf^#/*%+_' + get_super('sctSCTlf^#/*%+_')):
 
-                if operation == ' _ ': 
+                if operation.value == ' _ ': 
                     
                     # add operator to equation and display strings
                     self.update_text(strings_to_insert = (operation.value, ' - ', ''), update_type = UpdateType.ClearDisplayText)
@@ -871,7 +871,7 @@ class Gui:
 
         except: # ask ryan which format looks better
 
-            if operation == ' _ ':
+            if operation.value == ' _ ':
 
                 self.update_text(strings_to_insert = (operation.value, ' - ', ''), update_type = UpdateType.ClearDisplayText)
 
