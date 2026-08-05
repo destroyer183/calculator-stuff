@@ -845,7 +845,7 @@ class Gui:
 
 
     # the function bound to the addition button to tell the calculate function which mathematical operation to perform when it is pressed.
-    def put_operator(self, operation = None):
+    def put_operator(self, operation: OperatorType):
 
         # prevent the use of an operator when there is nothing in the current equation string
         if self.logic.equation == ['']:
@@ -861,26 +861,26 @@ class Gui:
                 if operation == ' _ ': 
                     
                     # add operator to equation and display strings
-                    self.update_text(strings_to_insert = (operation, ' - ', ''), update_type = UpdateType.ClearDisplayText)
+                    self.update_text(strings_to_insert = (operation.value, ' - ', ''), update_type = UpdateType.ClearDisplayText)
 
                 
 
                 else:
 
-                    self.update_text(strings_to_insert = (operation, operation, ''), update_type = UpdateType.ClearDisplayText)
+                    self.update_text(strings_to_insert = (operation.value, operation.value, ''), update_type = UpdateType.ClearDisplayText)
 
         except: # ask ryan which format looks better
 
             if operation == ' _ ':
 
-                self.update_text(strings_to_insert = (operation, ' - ', ''), update_type = UpdateType.ClearDisplayText)
+                self.update_text(strings_to_insert = (operation.value, ' - ', ''), update_type = UpdateType.ClearDisplayText)
 
             
 
             else:
 
                 # add operator to equation and display strings
-                self.update_text(strings_to_insert = (operation, operation, ''), update_type = UpdateType.ClearDisplayText)
+                self.update_text(strings_to_insert = (operation.value, operation.value, ''), update_type = UpdateType.ClearDisplayText)
 
 
 

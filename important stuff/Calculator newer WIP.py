@@ -76,13 +76,13 @@ if __package__ is None and not hasattr(sys, 'frozen'):
 # main class to handle all the gui stuff
 class Window:
 
-    instance: "Window" = None
+    instance: "Window"
     option_choices: tk.StringVar
     trig_option_choices: tk.StringVar
 
     def __init__(self, gui) -> None:
         
-        self.gui = Scientific.Gui(gui, Window.instance)
+        self.gui = Scientific.Gui(gui, None)
 
 
 
