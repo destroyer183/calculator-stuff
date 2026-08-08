@@ -43,7 +43,9 @@ make a separate class variable list that only stores a new element when the user
 
 
 
-BUG: can begin with an operator instead of a number.
+BUG: can begin with an operator instead of a number while inside brackets.
+
+NOTE: 'memory clear' function isn't bound to any keyboard buttons.
 
 '''
 
@@ -266,11 +268,12 @@ class Gui:
         
         # column 6
         self.mem_recall     = tk.Button(self.parent, text = 'MR',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_recall())
+        self.mem_clear      = tk.Button(self.parent, text = 'MC',                 anchor = 'center', bg = 'gainsboro',      command = lambda: self.memory_clear())
         self.num9           = tk.Button(self.parent, text = '9',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(9))
         self.num6           = tk.Button(self.parent, text = '6',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(6))
         self.num3           = tk.Button(self.parent, text = '3',                  anchor = 'center', bg = 'white',          command = lambda: self.put_number(3))
         self.decimal        = tk.Button(self.parent, text = '.',                  anchor = 'center', bg = 'white',          command = lambda: self.put_decimal())
-        self.gui_column_6   = [self.mem_recall, self.num9, self.num6, self.num3, self.decimal]
+        self.gui_column_6   = [(self.mem_recall, self.mem_clear, SplitType.Horizontal), self.num9, self.num6, self.num3, self.decimal]
         self.gui_columns.append(self.gui_column_6)
 
         # column 7
@@ -1053,6 +1056,14 @@ class Gui:
 
         # add the number stored in memory to the equation and display strings
         self.update_text(strings_to_insert = (str(self.logic.memory), str(self.logic.memory), str(self.logic.memory)))
+
+
+
+    # function bound to the memory clear button to clear the current memory.
+    def memory_clear(self):
+
+        # clear the memory
+        self.logic.memory = 0.0
 
 
 

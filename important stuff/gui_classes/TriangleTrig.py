@@ -321,6 +321,8 @@ class Gui:
 
                 else: self.ambiguous_toggle(Data.DELETE)
 
+                assert isinstance(ambiguous, bool)
+
                 self.logic.calculate_triangle(ambiguous)
 
                 self.place_triangle(self.logic.calculate_triangle(ambiguous))
