@@ -571,6 +571,15 @@ class Gui:
 
                 return
 
+            # check if 'shift' and 'ctrl' are both held
+            elif input.state == 5:
+
+                match input.keysym:
+
+                    case 'M': self.memory_clear()
+
+                return
+
         except: print('exception triggered')
 
         if input.keysym in '1234567890': self.put_number(int(input.keysym))
