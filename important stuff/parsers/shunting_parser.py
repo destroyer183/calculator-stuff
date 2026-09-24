@@ -18,6 +18,7 @@ class MathOperation(Enum):
     aCosine = 'C'
     aTangent = 'T'
     Logarithm = 'l'
+    NatLog = 'L'
     Absolute = 'a'
     Factorial = 'f'
     SquareRoot = '#'
@@ -74,6 +75,7 @@ class Token:
             case MathOperation.aCosine:    return (math.acos(x) * is_radians) + (math.degrees(math.acos(x)) * (not is_radians))
             case MathOperation.aTangent:   return (math.atan(x) * is_radians) + (math.degrees(math.atan(x)) * (not is_radians))
             case MathOperation.Logarithm:  return math.log(x, 10)
+            case MathOperation.NatLog:     return math.log(x)
             case MathOperation.Absolute:   return abs(x)
             case MathOperation.Factorial:  return math.factorial(int(x))
             case MathOperation.SquareRoot: return x ** 0.5
@@ -98,6 +100,7 @@ TOKENS = [
     Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.aCosine,    value = 'C'),
     Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.aTangent,   value = 'T'),
     Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Logarithm,  value = 'l'),
+    Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.NatLog,     value = 'L'),
     Token(token_type = TokenType.Function, precedence = 5, associativity = Associativity.Left,  math_operation = MathOperation.Absolute,   value = 'a'),
     Token(token_type = TokenType.Function, precedence = 4, associativity = Associativity.Left,  math_operation = MathOperation.Factorial,  value = 'f'),
     Token(token_type = TokenType.Function, precedence = 2, associativity = Associativity.Left,  math_operation = MathOperation.SquareRoot, value = '#'),

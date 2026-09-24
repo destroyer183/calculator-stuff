@@ -47,6 +47,8 @@ BUG: can begin with an operator instead of a number while inside brackets.
 
 NOTE: 'memory clear' function isn't bound to any keyboard buttons.
 
+add natural log using the 'inv' button that is used for trig stuff.
+
 '''
 
 class OperatorType(Enum):
@@ -128,7 +130,7 @@ class Gui:
         
         self.parent: tk.Tk = parent
         self.master = master
-        self.trig_toggle = False
+        self.inv_toggle = False
         self.is_radians = False
         self.equation_text: list[str] = ['']
         self.display_text:list[str] = ['', '']
@@ -232,7 +234,7 @@ class Gui:
         # column 2
         self.open_b         = tk.Button(self.parent, text = '(',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_brackets(BracketType.Left))
         self.close_b        = tk.Button(self.parent, text = ')',                  anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_brackets(BracketType.Right))
-        self.shift          = tk.Button(self.parent, text = 'Inv',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.toggle_trig_type())
+        self.shift          = tk.Button(self.parent, text = 'Inv',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.invert_functions())
         self.sine           = tk.Button(self.parent, text = 'sin',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_trig_function(TrigFunctionType.Sine))
         self.cosine         = tk.Button(self.parent, text = 'cos',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_trig_function(TrigFunctionType.Cosine))
         self.tangent        = tk.Button(self.parent, text = 'tan',                anchor = 'center', bg = 'gainsboro',      command = lambda: self.put_trig_function(TrigFunctionType.Tangent))
@@ -807,21 +809,18 @@ class Gui:
 
 
     # function bound to the invert button to allow inverse functions to be used.
-    def toggle_trig_type(self):
+    def invert_functions(self):
 
         # flip the variable whenever the button is pressed
-        self.trig_toggle = not self.trig_toggle
+        self.inv_toggle = not self.inv_toggle
 
         # change the button text to inverted functions
-        if self.trig_toggle:
+        if self.inv_toggle:
 
             self.sine.   configure(text = 'sin' + get_super('-1'))
             self.cosine. configure(text = 'cos' + get_super('-1'))
             self.tangent.configure(text = 'tan' + get_super('-1'))
-
-            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 4, width = self.button_width(), height = self.button_height())
-            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
-            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
+            self.log.    configure(text = 'ln')
 
 
 
@@ -831,10 +830,14 @@ class Gui:
             self.sine.   configure(text = 'sin')
             self.cosine. configure(text = 'cos')
             self.tangent.configure(text = 'tan')
+            self.log.    configure(text = 'log')
+            
 
-            self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 4, width = self.button_width(), height = self.button_height())
-            self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
-            self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
+        
+        self.sine.   place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 4, width = self.button_width(), height = self.button_height())
+        self.cosine. place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
+        self.tangent.place(x = self.button_width() * 1, y = self.parent.winfo_height() - self.button_height() * 2, width = self.button_width(), height = self.button_height())
+        self.log.    place(x = 0, y = self.parent.winfo_height() - self.button_height() * 3, width = self.button_width(), height = self.button_height())
 
     
 
@@ -1161,7 +1164,7 @@ class Gui:
         self.insert_mult_operator()
 
         # add an alternate function for inverse trigonometry functions
-        if self.trig_toggle:
+        if self.inv_toggle:
 
             if trig_function_type == TrigFunctionType.Sine:
 
@@ -1263,8 +1266,16 @@ class Gui:
         # add multiplication operator to allow for bracket multiplication
         self.insert_mult_operator()
 
-        # add the log function indicator to the equation and display strings
-        self.update_text(strings_to_insert = ('l()', 'log()', ''), update_type = UpdateType.ClearDisplayText)
+        # add an alternate function for natural log
+        if self.inv_toggle:
+
+            # add the ln function indicator to the equation and display strings
+            self.update_text(strings_to_insert = ('L()', 'ln()', ''), update_type = UpdateType.ClearDisplayText)
+
+        else:
+
+            # add the log function indicator to the equation and display strings
+            self.update_text(strings_to_insert = ('l()', 'log()', ''), update_type = UpdateType.ClearDisplayText)
 
         # allow for more brackets
         self.logic.bracket_num += 1
