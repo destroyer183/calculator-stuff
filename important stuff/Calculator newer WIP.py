@@ -1,7 +1,7 @@
 import tkinter as tk
 # from tkinter import *
 import os
-from gui_classes import Scientific, Factoring, Quadratic, TriangleTrig, UnitCircleTrig, Variable
+from gui_classes import Scientific, Factoring, Quadratic, TriangleTrig, new_TriangleTrig, UnitCircleTrig, Variable
 import sys
 from enum import Enum
 
@@ -126,8 +126,10 @@ class Window:
     def choose_trig_gui(self):
 
         match self.gui_type:
-            case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
-            case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
+            # case GuiOptionChoices.Trigonometry  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
+            # case GuiOptionChoices.TriangleTrig  : self.gui = TriangleTrig.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.Trigonometry  : self.gui = new_TriangleTrig.Gui(self.gui.parent, Window.instance)
+            case GuiOptionChoices.TriangleTrig  : self.gui = new_TriangleTrig.Gui(self.gui.parent, Window.instance)
             case GuiOptionChoices.UnitCircleTrig: self.gui = UnitCircleTrig.Gui(self.gui.parent, Window.instance)
 
         # make trig option menu to switch between trig calculator types
@@ -233,11 +235,11 @@ def main():
         
     Window.trig_option_choices = tk.StringVar(Window.instance.gui.parent)
     Window.trig_option_choices.set(GuiOptionChoices.TriangleTrig.value)
-    Window.trig_option_choices.trace('w', Window.instance.trig_options_callback)
+    Window.trig_option_choices.trace_add('write', Window.instance.trig_options_callback)
 
     Window.option_choices = tk.StringVar(Window.instance.gui.parent)
-    Window.option_choices.trace('w', Window.instance.options_callback)
-    Window.option_choices.set(GuiOptionChoices.Scientific.value)
+    Window.option_choices.trace_add('write', Window.instance.options_callback)
+    Window.option_choices.set(GuiOptionChoices.Trigonometry.value)
 
 
 
