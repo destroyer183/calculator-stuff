@@ -1,7 +1,8 @@
 import tkinter as tk
 from enum import Enum
 import math
-from parsers.triangle_trig_parser import Logic, Data
+from parsers.new_triangle_trig_parser import Logic, Data
+from parsers.shunting_parser import shunting_yard_evaluator
 
 
 
@@ -58,7 +59,7 @@ class InputBox:
 
         self.tk_box: tk.Entry = tk_box
         self.str_var: tk.StringVar = str_var
-        self.sci_parser_indices: tuple[int, int] = (-1, -1)
+        self.sci_parser_indices: list[int] = [-1, -1]
         self.sci_parser_toggle: bool = False
 
         self.tk_box.configure(textvariable = self.str_var)
@@ -69,16 +70,25 @@ class InputBox:
 
     def parse_embedded_sci(self):
 
-        # pass info to sci parser
-        # remove brackets
-        # embed back in entry widget
-        pass
+        embedded_input: str = self.str_var.get()[self.sci_parser_indices[0]:self.sci_parser_indices[1]]
+
+        print(f"sci input: {embedded_input}")
+
+        # calculate embedded output
+        embedded_output: str = shunting_yard_evaluator(embedded_input, Gui.is_radians)
+
+        print(f"sci output: {embedded_output}")
+
+        # replace parser input with output
+        self.str_var.set(self.str_var.get()[:self.sci_parser_indices[0]] + embedded_output + self.str_var.get()[self.sci_parser_indices[1]:])
+
 
 
 
 class Gui:
 
     is_ambiguous = False
+    is_radians = False
 
     def __init__(self, parent: tk.Tk, master) -> None:
 
@@ -233,16 +243,10 @@ class Gui:
 
     def keybindings(self, input: tk.Event):
 
-        print(type(input))
-
         try: temp = input.keysym
         except:return
 
-        print(f"keysm type: {type(input.keysym)}")
-
-        # if input.char == "\r": self.text_boxes_callback(None)
-        if False: pass
-        elif input.keycode == 27: self.clear_data()
+        if input.keycode == 27: self.clear_data()
         elif input.char == "m": self.swap_modes()
         elif input.char == "t" and self.ambiguous_triangle: self.ambiguous_toggle()
 
@@ -254,28 +258,47 @@ class Gui:
 
             if args[0] == str(box.str_var):
 
-                # check if box is currently embedding sci parsing
-                if box.sci_parser_toggle:
-                    return
-
                 # do stuff for embedded sci parsing
-                if box.str_var.get() == '{':
-                    self.open_sci_parsers += 1
-                    return
-                
-                elif box.str_var.get() == '}':
+                if box.str_var.get().count('}'):
+
+                    box.sci_parser_indices[1] = box.str_var.get().find('}') + 1
 
                     # call function for embedded sci parsing here
                     box.parse_embedded_sci()
 
+                    box.sci_parser_toggle = False
+
+                    print(f"entry content: {box.tk_box.get()}")
+
                     self.open_sci_parsers -= 1
+
+
+
+                elif box.str_var.get().count('{'):
+
+                    # do nothing if embedding is already happening
+                    if box.sci_parser_toggle:
+                        return
+
+                    box.sci_parser_toggle = True
+
+                    self.open_sci_parsers += 1
+                    box.sci_parser_indices[0] = box.str_var.get().find('{')
+                    return
+                
 
 
                 # update information in logic
                 if box in self.angle_boxes:
-                    self.logic.angles[int(str(box.str_var)[0])] = float(box.str_var.get())
+                    self.logic.angles[int(str(box.str_var)[-1])] = float(box.str_var.get())
                 else:
-                    self.logic.lengths[int(str(box.str_var)[0])] = float(box.str_var.get())
+                    self.logic.lengths[int(str(box.str_var)[-1])] = float(box.str_var.get())
+
+
+
+                # do not calculate anything if there is incomplete embedded parsing
+                if not self.open_sci_parsers:
+                    return
 
 
 
@@ -394,8 +417,7 @@ class Gui:
     def clear_data(self):
 
         for box in self.angle_boxes + self.length_boxes:
-            box.tk_box.delete(0, tk.END)
-            # box.tk_box.edit_modified(False)
+            box.str_var.set('')
 
         try:self.canvas.delete(self.triangle)
         except:pass
@@ -405,9 +427,8 @@ class Gui:
 
         self.ambiguous_toggle(Data.DELETE)
 
-        self.place_triangle(self.logic.calculate_triangle(False), no = True)
+        self.place_triangle(self.logic.calculate_triangle(), no = True)
 
-        # self.text_boxes_callback(1)
 
         Gui.is_ambiguous = False
         
